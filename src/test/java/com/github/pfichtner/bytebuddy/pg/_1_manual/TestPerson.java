@@ -9,6 +9,7 @@ class TestPerson {
 
 	@Test
 	void assertThrowsException() {
+		assertThrows(ConstraintViolationException.class, () -> Person.create(null));
 		assertThrows(ConstraintViolationException.class, () -> Person.create("x"));
 	}
 

@@ -17,6 +17,7 @@ class TestPerson {
 
 	@Test
 	void assertThrowsException() {
+		assertThrows(ConstraintViolationException.class, () -> new Person(null));
 		assertThrows(ConstraintViolationException.class, () -> new Person("x"));
 	}
 
