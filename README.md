@@ -2,7 +2,7 @@
 
 # jsr380-pg
 
-Playground for JSR-380 API and implementation
+Playground for JSR-380 API and implementation in conjunction with a [bytebuddy](https://bytebuddy.net/) created java agent
 
 com.github.pfichtner.bytebuddy.pg._1_manual
 -------------------------------------------
