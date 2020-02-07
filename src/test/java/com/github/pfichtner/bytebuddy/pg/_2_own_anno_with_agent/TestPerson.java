@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class TestPerson {
 
 	@BeforeAll
-	public static void setUp() throws Exception {
+	public static void setUp() {
 		Agent.premain(null, install());
 	}
 
