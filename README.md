@@ -16,5 +16,5 @@ com.github.pfichtner.bytebuddy._3_no_anno_with_agent
 ----------------------------------------------------
 Validation code automatically called if there are fields annotated with an annotation in package ``javax.validation.constraints``
 
-
-	
+TODO add example with annotation processor during compile time 
+https://docs.jboss.org/hibernate/validator/5.0/reference/en-US/html/validator-annotation-processor.html#validator-annotationprocessor-usage
