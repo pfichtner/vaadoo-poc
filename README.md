@@ -10,11 +10,12 @@ Validation code explicitly called in factory method create
 
 com.github.pfichtner.bytebuddy._2_own_anno_with_agent
 -----------------------------------------------------
-Validation code automatically called by javaagent if class is annotated by ``@Validate``
+Validation code automatically called within code added by javaagent if class is annotated by ``@Validate``
 
 com.github.pfichtner.bytebuddy._3_no_anno_with_agent
 ----------------------------------------------------
-Validation code automatically called if there are fields annotated with an annotation in package ``javax.validation.constraints``
+Validation code automatically called within code added by javaagent if there are fields annotated with an annotation in package ``javax.validation.constraints``
 
-TODO add example with annotation processor during compile time using https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven-plugin
-
+com.github.pfichtner.bytebuddy.pg._4_no_anno_apt
+----------------------------------------------------
+Validation code automatically called within code added by [byte-buddy-maven-plugin](https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven-plugin) if there are fields annotated with an annotation in package ``javax.validation.constraints``
