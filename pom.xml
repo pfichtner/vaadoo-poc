@@ -10,6 +10,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<bytebuddy.version>1.10.14</bytebuddy.version>
 	</properties>
 
 	<build>
@@ -59,7 +60,7 @@
 			<plugin>
 				<groupId>net.bytebuddy</groupId>
 				<artifactId>byte-buddy-maven-plugin</artifactId>
-				<version>1.10.14</version>
+				<version>${bytebuddy.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -108,7 +109,7 @@
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
-			<version>1.10.14</version>
+			<version>${bytebuddy.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -125,7 +126,7 @@
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy-agent</artifactId>
-			<version>1.10.14</version>
+			<version>${bytebuddy.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
