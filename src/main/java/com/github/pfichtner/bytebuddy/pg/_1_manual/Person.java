@@ -10,15 +10,17 @@ import com.github.pfichtner.bytebuddy.pg._2_own_anno_with_agent.Validate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
 
 @Value
 @RequiredArgsConstructor(access = PRIVATE)
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @Validate
 public class Person {
 
 	@NotNull
 	@Size(min = 2, max = 20)
-	private final String name;
+	String name;
 
 	public static Person create(String name) {
 		return validate(new Person(name));
