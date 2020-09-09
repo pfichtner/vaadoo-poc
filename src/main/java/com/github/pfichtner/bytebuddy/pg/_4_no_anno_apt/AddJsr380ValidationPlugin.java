@@ -1,6 +1,6 @@
 package com.github.pfichtner.bytebuddy.pg._4_no_anno_apt;
 
-import static net.bytebuddy.asm.Advice.to;
+import static net.bytebuddy.implementation.MethodDelegation.to;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 
 import java.io.IOException;
@@ -16,6 +16,7 @@ import net.bytebuddy.description.annotation.AnnotationSource;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.ClassFileLocator;
 import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.implementation.SuperMethodCall;
 
 public class AddJsr380ValidationPlugin implements Plugin {
 
@@ -47,7 +48,7 @@ public class AddJsr380ValidationPlugin implements Plugin {
 
 	@Override
 	public Builder<?> apply(Builder<?> builder, TypeDescription typeDescription, ClassFileLocator classFileLocator) {
-		return builder.constructor(any()).intercept(to(Constructor.class));
+		return builder.constructor(any()).intercept(SuperMethodCall.INSTANCE.andThen(to(Constructor.class)));
 	}
 
 	@Override
