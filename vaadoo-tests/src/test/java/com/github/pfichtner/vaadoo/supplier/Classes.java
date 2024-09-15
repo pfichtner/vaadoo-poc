@@ -83,11 +83,7 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> get() {
-		List<Arbitrary<Tuple2<Class<?>, Object>>> tupleArbitraries = new ArrayList<>();
-		for (Map.Entry<Class<?>, Arbitrary<?>> entry : allArbitraries.entrySet()) {
-			tupleArbitraries.add(entry.getValue().map(value -> Tuple.of(entry.getKey(), value)));
-		}
-		return Arbitraries.oneOf(tupleArbitraries);
+		return Arbitraries.oneOf(allArbitraries.entrySet().stream().map(Classes::arbitrary).collect(toList()));
 	}
 
 	@Override
@@ -96,9 +92,9 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 		return targetClass.map(this::filteredArbitraries).orElseGet(this::get);
 	}
 
-	private Arbitrary<Tuple2<Class<?>, Object>> filteredArbitraries(Class<?>[] xxx) {
+	private Arbitrary<Tuple2<Class<?>, Object>> filteredArbitraries(Class<?>[] clazz) {
 		var filteredArbitraries = allArbitraries.entrySet().stream() //
-				.filter(e -> Arrays.stream(xxx).anyMatch(t -> t.isAssignableFrom(e.getKey()))) //
+				.filter(e -> Arrays.stream(clazz).anyMatch(t -> t.isAssignableFrom(e.getKey()))) //
 				.map(Classes::arbitrary).collect(toList());
 		return Arbitraries.oneOf(filteredArbitraries);
 	}
