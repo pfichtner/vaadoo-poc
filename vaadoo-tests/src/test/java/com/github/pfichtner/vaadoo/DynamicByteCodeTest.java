@@ -13,11 +13,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import com.github.pfichtner.vaadoo.supplier.Blanks;
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Classes.Types;
 import com.github.pfichtner.vaadoo.supplier.NonBlanks;
 
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -105,6 +110,37 @@ class DynamicByteCodeTest {
 		var config = Config.config().withEntry(tuple.get1(), "param", tuple.get2(), NotNull.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
+	}
+
+	@ParameterizedTest
+	@MethodSource("booleanOkConfigs")
+	void booleansOks(Config config) throws Exception {
+		var transformedClass = transform(dynamicClass(config));
+		assertNoException(config, transformedClass);
+	}
+
+	@ParameterizedTest
+	@MethodSource("booleanOkConfigs")
+	void booleansNoks(Config config) throws Exception {
+		var transformedClass = transform(dynamicClass(config));
+		var inverted = invert(config);
+		var entry = config.entries().get(0);
+		assertException(inverted, transformedClass,
+				entry.name() + " should be " + ((boolean) entry.value() ? "true" : "false"),
+				IllegalArgumentException.class);
+	}
+
+	static Config invert(Config config) {
+		return new Config(config.entries.stream()
+				.map(e -> new ConfigEntry(e.paramType(), e.name(), !((boolean) e.value()), e.annoClass())).toList());
+	}
+
+	static List<Config> booleanOkConfigs() {
+		return List.of( //
+				Config.config().withEntry(Boolean.class, "param", true, AssertTrue.class), //
+				Config.config().withEntry(boolean.class, "param", true, AssertTrue.class), //
+				Config.config().withEntry(Boolean.class, "param", false, AssertFalse.class), //
+				Config.config().withEntry(boolean.class, "param", false, AssertFalse.class));
 	}
 
 	@Property
