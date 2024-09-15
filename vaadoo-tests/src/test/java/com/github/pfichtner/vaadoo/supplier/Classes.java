@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
 	public static @interface Types {
-		Class<?> value();
+		Class<?>[] value();
 	}
 
 	Map<Class<?>, Arbitrary<?>> primitives = Map.of( //
@@ -92,11 +93,12 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
 		var targetClass = targetType.findAnnotation(Types.class).map(Types::value);
-		if (targetClass.isEmpty()) {
-			return get();
-		}
+		return targetClass.map(this::filteredArbitraries).orElseGet(this::get);
+	}
+
+	private Arbitrary<Tuple2<Class<?>, Object>> filteredArbitraries(Class<?>[] xxx) {
 		var filteredArbitraries = allArbitraries.entrySet().stream() //
-				.filter(entry -> targetClass.get().isAssignableFrom(entry.getKey())) //
+				.filter(e -> Arrays.stream(xxx).anyMatch(t -> t.isAssignableFrom(e.getKey()))) //
 				.map(Classes::arbitrary).collect(toList());
 		return Arbitraries.oneOf(filteredArbitraries);
 	}
