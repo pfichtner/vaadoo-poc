@@ -1,4 +1,5 @@
-# Vaadoo Validating automatically domain objects: It's magic
+# Vaadoo
+Validating automatically domain objects: It's magic
 
 ## This is a "work in progress" PoC of weaving JSR380 (Bean Validation 2.0) checks based on annotations into the bytecode. 
 
