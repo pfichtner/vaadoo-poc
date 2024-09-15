@@ -5,7 +5,6 @@ import static java.util.Collections.singletonMap;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -26,6 +25,7 @@ import com.example.SomeLombokClass;
 import com.example.SomeRecord;
 
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.build.Plugin;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 
@@ -33,12 +33,12 @@ class AddJsr380ValidationPluginTest {
 
 	@Test
 	void testGeneratedBytecode(@TempDir Path tempDir) throws Exception {
-		verify(transformAndDecompile(tempDir, SomeClass.class));
+		verify(decompile(tempDir, SomeClass.class));
 	}
 
 	@Test
 	void testGeneratedBytecodeOnLombokClass(@TempDir Path tempDir) throws Exception {
-		verify(transformAndDecompile(tempDir, SomeLombokClass.class));
+		verify(decompile(tempDir, SomeLombokClass.class));
 	}
 
 	@Test
@@ -55,22 +55,19 @@ class AddJsr380ValidationPluginTest {
 		}
 	}
 
-	private String transformAndDecompile(Path tempDir, Class<?> clazz) throws URISyntaxException, IOException {
+	private String decompile(Path tempDir, Class<?> clazz) throws URISyntaxException, IOException {
 		Path sourcePath = Path.of(getClass().getResource("/" + clazz.getName().replace('.', '/') + ".class").toURI());
 		Files.copy(sourcePath, tempDir.resolve(clazz.getSimpleName() + ".class"));
-
-		try (AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin()) {
-			return decompileClass(tempDir, clazz);
-//			var transformedClass = transform(sut, SomeClass.class);
-//			firstConstructor(transformedClass).newInstance("", "", "", "", false);
-		}
+		return decompileClass(tempDir, clazz);
+//		var transformedClass = transform(sut, SomeClass.class);
+//		firstConstructor(transformedClass).newInstance("", "", "", "", false);
 	}
 
 	private static Constructor<?> firstConstructor(Class<?> clazz) {
 		return Stream.of(clazz.getConstructors()).findFirst().get();
 	}
 
-	private static Class<?> transform(AddJsr380ValidationPlugin plugin, Class<?> clazz) throws ClassNotFoundException {
+	private static Class<?> transform(Plugin plugin, Class<?> clazz) throws ClassNotFoundException {
 		var builder = new ByteBuddy().redefine(clazz);
 		var transformed = plugin.apply(builder, TypeDescription.ForLoadedType.of(clazz), null).make();
 		var classname = clazz.getName();
