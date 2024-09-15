@@ -1,0 +1,75 @@
+package com.example;
+
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+public class SomeClass {
+   private final Object someNullObject;
+   private final Object someObject;
+   private final String valueWithoutAnnotation;
+   private final CharSequence someNotEmptyCharSequence;
+   private final String someNotEmptyString;
+   private final Collection someNotEmptyCollection;
+   private final Map someNotEmptyMap;
+   private final Integer[] someNotEmptyArray;
+   private final CharSequence someNonBlankValue;
+   private final boolean someTrueValue;
+   private final boolean someFalseValue;
+   private final Boolean someTrueValueWrapper;
+   private final Boolean someFalseValueWrapper;
+   private final int someValueThatIsMinimal42;
+
+   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someValueThatIsMinimal42) {
+      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someValueThatIsMinimal42);
+      this.someNullObject = someNullObject;
+      this.someObject = someObject;
+      this.valueWithoutAnnotation = valueWithoutAnnotation;
+      this.someNotEmptyCharSequence = someNotEmptyCharSequence;
+      this.someNotEmptyString = someNotEmptyString;
+      this.someNotEmptyCollection = someNotEmptyCollection;
+      this.someNotEmptyMap = someNotEmptyMap;
+      this.someNotEmptyArray = someNotEmptyArray;
+      this.someNonBlankValue = someNonBlankValue;
+      this.someTrueValue = someTrueValue;
+      this.someFalseValue = someFalseValue;
+      this.someTrueValueWrapper = someTrueValueWrapper;
+      this.someFalseValueWrapper = someFalseValueWrapper;
+      this.someValueThatIsMinimal42 = someValueThatIsMinimal42;
+   }
+
+   public static void main(String[] args) {
+      System.out.println(new SomeClass((Object)null, "isNotNull", (String)null, (CharSequence)null, (String)null, List.of(), Map.of(), new Integer[0], "", true, false, Boolean.TRUE, Boolean.FALSE, 42));
+   }
+
+   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, boolean var9, boolean var10, Boolean var11, Boolean var12, int var13) {
+      Preconditions.checkArgument(var0 == null, "someNullObject expected to be null");
+      Preconditions.checkNotNull(var1, "someObject must not be null");
+      Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be null");
+      Preconditions.checkArgument(var3.length() > 0, "someNotEmptyCharSequence must not be empty");
+      Preconditions.checkNotNull(var4, "someNotEmptyString must not be null");
+      Preconditions.checkArgument(var4.length() > 0, "someNotEmptyString must not be empty");
+      Preconditions.checkNotNull(var5, "someNotEmptyCollection must not be null");
+      Preconditions.checkArgument(var5.size() > 0, "someNotEmptyCollection must not be empty");
+      Preconditions.checkNotNull(var6, "someNotEmptyMap must not be null");
+      Preconditions.checkArgument(var6.size() > 0, "someNotEmptyMap must not be empty");
+      Preconditions.checkNotNull(var7, "someNotEmptyArray must not be null");
+      Preconditions.checkArgument(var7.length > 0, "someNotEmptyArray must not be empty");
+      Preconditions.checkNotNull(var8, "someNonBlankValue must not be null");
+      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn(var8) > 0, "someNonBlankValue must not be blank");
+      Preconditions.checkArgument(var9, "someTrueValue should be true");
+      Preconditions.checkArgument(!var10, "someFalseValue should be false");
+      Preconditions.checkArgument(Boolean.TRUE.equals(var11), "someTrueValueWrapper should be true");
+      Preconditions.checkArgument(Boolean.FALSE.equals(var12), "someFalseValueWrapper should be false");
+      Preconditions.checkArgument(var13 >= 42, "someValueThatIsMinimal42 should be >= 42");
+   }
+}
