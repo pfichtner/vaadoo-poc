@@ -120,19 +120,13 @@ class DynamicByteCodeTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("booleanOkConfigs")
+	@MethodSource("booleanNokConfigs")
 	void booleansNoks(Config config) throws Exception {
 		var transformedClass = transform(dynamicClass(config));
-		var inverted = invert(config);
 		var entry = config.entries().get(0);
-		assertException(inverted, transformedClass,
-				entry.name() + " should be " + ((boolean) entry.value() ? "true" : "false"),
+		assertException(config, transformedClass,
+				entry.name() + " should be " + ((boolean) entry.value() ? "false" : "true"),
 				IllegalArgumentException.class);
-	}
-
-	static Config invert(Config config) {
-		return new Config(config.entries.stream()
-				.map(e -> new ConfigEntry(e.paramType(), e.name(), !((boolean) e.value()), e.annoClass())).toList());
 	}
 
 	static List<Config> booleanOkConfigs() {
@@ -141,6 +135,14 @@ class DynamicByteCodeTest {
 				Config.config().withEntry(boolean.class, "param", true, AssertTrue.class), //
 				Config.config().withEntry(Boolean.class, "param", false, AssertFalse.class), //
 				Config.config().withEntry(boolean.class, "param", false, AssertFalse.class));
+	}
+
+	static List<Config> booleanNokConfigs() {
+		return List.of( //
+				Config.config().withEntry(Boolean.class, "param", false, AssertTrue.class), //
+				Config.config().withEntry(boolean.class, "param", false, AssertTrue.class), //
+				Config.config().withEntry(Boolean.class, "param", true, AssertFalse.class), //
+				Config.config().withEntry(boolean.class, "param", true, AssertFalse.class));
 	}
 
 	@Property
