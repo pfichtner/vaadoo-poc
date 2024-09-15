@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+import com.github.pfichtner.vaadoo.supplier.Blanks;
+import com.github.pfichtner.vaadoo.supplier.CharSequenceClasses;
+import com.github.pfichtner.vaadoo.supplier.NonBlanks;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,11 +28,8 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 import net.bytebuddy.dynamic.loading.ByteArrayClassLoader.PersistenceHandler;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.Provide;
 import net.jqwik.api.constraints.WithNull;
 
 /**
@@ -58,9 +57,12 @@ class DynamicByteCodeTest {
 	AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin();
 
 	@Property
-	void showcaseWithThreeParams(@ForAll("charSequenceClass") Class<?> clazz1,
-			@ForAll("charSequenceClass") Class<?> clazz2, @ForAll("charSequenceClass") Class<?> clazz3,
-			@ForAll("blanks") String blank) throws Exception {
+	void showcaseWithThreeParams( //
+			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz1, //
+			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz2, //
+			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz3, //
+			@ForAll(supplier = Blanks.class) String blank //
+	) throws Exception {
 		var config = Config.config() //
 				.withEntry(casted(clazz1, CharSequence.class), "parameter1", blank, NotNull.class) //
 				.withEntry(casted(clazz2, CharSequence.class), "parameter2", blank, NotBlank.class) //
@@ -71,18 +73,21 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void notBlankOks(@ForAll("charSequenceClass") Class<?> clazz, @ForAll("nonblanks") String nonBlankString)
-			throws Exception {
-		var config = Config.config() //
-				.withEntry(casted(clazz, CharSequence.class), "parameter", nonBlankString, NotBlank.class);
+	void notBlankOks( //
+			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz, //
+			@ForAll(supplier = NonBlanks.class) String nonBlank //
+	) throws Exception {
+		var config = Config.config().withEntry(casted(clazz, CharSequence.class), "param", nonBlank, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
 
 	@Property
-	void notBlankNoks(@ForAll("charSequenceClass") Class<?> clazz, @WithNull @ForAll("blanks") String blankString)
-			throws Exception {
-		String parameterName = "parameter";
+	void notBlankNoks( //
+			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz, //
+			@WithNull @ForAll(supplier = Blanks.class) String blankString //
+	) throws Exception {
+		String parameterName = "param";
 		boolean stringIsNull = blankString == null;
 		var config = Config.config() //
 				.withEntry(casted(clazz, CharSequence.class), parameterName, blankString, NotBlank.class);
@@ -95,21 +100,6 @@ class DynamicByteCodeTest {
 	@SuppressWarnings("unchecked")
 	private static <T> Class<T> casted(Class<?> clazzArg, Class<T> target) {
 		return (Class<T>) clazzArg;
-	}
-
-	@Provide("charSequenceClass")
-	Arbitrary<Class<? extends CharSequence>> charSeqenceClasses() {
-		return Arbitraries.of(CharSequence.class, String.class);
-	}
-
-	@Provide("blanks")
-	Arbitrary<String> blanks() {
-		return Arbitraries.of("", " ", "     ");
-	}
-
-	@Provide("nonblanks")
-	Arbitrary<String> nonblanks() {
-		return Arbitraries.of("x", "xXx", "x ", " x");
 	}
 
 	private static void assertException(Config config, Class<?> transformedClass, String description,
