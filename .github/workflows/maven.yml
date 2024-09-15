@@ -1,0 +1,62 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  schedule:
+  # each fifteen day of month
+  - cron: "0 0 15 * *"
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [ 11, 17 ]
+
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.0.0
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@6a0805fcefea3d4657a47ac4c165951e33482018 # v4.2.2
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      run: mvn -B org.jacoco:jacoco-maven-plugin:prepare-agent compile verify --file pom.xml
+
+    - name: Set first matrix job environment variable
+      id: set-first-job
+      if: ${{ matrix.java-version == '8' }}
+      run: echo "::set-output name=first_job::true"
+
+    - name: Distribute build results
+      if: steps.set-first-job.outputs.first_job == 'true'
+      uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+      with:
+        name: jars
+        path: "*/target/*.jar"
+
+    - name: Test Report JDK ${{ matrix.java-version }}
+      uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1
+      if: (success() || failure()) && github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'  # run this step even if previous step failed
+      with:
+        name: Tests Report JDK ${{ matrix.java-version }}
+        path: "*/target/surefire-reports/*.xml"
+        reporter: java-junit
+
+    - name: Codecov
+      uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
+
