@@ -24,6 +24,11 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 import net.bytebuddy.dynamic.loading.ByteArrayClassLoader.PersistenceHandler;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
+import net.jqwik.api.Arbitraries;
+import net.jqwik.api.Arbitrary;
+import net.jqwik.api.ForAll;
+import net.jqwik.api.Property;
+import net.jqwik.api.Provide;
 
 /**
  * This is the base of all dynamic tests (we can check all the different types
@@ -47,6 +52,28 @@ class DynamicByteCodeTest {
 		assertThat(expectException(transformedClass, configs)) //
 				.withFailMessage("expected to throw exception but didn't") //
 				.hasValueSatisfying(e -> assertThat(e).hasMessageContaining("parameter2 must not be blank"));
+	}
+
+	@Property(tries = 50)
+	void testNotBlank(@ForAll("charSequenceClass") Class<?> clazz, @ForAll("blanks") String blankString)
+			throws Exception {
+		String parameterName = "parameter";
+		var configs = List.of(new Config(clazz, parameterName, blankString, NotBlank.class));
+		var transformedClass = transform(new AddJsr380ValidationPlugin(),
+				dynamicClass("com.example.GeneratedTestClass", configs));
+		assertThat(expectException(transformedClass, configs)) //
+				.withFailMessage("expected to throw exception but didn't") //
+				.hasValueSatisfying(e -> assertThat(e).hasMessageContaining(parameterName + " must not be blank"));
+	}
+
+	@Provide("charSequenceClass")
+	Arbitrary<Class<? extends CharSequence>> charSeqenceClasses() {
+		return Arbitraries.of(CharSequence.class, String.class);
+	}
+
+	@Provide("blanks")
+	Arbitrary<String> blanks() {
+		return Arbitraries.strings().ofMinLength(0).ofMaxLength(10).map(s -> s.replaceAll("[^\\s]", ""));
 	}
 
 	private static Optional<Throwable> expectException(Class<?> dynamicClass, List<Config> configs)
