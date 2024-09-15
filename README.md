@@ -1,3 +1,5 @@
+[![Java CI with Maven](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml/badge.svg)](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml)
+
 # Vaadoo
 Validating automatically domain objects: It's magic
 
