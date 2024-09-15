@@ -14,11 +14,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.github.pfichtner.vaadoo.supplier.Blanks;
-import com.github.pfichtner.vaadoo.supplier.CharSequenceClasses;
+import com.github.pfichtner.vaadoo.supplier.Classes;
+import com.github.pfichtner.vaadoo.supplier.Classes.Types;
 import com.github.pfichtner.vaadoo.supplier.NonBlanks;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -30,6 +32,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
+import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.constraints.WithNull;
 
 /**
@@ -58,39 +61,71 @@ class DynamicByteCodeTest {
 
 	@Property
 	void showcaseWithThreeParams( //
-			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz1, //
-			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz2, //
-			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz3, //
+			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple1, //
+			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple2, //
+			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple3, //
 			@ForAll(supplier = Blanks.class) String blank //
 	) throws Exception {
 		var config = Config.config() //
-				.withEntry(casted(clazz1, CharSequence.class), "parameter1", blank, NotNull.class) //
-				.withEntry(casted(clazz2, CharSequence.class), "parameter2", blank, NotBlank.class) //
-				.withEntry(casted(clazz3, CharSequence.class), "parameter3", blank, NotBlank.class);
+				.withEntry(casted(tuple1.get1(), CharSequence.class), "parameter1", blank, NotNull.class) //
+				.withEntry(casted(tuple2.get1(), CharSequence.class), "parameter2", blank, NotBlank.class) //
+				.withEntry(casted(tuple3.get1(), CharSequence.class), "parameter3", blank, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, //
 				"parameter2 must not be blank", IllegalArgumentException.class);
 	}
 
 	@Property
+	void nullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		Object nullValue = null;
+		var config = Config.config().withEntry(tuple.get1(), "param", nullValue, Null.class);
+		var transformedClass = transform(dynamicClass(config));
+		assertNoException(config, transformedClass);
+	}
+
+	@Property
+	void nullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		var parameterName = "param";
+		var config = Config.config().withEntry(tuple.get1(), parameterName, tuple.get2(), Null.class);
+		var transformedClass = transform(dynamicClass(config));
+		assertException(config, transformedClass, parameterName + " expected to be null",
+				IllegalArgumentException.class);
+	}
+
+	@Property
+	void notnullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		var parameterName = "param";
+		var config = Config.config().withEntry(tuple.get1(), parameterName, null, NotNull.class);
+		var transformedClass = transform(dynamicClass(config));
+		assertException(config, transformedClass, parameterName + " must not be null", NullPointerException.class);
+	}
+
+	@Property
+	void notnullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		var config = Config.config().withEntry(tuple.get1(), "param", tuple.get2(), NotNull.class);
+		var transformedClass = transform(dynamicClass(config));
+		assertNoException(config, transformedClass);
+	}
+
+	@Property
 	void notBlankOks( //
-			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz, //
+			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple, //
 			@ForAll(supplier = NonBlanks.class) String nonBlank //
 	) throws Exception {
-		var config = Config.config().withEntry(casted(clazz, CharSequence.class), "param", nonBlank, NotBlank.class);
+		var config = Config.config().withEntry(tuple.get1(), "param", nonBlank, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
 
 	@Property
 	void notBlankNoks( //
-			@ForAll(supplier = CharSequenceClasses.class) Class<?> clazz, //
+			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple, //
 			@WithNull @ForAll(supplier = Blanks.class) String blankString //
 	) throws Exception {
-		String parameterName = "param";
+		var parameterName = "param";
 		boolean stringIsNull = blankString == null;
 		var config = Config.config() //
-				.withEntry(casted(clazz, CharSequence.class), parameterName, blankString, NotBlank.class);
+				.withEntry(casted(tuple.get1(), CharSequence.class), parameterName, blankString, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
