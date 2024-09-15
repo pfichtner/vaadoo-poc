@@ -140,6 +140,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 		private final List<String> methodNames;
 		private final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
 		private String methodAddedName;
+		private boolean visitParameterCalled;
 
 		public ConstructorVisitor(int api, MethodVisitor methodVisitor, String className, String methodDescriptor,
 				List<String> methodNames) {
@@ -147,6 +148,14 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			this.className = className;
 			this.methodDescriptor = methodDescriptor;
 			this.methodNames = methodNames;
+		}
+
+		@Override
+		public void visitParameter(String name, int access) {
+			visitParameterCalled = true;
+			int index = parameterInfos.size();
+			parameterInfo(index).name(name).type(Type.getMethodType(methodDescriptor).getArgumentTypes()[index]);
+			super.visitParameter(name, access);
 		}
 
 		@Override
@@ -195,9 +204,11 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 		@Override
 		public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end,
 				int index) {
-			int parameter = index - 1;
-			if (parameter >= 0) {
-				parameterInfo(parameter).name(name).type(Type.getType(descriptor));
+			if (!visitParameterCalled) {
+				int parameter = index - 1;
+				if (parameter >= 0) {
+					parameterInfo(parameter).name(name).type(Type.getType(descriptor));
+				}
 			}
 			super.visitLocalVariable(name, descriptor, signature, start, end, index);
 		}
