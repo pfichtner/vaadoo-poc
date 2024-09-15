@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -54,44 +53,43 @@ class DynamicByteCodeTest {
 	static record ConfigEntry(Class<?> paramType, String name, Object value, Class<? extends Annotation> annoClass) {
 	}
 
+	// TODO add the moment the ByteBuddy generated code contains debug information,
+	// we want to support (and test both): Bytecode with and w/o debug information
 	AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin();
 
-	@Test
-	void testGeneratedClassWithConstructor() throws Exception {
+	@Property
+	void showcaseWithThreeParams(@ForAll("charSequenceClass") Class<?> clazz1,
+			@ForAll("charSequenceClass") Class<?> clazz2, @ForAll("charSequenceClass") Class<?> clazz3,
+			@ForAll("blanks") String blank) throws Exception {
 		var config = Config.config() //
-				.withEntry(String.class, "parameter1", " ", NotNull.class) //
-				.withEntry(String.class, "parameter2", " ", NotBlank.class);
-		// TODO add the moment the ByteBuddy generated code contains debug information,
-		// we want to support (and test both): Bytecode with and w/o debug information
+				.withEntry(casted(clazz1, CharSequence.class), "parameter1", blank, NotNull.class) //
+				.withEntry(casted(clazz2, CharSequence.class), "parameter2", blank, NotBlank.class) //
+				.withEntry(casted(clazz3, CharSequence.class), "parameter3", blank, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
-		assertThat(expectException(transformedClass, config)) //
-				.withFailMessage("expected to throw exception but didn't") //
-				.hasValueSatisfying(e -> assertThat(e).hasMessageContaining("parameter2 must not be blank"));
+		assertException(config, transformedClass, //
+				"parameter2 must not be blank", IllegalArgumentException.class);
 	}
 
 	@Property
 	void notBlankOks(@ForAll("charSequenceClass") Class<?> clazz, @ForAll("nonblanks") String nonBlankString)
 			throws Exception {
-		String parameterName = "parameter";
 		var config = Config.config() //
-				.withEntry(casted(clazz, CharSequence.class), parameterName, nonBlankString, NotBlank.class);
+				.withEntry(casted(clazz, CharSequence.class), "parameter", nonBlankString, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
-		assertThat(expectException(transformedClass, config)).isEmpty();
+		assertNoException(config, transformedClass);
 	}
 
 	@Property
 	void notBlankNoks(@ForAll("charSequenceClass") Class<?> clazz, @WithNull @ForAll("blanks") String blankString)
 			throws Exception {
 		String parameterName = "parameter";
+		boolean stringIsNull = blankString == null;
 		var config = Config.config() //
 				.withEntry(casted(clazz, CharSequence.class), parameterName, blankString, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
-		assertThat(expectException(transformedClass, config)) //
-				.withFailMessage("expected to throw exception but didn't") //
-				.hasValueSatisfying(e -> {
-					assertThat(e).hasMessageContaining(
-							parameterName + " must not be " + (blankString == null ? "null" : "blank"));
-				});
+		assertException(config, transformedClass, //
+				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
+				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,9 +112,18 @@ class DynamicByteCodeTest {
 		return Arbitraries.of("x", "xXx", "x ", " x");
 	}
 
-	private static Optional<Throwable> expectException(Class<?> dynamicClass, Config config)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException {
+	private static void assertException(Config config, Class<?> transformedClass, String description,
+			Class<? extends Exception> type) throws Exception {
+		assertThat(provideExecException(transformedClass, config)) //
+				.withFailMessage("expected to throw exception but didn't") //
+				.hasValueSatisfying(e -> assertThat(e).isExactlyInstanceOf(type).hasMessageContaining(description));
+	}
+
+	private void assertNoException(Config config, Class<?> transformedClass) throws Exception {
+		assertThat(provideExecException(transformedClass, config)).isEmpty();
+	}
+
+	private static Optional<Throwable> provideExecException(Class<?> dynamicClass, Config config) throws Exception {
 		var constructor = dynamicClass.getDeclaredConstructor(types(config.entries));
 		try {
 			constructor.newInstance(params(config.entries));
