@@ -1,10 +1,12 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.Config.config;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Stream.concat;
 import static net.bytebuddy.description.modifier.Visibility.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.pfichtner.vaadoo.supplier.Blanks;
@@ -46,8 +49,8 @@ import net.jqwik.api.constraints.WithNull;
  */
 class DynamicByteCodeTest {
 
-	static record Config(List<ConfigEntry> entries) {
-		private static Config config() {
+	public static record Config(List<ConfigEntry> entries) {
+		public static Config config() {
 			return new Config(Collections.emptyList());
 		}
 
@@ -71,7 +74,7 @@ class DynamicByteCodeTest {
 			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple3, //
 			@ForAll(supplier = Blanks.class) String blank //
 	) throws Exception {
-		var config = Config.config() //
+		var config = config() //
 				.withEntry(casted(tuple1.get1(), CharSequence.class), "parameter1", blank, NotNull.class) //
 				.withEntry(casted(tuple2.get1(), CharSequence.class), "parameter2", blank, NotBlank.class) //
 				.withEntry(casted(tuple3.get1(), CharSequence.class), "parameter3", blank, NotBlank.class);
@@ -83,7 +86,7 @@ class DynamicByteCodeTest {
 	@Property
 	void nullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
 		Object nullValue = null;
-		var config = Config.config().withEntry(tuple.get1(), "param", nullValue, Null.class);
+		var config = config().withEntry(tuple.get1(), "param", nullValue, Null.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
@@ -91,7 +94,7 @@ class DynamicByteCodeTest {
 	@Property
 	void nullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
-		var config = Config.config().withEntry(tuple.get1(), parameterName, tuple.get2(), Null.class);
+		var config = config().withEntry(tuple.get1(), parameterName, tuple.get2(), Null.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, parameterName + " expected to be null",
 				IllegalArgumentException.class);
@@ -100,49 +103,50 @@ class DynamicByteCodeTest {
 	@Property
 	void notnullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
-		var config = Config.config().withEntry(tuple.get1(), parameterName, null, NotNull.class);
+		var config = config().withEntry(tuple.get1(), parameterName, null, NotNull.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, parameterName + " must not be null", NullPointerException.class);
 	}
 
 	@Property
 	void notnullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
-		var config = Config.config().withEntry(tuple.get1(), "param", tuple.get2(), NotNull.class);
+		var config = config().withEntry(tuple.get1(), "param", tuple.get2(), NotNull.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
 
 	@ParameterizedTest
-	@MethodSource("booleanOkConfigs")
-	void booleansOks(Config config) throws Exception {
+	@MethodSource("booleanOks")
+	void booleansOks(Class<?> type, boolean value, Class<Annotation> anno) throws Exception {
+		var config = config().withEntry(casted(type, Boolean.class), "param", value, anno);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
 
 	@ParameterizedTest
-	@MethodSource("booleanNokConfigs")
-	void booleansNoks(Config config) throws Exception {
+	@MethodSource("booleanNoks")
+	void booleansNoks(Class<?> type, boolean value, Class<Annotation> anno) throws Exception {
+		var parameterName = "param";
+		var config = config().withEntry(casted(type, Boolean.class), parameterName, value, anno);
 		var transformedClass = transform(dynamicClass(config));
-		var entry = config.entries().get(0);
-		assertException(config, transformedClass,
-				entry.name() + " should be " + ((boolean) entry.value() ? "false" : "true"),
+		assertException(config, transformedClass, parameterName + " should be " + (value ? "false" : "true"),
 				IllegalArgumentException.class);
 	}
 
-	static List<Config> booleanOkConfigs() {
+	static List<Arguments> booleanOks() {
 		return List.of( //
-				Config.config().withEntry(Boolean.class, "param", true, AssertTrue.class), //
-				Config.config().withEntry(boolean.class, "param", true, AssertTrue.class), //
-				Config.config().withEntry(Boolean.class, "param", false, AssertFalse.class), //
-				Config.config().withEntry(boolean.class, "param", false, AssertFalse.class));
+				arguments(Boolean.class, true, AssertTrue.class), //
+				arguments(boolean.class, true, AssertTrue.class), //
+				arguments(Boolean.class, false, AssertFalse.class), //
+				arguments(boolean.class, false, AssertFalse.class));
 	}
 
-	static List<Config> booleanNokConfigs() {
+	static List<Arguments> booleanNoks() {
 		return List.of( //
-				Config.config().withEntry(Boolean.class, "param", false, AssertTrue.class), //
-				Config.config().withEntry(boolean.class, "param", false, AssertTrue.class), //
-				Config.config().withEntry(Boolean.class, "param", true, AssertFalse.class), //
-				Config.config().withEntry(boolean.class, "param", true, AssertFalse.class));
+				arguments(Boolean.class, false, AssertTrue.class), //
+				arguments(boolean.class, false, AssertTrue.class), //
+				arguments(Boolean.class, true, AssertFalse.class), //
+				arguments(boolean.class, true, AssertFalse.class));
 	}
 
 	@Property
@@ -150,7 +154,7 @@ class DynamicByteCodeTest {
 			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple, //
 			@ForAll(supplier = NonBlanks.class) String nonBlank //
 	) throws Exception {
-		var config = Config.config().withEntry(tuple.get1(), "param", nonBlank, NotBlank.class);
+		var config = config().withEntry(tuple.get1(), "param", nonBlank, NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
@@ -162,8 +166,8 @@ class DynamicByteCodeTest {
 	) throws Exception {
 		var parameterName = "param";
 		boolean stringIsNull = blankString == null;
-		var config = Config.config() //
-				.withEntry(casted(tuple.get1(), CharSequence.class), parameterName, blankString, NotBlank.class);
+		var config = config().withEntry(casted(tuple.get1(), CharSequence.class), parameterName, blankString,
+				NotBlank.class);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
