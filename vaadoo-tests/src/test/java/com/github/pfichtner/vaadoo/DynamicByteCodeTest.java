@@ -2,6 +2,10 @@ package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.Config.config;
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.ConfigEntry.entry;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.UUID.randomUUID;
@@ -12,10 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.security.SecureRandom;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -32,6 +39,7 @@ import com.google.common.base.Supplier;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import net.bytebuddy.ByteBuddy;
@@ -168,7 +176,7 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankOks( //
-			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple, //
+			@ForAll(supplier = Classes.class) @Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
 			@ForAll(supplier = NonBlanks.class) String nonBlank //
 	) throws Exception {
 		var config = config().withEntry(entry(tuple.get1(), "param", nonBlank).withAnno(NotBlank.class));
@@ -178,7 +186,7 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankNoks( //
-			@ForAll(supplier = Classes.class) @Types(CharSequence.class) Tuple2<Class<Object>, Object> tuple, //
+			@ForAll(supplier = Classes.class) @Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
 			@WithNull @ForAll(supplier = Blanks.class) String blankString //
 	) throws Exception {
 		var parameterName = "param";
@@ -189,6 +197,55 @@ class DynamicByteCodeTest {
 		assertException(config, transformedClass, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
 				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
+	}
+
+	@Property
+	void notEmptyOks( //
+			@ForAll(supplier = Classes.class) //
+			@Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+	) throws Exception {
+		var config = config()
+				.withEntry(entry(tuple.get1(), "param", convertValue(tuple.get2(), false)).withAnno(NotEmpty.class));
+		var transformedClass = transform(dynamicClass(config));
+		assertNoException(config, transformedClass);
+	}
+
+	@Property
+	void notEmptyNoks( //
+			@ForAll(supplier = Classes.class) //
+			@Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var config = config().withEntry(
+				entry(tuple.get1(), parameterName, convertValue(tuple.get2(), true)).withAnno(NotEmpty.class));
+		var transformedClass = transform(dynamicClass(config));
+		assertException(config, transformedClass, parameterName + " must not be empty", IllegalArgumentException.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Object convertValue(Object value, boolean empty) {
+		if (empty) {
+			if (value instanceof CharSequence) {
+				value = "";
+			} else if (value instanceof Collection collection) {
+				collection.clear();
+			} else if (value instanceof Map map) {
+				map.clear();
+			} else if (value.getClass().isArray()) {
+				value = Array.newInstance(value.getClass().getComponentType(), 0);
+			}
+		} else {
+			if (value instanceof CharSequence) {
+				value = " ";
+			} else if (value instanceof Collection collection) {
+				collection.add(new Object());
+			} else if (value instanceof Map map) {
+				map.put(new Object(), new Object());
+			} else if (value.getClass().isArray()) {
+				value = Array.newInstance(value.getClass().getComponentType(), 1);
+			}
+		}
+		return value;
 	}
 
 	@SuppressWarnings("unchecked")

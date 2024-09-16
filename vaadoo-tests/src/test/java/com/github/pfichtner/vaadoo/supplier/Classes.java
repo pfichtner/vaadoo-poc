@@ -2,14 +2,15 @@ package com.github.pfichtner.vaadoo.supplier;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.function.Predicate.not;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -17,9 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -33,74 +32,97 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
 	public static @interface Types {
-		Class<?>[] value();
+		SubTypes[] value();
 	}
 
-	Map<Class<?>, Arbitrary<?>> primitives = Map.of( //
-			int.class, Arbitraries.integers(), //
-			long.class, Arbitraries.longs(), //
-			double.class, Arbitraries.doubles(), //
-			float.class, Arbitraries.floats(), //
-			short.class, Arbitraries.shorts(), //
-			char.class, Arbitraries.chars(), //
-			boolean.class, Arbitraries.of(true, false) //
-	);
+	public static enum SubTypes {
+//		PRIMITIVES(int.class, long.class, double.class, float.class, short.class, char.class, boolean.class),
+		OBJECT(Object.class), //
+		WRAPPERS(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Short.class, Character.class),
+		LISTS(List.class, ArrayList.class, LinkedList.class), SETS(Set.class, HashSet.class, LinkedHashSet.class), //
+		COLLECTIONS(Collection.class), //
+		MAPS(Map.class, HashMap.class, LinkedHashMap.class), //
+		CHARSEQUENCES(CharSequence.class, String.class), //
+		ARRAYS(Object[].class, Boolean[].class, Integer[].class, Long[].class, Double[].class, Float[].class,
+				Short[].class, Character[].class);
 
-	Map<Class<?>, Arbitrary<?>> wrappers = Map.of( //
+		private final List<Class<?>> types;
+
+		private SubTypes(Class<?>... types) {
+			this.types = List.of(types);
+		}
+
+		public List<Class<?>> types() {
+			return types;
+		}
+
+	}
+
+	private static final Map<Class<?>, Arbitrary<?>> suppliers = Map.of( //
+			CharSequence.class, Arbitraries.strings(), //
+			Boolean.class, Arbitraries.of(Boolean.TRUE, Boolean.FALSE), //
 			Integer.class, Arbitraries.integers(), //
 			Long.class, Arbitraries.longs(), //
 			Double.class, Arbitraries.doubles(), //
 			Float.class, Arbitraries.floats(), //
 			Short.class, Arbitraries.shorts(), //
-			Character.class, Arbitraries.chars(), //
-			Boolean.class, Arbitraries.of(Boolean.TRUE, Boolean.FALSE) //
+			Character.class, Arbitraries.chars() //
 	);
 
-	Map<Class<?>, Arbitrary<?>> collections = Map.of( //
-			List.class, Arbitraries.of(new ArrayList<>(), new LinkedList<>()), //
-			Set.class, Arbitraries.of(new HashSet<>(), new LinkedHashSet<>()) //
-	);
-
-	Map<Class<?>, Arbitrary<?>> collection = Map.of( //
-			Collection.class, Arbitraries.oneOf(collections.values()) //
-	);
-
-	Map<Class<?>, Arbitrary<?>> maps = Map.of( //
-			Map.class, Arbitraries.of(new HashMap<>(), new LinkedHashMap<>()) //
-	);
-
-	Map<Class<?>, Arbitrary<?>> charSequences = Map.of( //
-			CharSequence.class, Arbitraries.strings().ofMaxLength(3), //
-			String.class, Arbitraries.strings().ofMaxLength(3) //
-	);
-
-	Map<Class<?>, Arbitrary<?>> allArbitraries = Stream.of(
-//			  primitives, 
-			wrappers, collections, collection, charSequences) //
-			.map(Map::entrySet) //
-			.flatMap(Set::stream) //
-			.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+	private List<Class<?>> all(Set<SubTypes> sub) {
+		return sub.stream().map(SubTypes::types).flatMap(Collection::stream).toList();
+	}
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> get() {
-		return Arbitraries.oneOf(allArbitraries.entrySet().stream().map(Classes::arbitrary).collect(toList()));
+		var all = all(EnumSet.allOf(SubTypes.class)).stream().toList();
+		return Arbitraries.of(all).flatMap(c -> supplierFor(c, all).map(t -> Tuple.of(c, t)));
 	}
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
-		var targetClass = targetType.findAnnotation(Types.class).map(Types::value);
-		return targetClass.map(this::filteredArbitraries).orElseGet(this::get);
+		Set<SubTypes> onlyTheseTypesAreAllowd = targetType.findAnnotation(Types.class).map(Types::value).map(Set::of)
+				.orElseGet(() -> EnumSet.allOf(SubTypes.class));
+		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
+				.toList();
+		var allowed = all(EnumSet.allOf(SubTypes.class)).stream().filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes))
+				.toList();
+		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> Tuple.of(c, t)));
 	}
 
-	private Arbitrary<Tuple2<Class<?>, Object>> filteredArbitraries(Class<?>[] clazz) {
-		var filteredArbitraries = allArbitraries.entrySet().stream() //
-				.filter(e -> Arrays.stream(clazz).anyMatch(t -> t.isAssignableFrom(e.getKey()))) //
-				.map(Classes::arbitrary).collect(toList());
-		return Arbitraries.oneOf(filteredArbitraries);
+	private boolean isSubtypeOfOneOf(Class<?> c, List<Class<?>> allowedSuperTypes) {
+		return allowedSuperTypes.stream().anyMatch(s -> s.isAssignableFrom(c));
 	}
 
-	private static Arbitrary<Tuple2<Class<?>, Object>> arbitrary(Entry<Class<?>, Arbitrary<?>> entry) {
-		return entry.getValue().map(value -> Tuple.of(entry.getKey(), value));
+	private Arbitrary<?> supplierFor(Class<?> clazz, List<Class<?>> matchingTypes) {
+		var arbitrary = suppliers.get(clazz);
+		return arbitrary == null //
+				? Arbitraries.of(matchingTypes.stream() //
+						.filter(t -> clazz.isAssignableFrom(t)) //
+						.filter(not(Class::isInterface)) //
+						.filter(Classes::canCreate) //
+						.toList()) //
+						.map(Classes::newInstance) //
+				: arbitrary;
+	}
+
+	private static boolean canCreate(Class<?> clazz) {
+		return clazz.isArray() || hasNoArgConstructor(clazz);
+	}
+
+	private static boolean hasNoArgConstructor(Class<?> clazz) {
+		return Arrays.stream(clazz.getDeclaredConstructors()).anyMatch(p -> p.getParameters().length == 0);
+	}
+
+	private static Object newInstance(Class<?> clazz) {
+		if (clazz.isArray()) {
+			return Array.newInstance(clazz.componentType(), 0);
+		}
+		try {
+			return clazz.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
