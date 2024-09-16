@@ -50,19 +50,35 @@ public class GuavaCodeEmitter implements CodeEmitter {
 
 	@Override
 	public void addNotEmptyCheck(MethodVisitor mv, ParameterInfo parameter) {
-		var superType = parameter.isArray() //
-				? Object[].class //
-				: superType(parameter.classname(), CharSequence.class, Collection.class, Map.class);
+		Class<?> classType;
+		// TODO the superType should be passed by the caller (since the caller has the
+		// knowledge which type are general ok)
+		Class<?> superType;
+		if (parameter.isArray()) {
+			classType = Object[].class;
+			superType = Object[].class;
+		} else {
+			classType = loadClass(parameter.classname());
+			superType = superType(classType, CharSequence.class, Collection.class, Map.class);
+		}
+
 		if (superType != null) {
 			mv.visitVarInsn(ALOAD, parameter.index());
+
+			boolean isInterface = classType.isInterface();
+			int opcode = isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL;
+			var internalName = parameter.type().getInternalName();
+
 			if (superType.equals(CharSequence.class)) {
-				mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/CharSequence", "length", "()I", true);
+				mv.visitMethodInsn(opcode, internalName, "length", "()I", isInterface);
 			} else if (superType.equals(Collection.class)) {
-				mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Collection", "size", "()I", true);
+				mv.visitMethodInsn(opcode, internalName, "size", "()I", isInterface);
 			} else if (superType.equals(Map.class)) {
-				mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "size", "()I", true);
+				mv.visitMethodInsn(opcode, internalName, "size", "()I", isInterface);
 			} else if (superType.equals(Object[].class)) {
 				mv.visitInsn(ARRAYLENGTH);
+			} else {
+				throw new IllegalStateException("Cannot handle type " + classType + ": Unsupported supertype");
 			}
 			negated(mv, IFLE);
 			mv.visitLdcInsn(parameter.name() + " must not be empty");
@@ -127,7 +143,6 @@ public class GuavaCodeEmitter implements CodeEmitter {
 	@Override
 	public void addMinCheck(MethodVisitor mv, ParameterInfo parameter) {
 		int min = parameter.annotationValue("value").map(String::valueOf).map(Integer::parseInt).orElse(0);
-		// this is load integer argument x
 		mv.visitVarInsn(ILOAD, parameter.index());
 		mv.visitIntInsn(BIPUSH, min);
 		negated(mv, IF_ICMPLT);
@@ -172,13 +187,13 @@ public class GuavaCodeEmitter implements CodeEmitter {
 	}
 
 	@SafeVarargs
-	private Class<?> superType(String className, Class<?>... superTypes) {
-		return Arrays.stream(superTypes).filter(t -> isAssignable(className, t)).findFirst().orElse(null);
+	private Class<?> superType(Class<?> classToCheck, Class<?>... superTypes) {
+		return Arrays.stream(superTypes).filter(t -> t.isAssignableFrom(classToCheck)).findFirst().orElse(null);
 	}
 
-	private static boolean isAssignable(String className, Class<?> superType) {
+	public static Class<?> loadClass(String className) {
 		try {
-			return superType.isAssignableFrom(Class.forName(className));
+			return Class.forName(className);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
