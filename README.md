@@ -14,7 +14,7 @@ When implementing an application using Spring it's very handy to use the JSR 380
 
 So if you decide, that none of these possibilites is an option you cannot just declare things like this...
 
-```
+```java
 public MyDomainObject {
     private final String someStringValue
     public MyDomainObject(@NotEmpty String someStringValue) {
@@ -25,7 +25,7 @@ public MyDomainObject {
 
 ...but you would start implementing hand-written code into you domain objects to make them self-validating: 
 
-```
+```java
 public MyDomainObject {
     private final String someStringValue
     public MyDomainObject(String someStringValue) {
@@ -42,14 +42,14 @@ And this is where vaadoo comes into play. Vaadoo is a compiler plugin that gener
 
 
 PS: This is getting real fun with lombok and records! 
-```
+```java
 @Value
 public MyDomainObject {
     @NotEmpty private final String someStringValue
 }
 ```
 
-```
+```java
 public record MyDomainObject(@NotEmpty String someStringValue) {}
 ```
 
@@ -57,12 +57,13 @@ public record MyDomainObject(@NotEmpty String someStringValue) {}
 
 The intention is to support creating domain classes (value types/entities) and get rid of boilerplate code there. 
 You don't want to have methods like ...
-```
+```java
+public record MyDomainObject(@NotEmpty String someStringValue) {}
 void sendMail(String from, String to, String subject, String body) {}
 ```
 
 ... but domain classes MailAddress, Subject and Text. Vaadoo helps you to add validation in a declarative way, so you get: 
-```
+```java
 record MailAddress(@Email String value) {}
 record Subject(@NotBlank @Max(256) String value) {}
 record Text(@Max(4 * 1024) String value) {}
@@ -71,60 +72,9 @@ void send(MailAddress from, MailAddress to, Subject subject, Text body) {}
 ```
 
 If vaadoo would support validation on methods we'd still write code like this
-```
+```java
 void sendMail(@Email String value, @NotBlank @Max(256) String value, @Max(4 * 1024) String value) {}
 ```
 
 That's not the intention of vaadoo. 
-
-
-
-- supporting javax.validation ([ ]) AND jakarta.validation ([X])?
-- Thouht to annotate the conctructors so checks are currently only added on constructors
-- Support JSR 380 annotations on fields?
-- Check if annotation support parameter type (e.g. @NotBlank Integer is not valid) and add tests for it (e.g. @NotBlank with non CharSequence)
-- Add "but was %s" to messages? 
-- Support for custom message (@Min(value = 18, message = "Age should not be less than 18"), @Email(message = "Email yada yada yada"))
-- Feature to turn on to generate for ALL notations by default or only if the constructor/class has a @Vadoo annotation
-- Tests with mutliple constructors
-- Tests with multiple annotations (NotNull, NotEmpty, ...)
-- Test if validate method already is present
-- Test with lombok classes (annotations on fields, @AllArgsConstructor) --> https://projectlombok.org/features/constructor --> lombok.copyableAnnotations
-- Test with records
-- Is/should there be an annotation evaluation order?
-- Support type constraints (e.g. List<@NotBlank String>)
-- PBTs that generate bytecode, transform it and run it (@NotEmpty and checks with all valid types and some invalid ones)
-- Inlining "validate" method(s)?  https://lsieun.github.io/assets/pdf/asm-transformations.pdf https://github.com/xxDark/asm-inline
-- Support for custom validators
-- Test Oracle comparing vadoo behaviuos against jakarta behaviour
-- Use messages like hibernate reference implementation src/main/resources/org/hibernate/validator/ValidationMessages.properties (also I18N)
-- Check compatibility to https://github.com/hibernate/hibernate-validator/ (tests)
-- Check compatibility to https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-annotation-processor
-
-[X] AssertFalse
-[X] AssertTrue
-[ ] DecimalMax
-[ ] DecimalMin
-[ ] Digits
-[ ] Email
-[ ] Future
-[ ] FutureOrPresent
-[ ] Max
-[X] Min (only int)
-[ ] Negative
-[ ] NegativeOrZero
-[X] NotBlank
-[X] NotEmpty
-[X] NotNull
-[X] Null
-[ ] Past
-[ ] PastOrPresent
-[ ] Pattern
-[ ] Positive
-[ ] PositiveOrZero
-[ ] Size
-
-CodeEmitters are be exchangeable but at the moment only Guava is implemented
-[ ] JDK-only
-[X] Guava (depends mostly on the class Preconditions and it's methods checkNotNull but also on CharMatcher)
 
