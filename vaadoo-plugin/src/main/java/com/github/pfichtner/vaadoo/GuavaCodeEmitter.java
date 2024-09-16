@@ -2,22 +2,23 @@ package com.github.pfichtner.vaadoo;
 
 import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.ARRAYLENGTH;
-import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.F_SAME;
 import static net.bytebuddy.jar.asm.Opcodes.F_SAME1;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.GOTO;
+import static net.bytebuddy.jar.asm.Opcodes.I2L;
 import static net.bytebuddy.jar.asm.Opcodes.ICONST_0;
 import static net.bytebuddy.jar.asm.Opcodes.ICONST_1;
 import static net.bytebuddy.jar.asm.Opcodes.IFEQ;
 import static net.bytebuddy.jar.asm.Opcodes.IFLE;
+import static net.bytebuddy.jar.asm.Opcodes.IFLT;
 import static net.bytebuddy.jar.asm.Opcodes.IFNONNULL;
-import static net.bytebuddy.jar.asm.Opcodes.IF_ICMPLT;
 import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
 import static net.bytebuddy.jar.asm.Opcodes.INTEGER;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKEINTERFACE;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKEVIRTUAL;
+import static net.bytebuddy.jar.asm.Opcodes.LCMP;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -142,14 +143,16 @@ public class GuavaCodeEmitter implements CodeEmitter {
 
 	@Override
 	public void addMinCheck(MethodVisitor mv, ParameterInfo parameter) {
-		int min = parameter.annotationValue("value").map(String::valueOf).map(Integer::parseInt).orElse(0);
+		Long min = parameter.annotationValue("value").map(String::valueOf).map(Long::valueOf)
+				.orElseThrow(() -> new IllegalStateException("Min does not define attribute 'value'"));
 		mv.visitVarInsn(ILOAD, parameter.index());
-		mv.visitIntInsn(BIPUSH, min);
-		negated(mv, IF_ICMPLT);
+		mv.visitInsn(I2L);
+		mv.visitLdcInsn(min);
+		mv.visitInsn(LCMP);
+		negated(mv, IFLT);
 		mv.visitLdcInsn(parameter.name() + " should be >= " + min);
 		mv.visitMethodInsn(INVOKESTATIC, "com/google/common/base/Preconditions", "checkArgument",
 				"(ZLjava/lang/Object;)V", false);
-
 	}
 
 	private static void negated(MethodVisitor mv, int opcode) {

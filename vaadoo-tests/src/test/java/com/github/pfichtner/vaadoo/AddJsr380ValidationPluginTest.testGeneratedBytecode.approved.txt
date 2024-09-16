@@ -70,6 +70,6 @@ public class SomeClass {
       Preconditions.checkArgument(!var10, "someFalseValue should be false");
       Preconditions.checkArgument(Boolean.TRUE.equals(var11), "someTrueValueWrapper should be true");
       Preconditions.checkArgument(Boolean.FALSE.equals(var12), "someFalseValueWrapper should be false");
-      Preconditions.checkArgument(var13 >= 42, "someValueThatIsMinimal42 should be >= 42");
+      Preconditions.checkArgument((long)var13 >= 42L, "someValueThatIsMinimal42 should be >= 42");
    }
 }
