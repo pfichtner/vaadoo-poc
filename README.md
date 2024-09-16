@@ -45,7 +45,7 @@ PS: This is getting real fun with lombok and records!
 ```java
 @Value
 public MyDomainObject {
-    @NotEmpty private final String someStringValue;
+    @NotEmpty String someStringValue;
 }
 ```
 
