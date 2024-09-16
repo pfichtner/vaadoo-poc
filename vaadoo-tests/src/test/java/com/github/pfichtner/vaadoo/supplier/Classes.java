@@ -19,6 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -38,9 +41,10 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	public static enum SubTypes {
 		OBJECT(Object.class), //
 		WRAPPERS(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Short.class, Character.class),
-		LISTS(List.class, ArrayList.class, LinkedList.class), SETS(Set.class, HashSet.class, LinkedHashSet.class), //
+		LISTS(List.class, ArrayList.class, LinkedList.class, CopyOnWriteArrayList.class), //
+		SETS(Set.class, HashSet.class, LinkedHashSet.class), //
 		COLLECTIONS(Collection.class), //
-		MAPS(Map.class, HashMap.class, LinkedHashMap.class), //
+		MAPS(Map.class, HashMap.class, LinkedHashMap.class, ConcurrentMap.class, ConcurrentHashMap.class), //
 		CHARSEQUENCES(CharSequence.class, String.class), //
 		ARRAYS(Object[].class, Boolean[].class, Integer[].class, Long[].class, Double[].class, Float[].class,
 				Short[].class, Character[].class);
@@ -96,13 +100,18 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	private Arbitrary<?> supplierFor(Class<?> clazz, List<Class<?>> matchingTypes) {
 		var arbitrary = suppliers.get(clazz);
 		return arbitrary == null //
-				? Arbitraries.of(matchingTypes.stream() //
-						.filter(t -> clazz.isAssignableFrom(t)) //
-						.filter(not(Class::isInterface)) //
-						.filter(Classes::canCreate) //
-						.toList()) //
-						.map(Classes::newInstance) //
+				? Arbitraries.of(instantiables(clazz, matchingTypes)).map(Classes::newInstance) //
 				: arbitrary;
+	}
+
+	private List<Class<?>> instantiables(Class<?> clazz, List<Class<?>> matchingTypes) {
+		List<Class<?>> list = matchingTypes.stream() //
+				.filter(t -> clazz.isAssignableFrom(t)) //
+				.filter(not(Class::isInterface)) //
+				.filter(Classes::canCreate) //
+				.toList();
+		assert !list.isEmpty() : "no instantiables for type " + clazz;
+		return list;
 	}
 
 	private static boolean canCreate(Class<?> clazz) {
