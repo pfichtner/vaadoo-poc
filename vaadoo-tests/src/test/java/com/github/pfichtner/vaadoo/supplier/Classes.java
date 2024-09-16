@@ -36,7 +36,6 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	}
 
 	public static enum SubTypes {
-//		PRIMITIVES(int.class, long.class, double.class, float.class, short.class, char.class, boolean.class),
 		OBJECT(Object.class), //
 		WRAPPERS(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Short.class, Character.class),
 		LISTS(List.class, ArrayList.class, LinkedList.class), SETS(Set.class, HashSet.class, LinkedHashSet.class), //
