@@ -16,7 +16,7 @@ So if you decide, that none of these possibilites is an option you cannot just d
 
 ```java
 public MyDomainObject {
-    private final String someStringValue
+    private final String someStringValue;
     public MyDomainObject(@NotEmpty String someStringValue) {
         this.someStringValue = someStringValue;
     }
@@ -27,7 +27,7 @@ public MyDomainObject {
 
 ```java
 public MyDomainObject {
-    private final String someStringValue
+    private final String someStringValue;
     public MyDomainObject(String someStringValue) {
         Preconditions.checkNotNull(someStringValue, "someStringValue must not be null");
         Preconditions.checkArgument(someStringValue.length() > 0, "someStringValue must not be empty");
@@ -45,7 +45,7 @@ PS: This is getting real fun with lombok and records!
 ```java
 @Value
 public MyDomainObject {
-    @NotEmpty private final String someStringValue
+    @NotEmpty private final String someStringValue;
 }
 ```
 
