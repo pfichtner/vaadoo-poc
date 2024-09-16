@@ -56,12 +56,12 @@ public record MyDomainObject(@NotEmpty String someStringValue) {}
 ## Why are only constructors supported? Please add support for methods as well! 
 
 The intention is to support creating domain classes (value types/entities) and get rid of boilerplate code there. 
-You don't want to have methods like 
+You don't want to have methods like ...
 ```
 void sendMail(String from, String to, String subject, String body) {}
 ```
 
-but domain classes MailAddress, Subject and Text. Vaadoo helps you to add validation in a declarative way, so you get: 
+... but domain classes MailAddress, Subject and Text. Vaadoo helps you to add validation in a declarative way, so you get: 
 ```
 record MailAddress(@Email String value) {}
 record Subject(@NotBlank @Max(256) String value) {}
