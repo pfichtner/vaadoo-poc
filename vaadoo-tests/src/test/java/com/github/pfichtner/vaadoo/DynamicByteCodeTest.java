@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -38,12 +39,14 @@ import com.google.common.base.Supplier;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
+import net.bytebuddy.description.annotation.AnnotationDescription.Builder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder.MethodDefinition.ParameterDefinition.Annotatable;
 import net.bytebuddy.dynamic.DynamicType.Unloaded;
@@ -79,13 +82,17 @@ class DynamicByteCodeTest {
 	}
 
 	public static record ConfigEntry(Class<?> paramType, String name, Object value,
-			Class<? extends Annotation> annoClass) {
+			Class<? extends Annotation> annoClass, Map<String, Object> annoValues) {
 		public static <T> ConfigEntry entry(Class<T> paramType, String name, T value) {
-			return new ConfigEntry(paramType, name, value, null);
+			return new ConfigEntry(paramType, name, value, null, emptyMap());
 		}
 
 		public ConfigEntry withAnno(Class<? extends Annotation> annoClass) {
-			return new ConfigEntry(paramType(), name(), value(), annoClass);
+			return withAnno(annoClass, emptyMap());
+		}
+
+		public ConfigEntry withAnno(Class<? extends Annotation> annoClass, Map<String, Object> annoValues) {
+			return new ConfigEntry(paramType(), name(), value(), annoClass, annoValues);
 		}
 	}
 
@@ -222,6 +229,23 @@ class DynamicByteCodeTest {
 		assertException(config, transformedClass, parameterName + " must not be empty", IllegalArgumentException.class);
 	}
 
+	// TODO add BigDecimal BigInteger Byte Short Integer Long
+//	void minEmptyOks(@ForAll(supplier = Primitives.class) Tuple2<Class<Object>, Object> tuple, @ForAll long minValue)
+//			throws Exception {
+	@Property
+	void minValues(@ForAll int value, @ForAll long minValue) throws Exception {
+		var parameterName = "param";
+		var config = config()
+				.withEntry(entry(int.class, parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
+		var transformedClass = transform(dynamicClass(config));
+		var execResult = provideExecException(transformedClass, config);
+		if (value < minValue) {
+			assertException(execResult, parameterName + " should be >= " + minValue, IllegalArgumentException.class);
+		} else {
+			assertThat(execResult).isEmpty();
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private static Object convertValue(Object value, boolean empty) {
 		if (empty) {
@@ -255,7 +279,12 @@ class DynamicByteCodeTest {
 
 	private static void assertException(Config config, Class<?> transformedClass, String description,
 			Class<? extends Exception> type) throws Exception {
-		assertThat(provideExecException(transformedClass, config)) //
+		assertException(provideExecException(transformedClass, config), description, type);
+	}
+
+	private static void assertException(Optional<Throwable> provideExecException, String description,
+			Class<? extends Exception> type) {
+		assertThat(provideExecException) //
 				.withFailMessage("expected to throw exception but didn't") //
 				.hasValueSatisfying(e -> assertThat(e).isExactlyInstanceOf(type).hasMessageContaining(description));
 	}
@@ -293,9 +322,17 @@ class DynamicByteCodeTest {
 		for (ConfigEntry value : values) {
 			inner = inner == null ? builder.withParameter(value.paramType, value.name())
 					: inner.withParameter(value.paramType, value.name());
-			inner = value.annoClass == null //
-					? inner //
-					: inner.annotateParameter(AnnotationDescription.Builder.ofType(value.annoClass).build());
+			if (value.annoClass != null) {
+				Builder annoBuilder = AnnotationDescription.Builder.ofType(value.annoClass);
+
+				for (Entry<String, Object> annoValue : value.annoValues.entrySet()) {
+					// TODO at the moment only longs are supported, add accordingly
+					long longVal = (long) annoValue.getValue();
+					annoBuilder = annoBuilder.define(annoValue.getKey(), longVal);
+				}
+
+				inner = inner.annotateParameter(annoBuilder.build());
+			}
 		}
 
 		var builderSuf = inner == null ? builder : inner;
