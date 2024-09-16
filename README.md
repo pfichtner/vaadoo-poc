@@ -38,6 +38,9 @@ public MyDomainObject {
 
 Ough, what a mess and waste of time! 
 
+And this is where vaadoo comes into play. Vaadoo is a compiler plugin that generates this boilerplate code for you. Checks are added to the bytecode so you get rid of a JSR 380 validation library. The generated code does nor depend on JSR 380 API- nor on JSR 380 validation libaries anymore. Another advantage is that these checks don't depend on reflection: What and how to check will be decided during compile- not during runtime. So this could also be helpful if you can't use reflection in your system or if it's hard to use (like e.g. when compiling native images for GraalVM)
+
+
 PS: This is getting real fun with lombok and records! 
 ```
 @Value
