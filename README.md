@@ -58,7 +58,6 @@ public record MyDomainObject(@NotEmpty String someStringValue) {}
 The intention is to support creating domain classes (value types/entities) and get rid of boilerplate code there. 
 You don't want to have methods like ...
 ```java
-public record MyDomainObject(@NotEmpty String someStringValue) {}
 void sendMail(String from, String to, String subject, String body) {}
 ```
 
@@ -76,5 +75,5 @@ If vaadoo would support validation on methods we'd still write code like this
 void sendMail(@Email String value, @NotBlank @Max(256) String value, @Max(4 * 1024) String value) {}
 ```
 
-That's not the intention of vaadoo. 
+This is not what vaadoo was thought for! 
 
