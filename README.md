@@ -3,7 +3,7 @@
 # Vaadoo
 Validating automatically domain objects: It's magic
 
-## This is a "work in progress" PoC of weaving JSR380 (Bean Validation 2.0) checks based on annotations into the bytecode. 
+## This is a "work in progress" PoC of weaving JSR 380 (Bean Validation 2.0) checks based on annotations into the bytecode. 
 
 ## Why? 
 When implementing an application using Spring it's very handy to use the JSR 380 annotations. But where to place them? 
@@ -56,24 +56,22 @@ public record MyDomainObject(@NotEmpty String someStringValue) {}
 
 
 - supporting javax.validation ([ ]) AND jakarta.validation ([X])?
-
-- com.example -> move tests and com.example to testproject (so we can use java 17 there as well)
 - Thouht to annotate the conctructors so checks are currently only added on constructors
-- Support JSR380 annotations on fields?
-- Check if annotation support parameter type (e.g. @NotBlank Integer)
-- Add "but was %s" to messages
+- Support JSR 380 annotations on fields?
+- Check if annotation support parameter type (e.g. @NotBlank Integer is not valid) and add tests for it (e.g. @NotBlank with non CharSequence)
+- Add "but was %s" to messages? 
+- Support for custom message (@Min(value = 18, message = "Age should not be less than 18"), @Email(message = "Email yada yada yada"))
 - Feature to turn on to generate for ALL notations by default or only if the constructor/class has a @Vadoo annotation
 - Tests with mutliple constructors
 - Tests with multiple annotations (NotNull, NotEmpty, ...)
-- Tests with wrong type (NotBlank with non CharSequence)
 - Test if validate method already is present
 - Test with lombok classes (annotations on fields, @AllArgsConstructor) --> https://projectlombok.org/features/constructor --> lombok.copyableAnnotations
 - Test with records
 - Is/should there be an annotation evaluation order?
 - Support type constraints (e.g. List<@NotBlank String>)
-- Inlining "validate" method(s)
 - PBTs that generate bytecode, transform it and run it (@NotEmpty and checks with all valid types and some invalid ones)
-- Inline?  https://lsieun.github.io/assets/pdf/asm-transformations.pdf https://github.com/xxDark/asm-inline
+- Inlining "validate" method(s)?  https://lsieun.github.io/assets/pdf/asm-transformations.pdf https://github.com/xxDark/asm-inline
+- Support for custom validators
 - Test Oracle comparing vadoo behaviuos against jakarta behaviour
 - Use messages like hibernate reference implementation src/main/resources/org/hibernate/validator/ValidationMessages.properties (also I18N)
 - Check compatibility to https://github.com/hibernate/hibernate-validator/ (tests)
