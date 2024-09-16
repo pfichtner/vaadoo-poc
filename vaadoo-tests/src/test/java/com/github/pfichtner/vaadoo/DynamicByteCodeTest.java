@@ -124,9 +124,10 @@ class DynamicByteCodeTest {
 	}
 
 	@ParameterizedTest
-	@MethodSource("booleanNoks")
-	void booleansNoks(Class<?> type, boolean value, Class<Annotation> anno) throws Exception {
+	@MethodSource("booleanOks")
+	void booleansNoks(Class<?> type, boolean invertedvalue, Class<Annotation> anno) throws Exception {
 		var parameterName = "param";
+		boolean value = !invertedvalue;
 		var config = config().withEntry(casted(type, Boolean.class), parameterName, value, anno);
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, parameterName + " should be " + (value ? "false" : "true"),
@@ -139,14 +140,6 @@ class DynamicByteCodeTest {
 				arguments(boolean.class, true, AssertTrue.class), //
 				arguments(Boolean.class, false, AssertFalse.class), //
 				arguments(boolean.class, false, AssertFalse.class));
-	}
-
-	static List<Arguments> booleanNoks() {
-		return List.of( //
-				arguments(Boolean.class, false, AssertTrue.class), //
-				arguments(boolean.class, false, AssertTrue.class), //
-				arguments(Boolean.class, true, AssertFalse.class), //
-				arguments(boolean.class, true, AssertFalse.class));
 	}
 
 	@Property
