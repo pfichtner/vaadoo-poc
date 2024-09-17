@@ -287,11 +287,11 @@ class DynamicByteCodeTest {
 	@Property
 	void minValuesValueLowerThanMin( //
 			@ForAll(supplier = Primitives.class) //
-			@Primitives.Types({ int.class, long.class }) //
+			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
 			Tuple2<Class<?>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+		var value = numberWrapper(tuple.get1(), tuple.get2());
 		Assume.that(!value.isMin());
 
 		@SuppressWarnings("unchecked")
@@ -305,11 +305,11 @@ class DynamicByteCodeTest {
 	@Property
 	void minValuesValueEqualMin( //
 			@ForAll(supplier = Primitives.class) //
-			@Primitives.Types({ int.class, long.class }) //
+			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
 			Tuple2<Class<?>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+		var value = numberWrapper(tuple.get1(), tuple.get2());
 
 		@SuppressWarnings("unchecked")
 		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
@@ -321,11 +321,11 @@ class DynamicByteCodeTest {
 	@Property
 	void minValuesValueGreaterThanMin( //
 			@ForAll(supplier = Primitives.class) //
-			@Primitives.Types({ int.class, long.class }) //
+			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
 			Tuple2<Class<?>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+		var value = numberWrapper(tuple.get1(), tuple.get2());
 		Assume.that(!value.isMax());
 
 		@SuppressWarnings("unchecked")
@@ -415,7 +415,11 @@ class DynamicByteCodeTest {
 	}
 
 	private static Object[] params(List<ConfigEntry> values) {
-		return values.stream().map(ConfigEntry::value).toArray();
+		return values.stream().map(t -> {
+			return t.paramType.isPrimitive() //
+					? numberWrapper(t.paramType(), t.value()).value()
+					: t.paramType().cast(t.value());
+		}).toArray();
 	}
 
 	private Unloaded<Object> dynamicClass(Config config) throws NoSuchMethodException {

@@ -148,7 +148,7 @@ public class GuavaCodeEmitter implements CodeEmitter {
 				.orElseThrow(() -> new IllegalStateException("Min does not define attribute 'value'"));
 		if (parameter.typeIs(long.class)) {
 			mv.visitVarInsn(LLOAD, parameter.index());
-		} else if (parameter.typeIs(int.class)) {
+		} else if (parameter.typeIs(int.class) || parameter.typeIs(short.class) || parameter.typeIs(byte.class)) {
 			mv.visitVarInsn(ILOAD, parameter.index());
 			mv.visitInsn(I2L);
 		} else {
