@@ -99,7 +99,8 @@ class DynamicByteCodeTest {
 
 	@Property
 	void showcaseWithThreeParams( //
-			@ForAll(supplier = CharSequences.class) @CharSequences.Types(BLANKS) //
+			@ForAll(supplier = CharSequences.class) //
+			@CharSequences.Types(BLANKS) //
 			String blank) //
 			throws Exception {
 		var config = config() //
@@ -156,7 +157,8 @@ class DynamicByteCodeTest {
 
 	@Property
 	void assertTruesPrimitives( //
-			@ForAll(supplier = Primitives.class) @Primitives.Types(boolean.class) //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types(boolean.class) //
 			Tuple2<Class<Object>, Object> tuple) //
 			throws Exception {
 		assertTrues(tuple);
@@ -164,7 +166,8 @@ class DynamicByteCodeTest {
 
 	@Property
 	void assertTruesWrappers( //
-			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
 			Tuple2<Class<Object>, Object> tuple) //
 			throws Exception {
 		assertTrues(tuple);
@@ -237,7 +240,8 @@ class DynamicByteCodeTest {
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(CHARSEQUENCES) //
 			Tuple2<Class<Object>, Object> tuple, //
-			@WithNull @ForAll(supplier = CharSequences.class) //
+			@WithNull //
+			@ForAll(supplier = CharSequences.class) //
 			@CharSequences.Types(BLANKS) //
 			CharSequence blank //
 	) throws Exception {
