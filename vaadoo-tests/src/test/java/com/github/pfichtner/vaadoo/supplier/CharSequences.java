@@ -17,7 +17,8 @@ import net.jqwik.api.providers.TypeUsage;
 public class CharSequences implements ArbitrarySupplier<CharSequence> {
 
 	public static enum Type {
-		NON_BLANKS("x", "xXx", "x ", " x"), BLANKS("", " ", "     ");
+		NON_BLANKS("x", "xXx", "x ", " x", "X", "1", "!", "abc", "XyZ-987"),
+		BLANKS("", " ", "     ", "\t", "\n", "\r", "\t \n", "\r\n ");
 
 		private final CharSequence[] sequences;
 
