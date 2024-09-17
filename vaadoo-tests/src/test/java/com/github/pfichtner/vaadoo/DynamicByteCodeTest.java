@@ -107,8 +107,8 @@ class DynamicByteCodeTest {
 				.withEntry(entry(String.class, "param1", blank).withAnno(NotNull.class)) //
 				.withEntry(entry(String.class, "param2", blank).withAnno(NotBlank.class)) //
 				.withEntry(entry(String.class, "param3", blank).withAnno(NotBlank.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, "param2 must not be blank", IllegalArgumentException.class);
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, "param2 must not be blank", IllegalArgumentException.class);
 	}
 
 	@Property
@@ -118,8 +118,8 @@ class DynamicByteCodeTest {
 			throws Exception {
 		Object nullValue = null;
 		var config = randomConfigWith(entry(tuple.get1(), "param", nullValue).withAnno(Null.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertNoException(config, transformedClass);
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	@Property
@@ -129,9 +129,8 @@ class DynamicByteCodeTest {
 			throws Exception {
 		var parameterName = "param";
 		var config = randomConfigWith(entry(tuple.get1(), parameterName, tuple.get2()).withAnno(Null.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, parameterName + " expected to be null",
-				IllegalArgumentException.class);
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, parameterName + " expected to be null", IllegalArgumentException.class);
 	}
 
 	@Property
@@ -141,8 +140,8 @@ class DynamicByteCodeTest {
 			throws Exception {
 		var parameterName = "param";
 		var config = randomConfigWith(entry(tuple.get1(), parameterName, null).withAnno(NotNull.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, parameterName + " must not be null", NullPointerException.class);
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, parameterName + " must not be null", NullPointerException.class);
 	}
 
 	@Property
@@ -151,8 +150,8 @@ class DynamicByteCodeTest {
 			Tuple2<Class<Object>, Object> tuple) //
 			throws Exception {
 		var config = randomConfigWith(entry(tuple.get1(), "param", tuple.get2()).withAnno(NotNull.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertNoException(config, transformedClass);
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	@Property
@@ -178,9 +177,9 @@ class DynamicByteCodeTest {
 		var value = (boolean) tuple.get2();
 		var config = randomConfigWith(
 				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
-		var transformedClass = transform(dynamicClass(config));
+		var transformed = transform(dynamicClass(config));
 
-		var execResult = provideExecException(transformedClass, config);
+		var execResult = provideExecException(transformed, config);
 		if (value) {
 			assertNoException(execResult);
 		} else {
@@ -211,9 +210,9 @@ class DynamicByteCodeTest {
 		var value = (boolean) tuple.get2();
 		var config = randomConfigWith(
 				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertFalse.class));
-		var transformedClass = transform(dynamicClass(config));
+		var transformed = transform(dynamicClass(config));
 
-		var execResult = provideExecException(transformedClass, config);
+		var execResult = provideExecException(transformed, config);
 		if (value) {
 			assertException(execResult, parameterName + " should be false", IllegalArgumentException.class);
 		} else {
@@ -231,8 +230,8 @@ class DynamicByteCodeTest {
 			CharSequence nonBlank //
 	) throws Exception {
 		var config = config().withEntry(entry(tuple.get1(), "param", nonBlank).withAnno(NotBlank.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertNoException(config, transformedClass);
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	@Property
@@ -249,8 +248,8 @@ class DynamicByteCodeTest {
 		boolean stringIsNull = blank == null;
 		var config = config().withEntry(
 				entry(casted(tuple.get1(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, //
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
 				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
 	}
@@ -263,8 +262,8 @@ class DynamicByteCodeTest {
 	) throws Exception {
 		var config = config()
 				.withEntry(entry(tuple.get1(), "param", convertValue(tuple.get2(), false)).withAnno(NotEmpty.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertNoException(config, transformedClass);
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	@Property
@@ -276,8 +275,8 @@ class DynamicByteCodeTest {
 		var parameterName = "param";
 		var config = config().withEntry(
 				entry(tuple.get1(), parameterName, convertValue(tuple.get2(), true)).withAnno(NotEmpty.class));
-		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, parameterName + " must not be empty", IllegalArgumentException.class);
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, parameterName + " must not be empty", IllegalArgumentException.class);
 	}
 
 	// TODO add BigDecimal BigInteger Byte Short Integer Long
@@ -295,8 +294,8 @@ class DynamicByteCodeTest {
 		var value = (Number) tuple.get2();
 		var config = config()
 				.withEntry(entry(tuple.get1(), parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
-		var transformedClass = transform(dynamicClass(config));
-		var execResult = provideExecException(transformedClass, config);
+		var transformed = transform(dynamicClass(config));
+		var execResult = provideExecException(transformed, config);
 		if (value.longValue() < minValue) {
 			assertException(execResult, parameterName + " should be >= " + minValue, IllegalArgumentException.class);
 		} else {
@@ -349,9 +348,9 @@ class DynamicByteCodeTest {
 		return (Class<T>) clazzArg;
 	}
 
-	private static void assertException(Config config, Class<?> transformedClass, String description,
+	private static void assertException(Config config, Class<?> transformed, String description,
 			Class<? extends Exception> type) throws Exception {
-		assertException(provideExecException(transformedClass, config), description, type);
+		assertException(provideExecException(transformed, config), description, type);
 	}
 
 	private static void assertException(Optional<Throwable> provideExecException, String description,
@@ -361,8 +360,8 @@ class DynamicByteCodeTest {
 				.hasValueSatisfying(e -> assertThat(e).isExactlyInstanceOf(type).hasMessageContaining(description));
 	}
 
-	private void assertNoException(Config config, Class<?> transformedClass) throws Exception {
-		assertThat(provideExecException(transformedClass, config)).isEmpty();
+	private void assertNoException(Config config, Class<?> transformed) throws Exception {
+		assertThat(provideExecException(transformed, config)).isEmpty();
 	}
 
 	private void assertNoException(Optional<Throwable> execResult) {
