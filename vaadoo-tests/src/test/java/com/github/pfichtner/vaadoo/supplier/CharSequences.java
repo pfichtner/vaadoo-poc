@@ -1,12 +1,15 @@
 package com.github.pfichtner.vaadoo.supplier;
 
+import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.BLANKS;
+import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.NON_BLANKS;
+import static com.google.common.collect.Streams.concat;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.EnumSet.allOf;
+import static java.util.stream.Collectors.joining;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.Collection;
 import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
@@ -16,28 +19,30 @@ import net.jqwik.api.providers.TypeUsage;
 
 public class CharSequences implements ArbitrarySupplier<CharSequence> {
 
-	public static enum Type {
-		NON_BLANKS("x", "xXx", "x ", " x", "X", "1", "!", "abc", "XyZ-987"),
-		BLANKS("", " ", "     ", "\t", "\n", "\r", "\t \n", "\r\n ");
+	private static enum SequenceChunks {
+		BLANKS("", " ", "\t", "\n", "\r", "\t \n", "\r\n "), //
+		NON_BLANKS("x", "X", "x ", " x", "X ", " X", "1", "!", "-", "_", "/", "abc", "XyZ-987");
 
 		private final CharSequence[] sequences;
 
-		Type(String... values) {
+		private SequenceChunks(CharSequence... values) {
 			this.sequences = values;
 		}
 
-		public CharSequence[] sequences() {
+		private CharSequence[] sequences() {
 			return sequences;
 		}
 
+	}
+
+	public static enum Type {
+		BLANKS, NON_BLANKS;
 	}
 
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
 	public static @interface Types {
 		Type[] value();
-
-		Class<?>[] ofType() default {};
 	}
 
 	@Override
@@ -52,8 +57,25 @@ public class CharSequences implements ArbitrarySupplier<CharSequence> {
 				.orElseGet(() -> allOf(Type.class)));
 	}
 
-	private static Arbitrary<CharSequence> arbitraries(Set<Type> type) {
-		return Arbitraries.of(type.stream().map(Type::sequences).map(Set::of).flatMap(Collection::stream).toList());
+	private static Arbitrary<CharSequence> arbitraries(Set<Type> types) {
+		if (types.contains(Type.NON_BLANKS)) {
+			return generateNonBlankArbitrary();
+		} else if (types.contains(BLANKS)) {
+			return generateBlankArbitrary();
+		}
+		throw new IllegalStateException("types has to contain " + BLANKS + " or " + NON_BLANKS);
+	}
+
+	private static Arbitrary<CharSequence> generateNonBlankArbitrary() {
+		var blanksArbitrary = Arbitraries.of(SequenceChunks.BLANKS.sequences()).list().ofMinSize(1);
+		var nonBlanksArbitrary = Arbitraries.of(SequenceChunks.NON_BLANKS.sequences()).list().ofMinSize(1);
+		return blanksArbitrary.flatMap(blanks -> nonBlanksArbitrary
+				.map(nonBlanks -> concat(blanks.stream(), nonBlanks.stream()).collect(joining())));
+	}
+
+	private static Arbitrary<CharSequence> generateBlankArbitrary() {
+		return Arbitraries.of(SequenceChunks.BLANKS.sequences()).list().ofMinSize(1)
+				.map(list -> list.stream().collect(joining()));
 	}
 
 }
