@@ -42,9 +42,7 @@ class AddJsr380ValidationPluginTest {
 	}
 
 	@Test
-	void testGeneratedBytecodeOnRecord() throws NoSuchMethodException, SecurityException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException,
-			ClassNotFoundException, URISyntaxException {
+	void testGeneratedBytecodeOnRecord() throws Exception {
 		try (AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin()) {
 			var constructor = firstConstructor(transform(sut, SomeRecord.class));
 			assertThatExceptionOfType(InvocationTargetException.class).isThrownBy(() -> {
