@@ -2,6 +2,7 @@ package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.Config.config;
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.ConfigEntry.entry;
+import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
 import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.NON_BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
@@ -51,6 +52,7 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 import net.bytebuddy.dynamic.loading.ByteArrayClassLoader.PersistenceHandler;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
+import net.jqwik.api.Assume;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Tuple.Tuple2;
@@ -283,24 +285,54 @@ class DynamicByteCodeTest {
 //	void minEmptyOks(@ForAll(supplier = Primitives.class) Tuple2<Class<Object>, Object> tuple, @ForAll long minValue)
 //			throws Exception {
 	@Property
-	void minValues( //
+	void minValuesValueLowerThanMin( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types({ int.class, long.class }) //
-			Tuple2<Class<Object>, Object> tuple, //
-			@ForAll //
-			long minValue) //
-			throws Exception {
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
 		var parameterName = "param";
-		var value = (Number) tuple.get2();
-		var config = config()
-				.withEntry(entry(tuple.get1(), parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
+		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+		Assume.that(!value.isMin());
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
+				Map.of("value", value.value().longValue())));
 		var transformed = transform(dynamicClass(config));
-		var execResult = provideExecException(transformed, config);
-		if (value.longValue() < minValue) {
-			assertException(execResult, parameterName + " should be >= " + minValue, IllegalArgumentException.class);
-		} else {
-			assertNoException(execResult);
-		}
+		assertException(config, transformed, parameterName + " should be >= " + value.value(),
+				IllegalArgumentException.class);
+	}
+
+	@Property
+	void minValuesValueEqualMin( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types({ int.class, long.class }) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+				Map.of("value", value.value().longValue())));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
+	}
+
+	@Property
+	void minValuesValueGreaterThanMin( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types({ int.class, long.class }) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), (Number) tuple.get2());
+		Assume.that(!value.isMax());
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+				Map.of("value", value.value().longValue())));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	private Config randomConfigWith(ConfigEntry entry) {

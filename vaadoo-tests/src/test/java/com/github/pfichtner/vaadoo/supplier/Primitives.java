@@ -30,6 +30,7 @@ public class Primitives implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 			double.class, Arbitraries.doubles(), //
 			float.class, Arbitraries.floats(), //
 			short.class, Arbitraries.shorts(), //
+			byte.class, Arbitraries.bytes(), //
 			char.class, Arbitraries.chars() //
 	);
 
