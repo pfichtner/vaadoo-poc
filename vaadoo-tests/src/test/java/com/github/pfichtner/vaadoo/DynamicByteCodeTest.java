@@ -282,7 +282,7 @@ class DynamicByteCodeTest {
 	@Property
 	void minValues( //
 			@ForAll(supplier = Primitives.class) //
-			@Primitives.Types(value = { int.class, long.class }) //
+			@Primitives.Types({ int.class, long.class }) //
 			Tuple2<Class<Object>, Object> tuple, //
 			@ForAll //
 			long minValue) //
