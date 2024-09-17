@@ -15,7 +15,7 @@ When implementing an application using Spring it's very handy to use the JSR 380
 So if you decide, that none of these possibilites is an option you cannot just declare things like this...
 
 ```java
-public MyDomainObject {
+public class MyDomainObject {
     private final String someStringValue;
     public MyDomainObject(@NotEmpty String someStringValue) {
         this.someStringValue = someStringValue;
@@ -26,7 +26,7 @@ public MyDomainObject {
 ...but you would start implementing hand-written code into you domain objects to make them self-validating: 
 
 ```java
-public MyDomainObject {
+public class MyDomainObject {
     private final String someStringValue;
     public MyDomainObject(String someStringValue) {
         Preconditions.checkNotNull(someStringValue, "someStringValue must not be null");
@@ -43,8 +43,7 @@ And this is where vaadoo comes into play. Vaadoo is a compiler plugin that gener
 
 PS: This is getting real fun with lombok and records! 
 ```java
-@Value
-public MyDomainObject {
+@lombok.Value public class MyDomainObject {
     @NotEmpty String someStringValue;
 }
 ```
@@ -66,7 +65,7 @@ void sendMail(String from, String to, String subject, String body) {}
 record MailAddress(@Email String value) {}
 record Subject(@NotBlank @Max(256) String value) {}
 record Text(@Max(4 * 1024) String value) {}
-
+[...]
 void send(MailAddress from, MailAddress to, Subject subject, Text body) {}
 ```
 
