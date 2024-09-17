@@ -2,6 +2,8 @@ package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.Config.config;
 import static com.github.pfichtner.vaadoo.DynamicByteCodeTest.ConfigEntry.entry;
+import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.BLANKS;
+import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.NON_BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
@@ -27,9 +29,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.github.pfichtner.vaadoo.supplier.Blanks;
+import com.github.pfichtner.vaadoo.supplier.CharSequences;
 import com.github.pfichtner.vaadoo.supplier.Classes;
-import com.github.pfichtner.vaadoo.supplier.NonBlanks;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.google.common.base.Supplier;
 
@@ -97,7 +98,10 @@ class DynamicByteCodeTest {
 	AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin();
 
 	@Property
-	void showcaseWithThreeParams(@ForAll(supplier = Blanks.class) String blank) throws Exception {
+	void showcaseWithThreeParams( //
+			@ForAll(supplier = CharSequences.class) @CharSequences.Types(BLANKS) //
+			String blank) //
+			throws Exception {
 		var config = config() //
 				.withEntry(entry(String.class, "param1", blank).withAnno(NotNull.class)) //
 				.withEntry(entry(String.class, "param2", blank).withAnno(NotBlank.class)) //
@@ -107,7 +111,10 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void nullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+	void nullOks( //
+			@ForAll(supplier = Classes.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
 		Object nullValue = null;
 		var config = randomConfigWith(entry(tuple.get1(), "param", nullValue).withAnno(Null.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -115,7 +122,10 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void nullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+	void nullNoks( //
+			@ForAll(supplier = Classes.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
 		var parameterName = "param";
 		var config = randomConfigWith(entry(tuple.get1(), parameterName, tuple.get2()).withAnno(Null.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -124,7 +134,10 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void notnullOks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+	void notnullOks( //
+			@ForAll(supplier = Classes.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
 		var parameterName = "param";
 		var config = randomConfigWith(entry(tuple.get1(), parameterName, null).withAnno(NotNull.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -132,27 +145,32 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void notnullNoks(@ForAll(supplier = Classes.class) Tuple2<Class<Object>, Object> tuple) throws Exception {
+	void notnullNoks( //
+			@ForAll(supplier = Classes.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
 		var config = randomConfigWith(entry(tuple.get1(), "param", tuple.get2()).withAnno(NotNull.class));
 		var transformedClass = transform(dynamicClass(config));
 		assertNoException(config, transformedClass);
 	}
 
 	@Property
-	void assertTruesPrimitives(@ForAll(supplier = Primitives.class) @Primitives.Types(value = {
-			boolean.class }) Tuple2<Class<Object>, Object> tuple) throws Exception {
-		assertTrues(tuple);
-	}
-
-	@Property
-	void assertTruesWrappers(
-			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Tuple2<Class<Object>, Object> tuple)
+	void assertTruesPrimitives( //
+			@ForAll(supplier = Primitives.class) @Primitives.Types(boolean.class) //
+			Tuple2<Class<Object>, Object> tuple) //
 			throws Exception {
 		assertTrues(tuple);
 	}
 
-	private void assertTrues(Tuple2<Class<Object>, Object> tuple)
-			throws NoSuchMethodException, ClassNotFoundException, Exception {
+	@Property
+	void assertTruesWrappers( //
+			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
+		assertTrues(tuple);
+	}
+
+	private void assertTrues(Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
 		boolean value = (boolean) tuple.get2();
 		var config = randomConfigWith(
@@ -168,20 +186,24 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void assertFalsesPrimitives(@ForAll(supplier = Primitives.class) @Primitives.Types(value = {
-			boolean.class }) Tuple2<Class<Object>, Object> tuple) throws Exception {
-		assertFalses(tuple);
-	}
-
-	@Property
-	void assertFalsesWrappers(
-			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Tuple2<Class<Object>, Object> tuple)
+	void assertFalsesPrimitives( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types(boolean.class) //
+			Tuple2<Class<Object>, Object> tuple) //
 			throws Exception {
 		assertFalses(tuple);
 	}
 
-	private void assertFalses(Tuple2<Class<Object>, Object> tuple)
-			throws NoSuchMethodException, ClassNotFoundException, Exception {
+	@Property
+	void assertFalsesWrappers( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
+			Tuple2<Class<Object>, Object> tuple) //
+			throws Exception {
+		assertFalses(tuple);
+	}
+
+	private void assertFalses(Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
 		boolean value = (boolean) tuple.get2();
 		var config = randomConfigWith(
@@ -198,8 +220,12 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankOks( //
-			@ForAll(supplier = Classes.class) @Classes.Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
-			@ForAll(supplier = NonBlanks.class) String nonBlank //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(CHARSEQUENCES) //
+			Tuple2<Class<Object>, Object> tuple, //
+			@ForAll(supplier = CharSequences.class) //
+			@CharSequences.Types(NON_BLANKS) //
+			CharSequence nonBlank //
 	) throws Exception {
 		var config = config().withEntry(entry(tuple.get1(), "param", nonBlank).withAnno(NotBlank.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -208,13 +234,17 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankNoks( //
-			@ForAll(supplier = Classes.class) @Classes.Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
-			@WithNull @ForAll(supplier = Blanks.class) String blankString //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(CHARSEQUENCES) //
+			Tuple2<Class<Object>, Object> tuple, //
+			@WithNull @ForAll(supplier = CharSequences.class) //
+			@CharSequences.Types(BLANKS) //
+			CharSequence blank //
 	) throws Exception {
 		var parameterName = "param";
-		boolean stringIsNull = blankString == null;
+		boolean stringIsNull = blank == null;
 		var config = config().withEntry(
-				entry(casted(tuple.get1(), CharSequence.class), parameterName, blankString).withAnno(NotBlank.class));
+				entry(casted(tuple.get1(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
 		var transformedClass = transform(dynamicClass(config));
 		assertException(config, transformedClass, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
@@ -224,7 +254,8 @@ class DynamicByteCodeTest {
 	@Property
 	void notEmptyOks( //
 			@ForAll(supplier = Classes.class) //
-			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) //
+			Tuple2<Class<Object>, Object> tuple //
 	) throws Exception {
 		var config = config()
 				.withEntry(entry(tuple.get1(), "param", convertValue(tuple.get2(), false)).withAnno(NotEmpty.class));
@@ -235,7 +266,8 @@ class DynamicByteCodeTest {
 	@Property
 	void notEmptyNoks( //
 			@ForAll(supplier = Classes.class) //
-			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) //
+			Tuple2<Class<Object>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";
 		var config = config().withEntry(
@@ -249,9 +281,12 @@ class DynamicByteCodeTest {
 //			throws Exception {
 	@Property
 	void minValues( //
-			@ForAll(supplier = Primitives.class) @Primitives.Types(value = { int.class,
-					long.class }) Tuple2<Class<Object>, Object> tuple,
-			@ForAll long minValue) throws Exception {
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types(value = { int.class, long.class }) //
+			Tuple2<Class<Object>, Object> tuple, //
+			@ForAll //
+			long minValue) //
+			throws Exception {
 		var parameterName = "param";
 		Number value = (Number) tuple.get2();
 		var config = config()
