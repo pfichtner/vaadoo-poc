@@ -415,11 +415,21 @@ class DynamicByteCodeTest {
 	}
 
 	private static Object[] params(List<ConfigEntry> values) {
-		return values.stream().map(t -> {
-			return t.paramType.isPrimitive() //
-					? numberWrapper(t.paramType(), t.value()).value()
-					: t.paramType().cast(t.value());
-		}).toArray();
+		return values.stream().map(DynamicByteCodeTest::castToTargetType).toArray();
+	}
+
+	private static Object castToTargetType(ConfigEntry t) {
+		return t.paramType.isPrimitive() ? primCast(t) : objCast(t);
+	}
+
+	private static Object primCast(ConfigEntry entry) {
+		return entry.paramType == boolean.class //
+				? (Boolean) entry.value() //
+				: numberWrapper(entry.paramType(), entry.value()).value();
+	}
+
+	private static Object objCast(ConfigEntry entry) {
+		return entry.paramType().cast(entry.value());
 	}
 
 	private Unloaded<Object> dynamicClass(Config config) throws NoSuchMethodException {
