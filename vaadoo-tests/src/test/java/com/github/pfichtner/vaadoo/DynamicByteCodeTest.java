@@ -172,7 +172,7 @@ class DynamicByteCodeTest {
 
 	private void assertTrues(Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
-		boolean value = (boolean) tuple.get2();
+		var value = (boolean) tuple.get2();
 		var config = randomConfigWith(
 				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -205,7 +205,7 @@ class DynamicByteCodeTest {
 
 	private void assertFalses(Tuple2<Class<Object>, Object> tuple) throws Exception {
 		var parameterName = "param";
-		boolean value = (boolean) tuple.get2();
+		var value = (boolean) tuple.get2();
 		var config = randomConfigWith(
 				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertFalse.class));
 		var transformedClass = transform(dynamicClass(config));
@@ -288,7 +288,7 @@ class DynamicByteCodeTest {
 			long minValue) //
 			throws Exception {
 		var parameterName = "param";
-		Number value = (Number) tuple.get2();
+		var value = (Number) tuple.get2();
 		var config = config()
 				.withEntry(entry(tuple.get1(), parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
 		var transformedClass = transform(dynamicClass(config));
