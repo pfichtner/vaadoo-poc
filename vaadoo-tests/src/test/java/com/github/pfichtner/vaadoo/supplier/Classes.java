@@ -60,7 +60,7 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 			this.types = List.of(types);
 		}
 
-		public List<Class<?>> types() {
+		private List<Class<?>> types() {
 			return types;
 		}
 
