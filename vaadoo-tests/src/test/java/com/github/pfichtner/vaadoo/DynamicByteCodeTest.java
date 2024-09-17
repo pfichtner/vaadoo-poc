@@ -6,6 +6,7 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.UUID.randomUUID;
@@ -13,7 +14,6 @@ import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.empty;
 import static net.bytebuddy.description.modifier.Visibility.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -27,14 +27,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.checkerframework.checker.signature.qual.PrimitiveType;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import com.github.pfichtner.vaadoo.supplier.Blanks;
 import com.github.pfichtner.vaadoo.supplier.Classes;
-import com.github.pfichtner.vaadoo.supplier.Classes.Types;
 import com.github.pfichtner.vaadoo.supplier.NonBlanks;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.google.common.base.Supplier;
@@ -144,43 +138,62 @@ class DynamicByteCodeTest {
 		assertNoException(config, transformedClass);
 	}
 
-	@ParameterizedTest
-	@MethodSource("booleanOks")
-	void booleansOks(Class<?> type, boolean value, Class<Annotation> anno) throws Exception {
-		var config = randomConfigWith(entry(casted(type, Boolean.class), "param", value).withAnno(anno));
-		var transformedClass = transform(dynamicClass(config));
-		assertNoException(config, transformedClass);
+	@Property
+	void assertTruesPrimitives(@ForAll(supplier = Primitives.class) @Primitives.Types(value = {
+			boolean.class }) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		assertTrues(tuple);
 	}
 
-	@ParameterizedTest
-	@MethodSource("booleanOks")
-	void booleansNoks(Class<?> type, boolean negatedValue, Class<Annotation> anno) throws Exception {
+	@Property
+	void assertTruesWrappers(
+			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Tuple2<Class<Object>, Object> tuple)
+			throws Exception {
+		assertTrues(tuple);
+	}
+
+	private void assertTrues(Tuple2<Class<Object>, Object> tuple)
+			throws NoSuchMethodException, ClassNotFoundException, Exception {
 		var parameterName = "param";
-		boolean value = !negatedValue;
-		var config = randomConfigWith(entry(casted(type, Boolean.class), parameterName, value).withAnno(anno));
+		boolean value = (boolean) tuple.get2();
+		var config = randomConfigWith(
+				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
 		var transformedClass = transform(dynamicClass(config));
-		assertException(config, transformedClass, parameterName + " should be " + (value ? "false" : "true"),
-				IllegalArgumentException.class);
+
+		var execResult = provideExecException(transformedClass, config);
+		if (value) {
+			assertNoException(execResult);
+		} else {
+			assertException(execResult, parameterName + " should be true", IllegalArgumentException.class);
+		}
 	}
 
-	private Config randomConfigWith(ConfigEntry entry) {
-		SecureRandom random = new SecureRandom();
-		// TODO use random classes
-		Supplier<ConfigEntry> supplier = () -> entry(Object.class, "param" + randomUUID().toString().replace("-", "_"),
-				randomUUID());
-		return new Config(Stream.of( //
-				Stream.generate(supplier).limit(random.nextInt(5)), //
-				Stream.of(entry), //
-				Stream.generate(supplier).limit(random.nextInt(5)) //
-		).reduce(empty(), Stream::concat).toList());
+	@Property
+	void assertFalsesPrimitives(@ForAll(supplier = Primitives.class) @Primitives.Types(value = {
+			boolean.class }) Tuple2<Class<Object>, Object> tuple) throws Exception {
+		assertFalses(tuple);
 	}
 
-	static List<Arguments> booleanOks() {
-		return List.of( //
-				arguments(Boolean.class, true, AssertTrue.class), //
-				arguments(boolean.class, true, AssertTrue.class), //
-				arguments(Boolean.class, false, AssertFalse.class), //
-				arguments(boolean.class, false, AssertFalse.class));
+	@Property
+	void assertFalsesWrappers(
+			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Tuple2<Class<Object>, Object> tuple)
+			throws Exception {
+		assertFalses(tuple);
+	}
+
+	private void assertFalses(Tuple2<Class<Object>, Object> tuple)
+			throws NoSuchMethodException, ClassNotFoundException, Exception {
+		var parameterName = "param";
+		boolean value = (boolean) tuple.get2();
+		var config = randomConfigWith(
+				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertFalse.class));
+		var transformedClass = transform(dynamicClass(config));
+
+		var execResult = provideExecException(transformedClass, config);
+		if (value) {
+			assertException(execResult, parameterName + " should be false", IllegalArgumentException.class);
+		} else {
+			assertNoException(execResult);
+		}
 	}
 
 	@Property
@@ -250,6 +263,18 @@ class DynamicByteCodeTest {
 		} else {
 			assertNoException(execResult);
 		}
+	}
+
+	private Config randomConfigWith(ConfigEntry entry) {
+		SecureRandom random = new SecureRandom();
+		// TODO use random classes
+		Supplier<ConfigEntry> supplier = () -> entry(Object.class, "param" + randomUUID().toString().replace("-", "_"),
+				randomUUID());
+		return new Config(Stream.of( //
+				Stream.generate(supplier).limit(random.nextInt(5)), //
+				Stream.of(entry), //
+				Stream.generate(supplier).limit(random.nextInt(5)) //
+		).reduce(empty(), Stream::concat).toList());
 	}
 
 	@SuppressWarnings("unchecked")
