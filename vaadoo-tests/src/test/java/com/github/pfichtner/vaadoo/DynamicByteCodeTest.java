@@ -418,8 +418,8 @@ class DynamicByteCodeTest {
 		return values.stream().map(DynamicByteCodeTest::castToTargetType).toArray();
 	}
 
-	private static Object castToTargetType(ConfigEntry t) {
-		return t.paramType.isPrimitive() ? primCast(t) : objCast(t);
+	private static Object castToTargetType(ConfigEntry entry) {
+		return entry.paramType.isPrimitive() ? primCast(entry) : objCast(entry);
 	}
 
 	private static Object primCast(ConfigEntry entry) {
