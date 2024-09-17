@@ -22,6 +22,8 @@ import static net.bytebuddy.jar.asm.Opcodes.LCMP;
 import static net.bytebuddy.jar.asm.Opcodes.LLOAD;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -151,6 +153,11 @@ public class GuavaCodeEmitter implements CodeEmitter {
 		} else if (parameter.typeIs(int.class) || parameter.typeIs(short.class) || parameter.typeIs(byte.class)) {
 			mv.visitVarInsn(ILOAD, parameter.index());
 			mv.visitInsn(I2L);
+		} else if (parameter.typeIs(Byte.class) || parameter.typeIs(Short.class) //
+				|| parameter.typeIs(Integer.class) || parameter.typeIs(Long.class) //
+				|| parameter.typeIs(BigInteger.class) || parameter.typeIs(BigDecimal.class)) {
+			mv.visitVarInsn(ALOAD, parameter.index());
+			mv.visitMethodInsn(INVOKEVIRTUAL, parameter.type().getInternalName(), "longValue", "()J", false);
 		} else {
 			throw new IllegalStateException("Cannot handle type " + parameter.type());
 		}

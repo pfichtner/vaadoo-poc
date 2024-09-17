@@ -6,6 +6,7 @@ import static java.util.Collections.emptySet;
 import static java.util.EnumSet.allOf;
 import static java.util.Map.entry;
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -100,9 +101,9 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 		var annotation = targetType.findAnnotation(Types.class);
 		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).orElseGet(() -> allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
-				.toList();
+				.collect(toSet());
 		var allowed = allClasses(allOf(SubTypes.class)).stream().filter(filter(annotation))
-				.filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes)).toList();
+				.filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes)).collect(toSet());
 		return arbitraries(allowed);
 	}
 
@@ -111,29 +112,29 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 		return only.isEmpty() ? c -> true : only::contains;
 	}
 
-	private static Arbitrary<Tuple2<Class<?>, Object>> arbitraries(List<Class<?>> allowed) {
+	private static Arbitrary<Tuple2<Class<?>, Object>> arbitraries(Collection<Class<?>> allowed) {
 		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> Tuple.of(c, t)));
 	}
 
-	private boolean isSubtypeOfOneOf(Class<?> c, List<Class<?>> allowedSuperTypes) {
+	private boolean isSubtypeOfOneOf(Class<?> c, Collection<Class<?>> allowedSuperTypes) {
 		return allowedSuperTypes.stream().anyMatch(s -> s.isAssignableFrom(c));
 	}
 
-	private static Arbitrary<?> supplierFor(Class<?> clazz, List<Class<?>> matchingTypes) {
+	private static Arbitrary<?> supplierFor(Class<?> clazz, Collection<Class<?>> matchingTypes) {
 		var arbitrary = suppliers.get(clazz);
 		return arbitrary == null //
 				? Arbitraries.of(instantiables(clazz, matchingTypes)).map(Classes::newInstance) //
 				: arbitrary;
 	}
 
-	private static List<Class<?>> instantiables(Class<?> clazz, List<Class<?>> matchingTypes) {
-		List<Class<?>> list = matchingTypes.stream() //
+	private static Set<Class<?>> instantiables(Class<?> clazz, Collection<Class<?>> matchingTypes) {
+		Set<Class<?>> set = matchingTypes.stream() //
 				.filter(t -> clazz.isAssignableFrom(t)) //
 				.filter(not(Class::isInterface)) //
 				.filter(Classes::canCreate) //
-				.toList();
-		assert !list.isEmpty() : "no instantiables for type " + clazz;
-		return list;
+				.collect(toSet());
+		assert !set.isEmpty() : "no instantiables for type " + clazz;
+		return set;
 	}
 
 	private static boolean canCreate(Class<?> clazz) {

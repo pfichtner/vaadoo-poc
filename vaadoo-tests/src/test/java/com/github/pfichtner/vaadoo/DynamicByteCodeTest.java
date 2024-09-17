@@ -9,6 +9,7 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
+import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.NUMBERS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -32,6 +33,7 @@ import java.util.stream.Stream;
 
 import com.github.pfichtner.vaadoo.supplier.CharSequences;
 import com.github.pfichtner.vaadoo.supplier.Classes;
+import com.github.pfichtner.vaadoo.supplier.Classes.SubTypes;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.google.common.base.Supplier;
 
@@ -303,9 +305,25 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	void minValuesValueEqualMin( //
+	void minValuesValueEqualMinPrimitives( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), tuple.get2());
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+				Map.of("value", value.value().longValue())));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
+	}
+
+	@Property
+	void minValuesValueEqualMinObjects( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = NUMBERS) //
 			Tuple2<Class<?>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";

@@ -1,18 +1,19 @@
 package com.github.pfichtner.vaadoo;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public abstract class NumberWrapper {
+
+	private Class<?> type;
 
 	private static class IntWrapper extends NumberWrapper {
 
 		private final int number;
 
-		public IntWrapper(int number) {
+		public IntWrapper(Class<?> type, int number) {
+			super(type);
 			this.number = number;
-		}
-
-		@Override
-		protected Class<?> type() {
-			return int.class;
 		}
 
 		@Override
@@ -46,13 +47,9 @@ public abstract class NumberWrapper {
 
 		private final long number;
 
-		public LongWrapper(long number) {
+		public LongWrapper(Class<?> type, long number) {
+			super(type);
 			this.number = number;
-		}
-
-		@Override
-		protected Class<?> type() {
-			return long.class;
 		}
 
 		@Override
@@ -86,13 +83,9 @@ public abstract class NumberWrapper {
 
 		private final short number;
 
-		public ShortWrapper(short number) {
+		public ShortWrapper(Class<?> type, short number) {
+			super(type);
 			this.number = number;
-		}
-
-		@Override
-		protected Class<?> type() {
-			return short.class;
 		}
 
 		@Override
@@ -126,13 +119,9 @@ public abstract class NumberWrapper {
 
 		private final byte number;
 
-		public ByteWrapper(byte number) {
+		public ByteWrapper(Class<?> type, byte number) {
+			super(type);
 			this.number = number;
-		}
-
-		@Override
-		protected Class<?> type() {
-			return byte.class;
 		}
 
 		@Override
@@ -162,22 +151,104 @@ public abstract class NumberWrapper {
 
 	}
 
+	private static class BigDecimalWrapper extends NumberWrapper {
+
+		private final BigDecimal number;
+
+		public BigDecimalWrapper(Class<?> type, BigDecimal number) {
+			super(type);
+			this.number = number;
+		}
+
+		@Override
+		protected Number value() {
+			return number;
+		}
+
+		@Override
+		public Object add(Number subtrahend) {
+			return number.add(new BigDecimal(String.valueOf(subtrahend)));
+		}
+
+		@Override
+		public Object sub(Number subtrahend) {
+			return number.subtract(new BigDecimal(String.valueOf(subtrahend)));
+		}
+
+		@Override
+		protected boolean isMin() {
+			return false;
+		}
+
+		@Override
+		protected boolean isMax() {
+			return false;
+		}
+
+	}
+
+	private static class BigIntegerWrapper extends NumberWrapper {
+
+		private final BigInteger number;
+
+		public BigIntegerWrapper(Class<?> type, BigInteger number) {
+			super(type);
+			this.number = number;
+		}
+
+		@Override
+		protected Number value() {
+			return number;
+		}
+
+		@Override
+		public Object add(Number subtrahend) {
+			return number.add(new BigInteger(String.valueOf(subtrahend)));
+		}
+
+		@Override
+		public Object sub(Number subtrahend) {
+			return number.subtract(new BigInteger(String.valueOf(subtrahend)));
+		}
+
+		@Override
+		protected boolean isMin() {
+			return false;
+		}
+
+		@Override
+		protected boolean isMax() {
+			return false;
+		}
+
+	}
+
+	protected NumberWrapper(Class<?> type) {
+		this.type = type;
+	}
+
 	public static NumberWrapper numberWrapper(Class<?> clazz, Object value) {
 		Number number = (Number) value;
 		if (clazz == int.class || clazz == Integer.class) {
-			return new IntWrapper(number.intValue());
+			return new IntWrapper(clazz, number.intValue());
 		} else if (clazz == long.class || clazz == Long.class) {
-			return new LongWrapper(number.longValue());
+			return new LongWrapper(clazz, number.longValue());
 		} else if (clazz == short.class || clazz == Short.class) {
-			return new ShortWrapper(number.shortValue());
+			return new ShortWrapper(clazz, number.shortValue());
 		} else if (clazz == byte.class || clazz == Byte.class) {
-			return new ByteWrapper(number.byteValue());
+			return new ByteWrapper(clazz, number.byteValue());
+		} else if (clazz == BigDecimal.class) {
+			return new BigDecimalWrapper(clazz, new BigDecimal(String.valueOf(number)));
+		} else if (clazz == BigInteger.class) {
+			return new BigIntegerWrapper(clazz, new BigInteger(String.valueOf(number)));
 		}
 		throw new IllegalStateException("Unsupported type " + clazz + " (" + value + ")");
 	}
 
 	@SuppressWarnings("rawtypes")
-	protected abstract Class type();
+	protected final Class type() {
+		return type;
+	}
 
 	protected abstract Number value();
 

@@ -26,12 +26,12 @@ public record SomeRecord( //
 		@AssertFalse boolean someFalseValue, //
 		@AssertTrue Boolean someTrueValueWrapper, //
 		@AssertFalse Boolean someFalseValueWrapper, //
-		@Min(42) int someValueThatIsMinimal42
-) {
+		@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
+		@Min(42) Long someLongWrapperValueThatIsMinimal42) {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeRecord(null, "isNotNull", " ", " ", " ", List.of(" "), Map.of(0, " "),
-				new Integer[] { 1 }, "", true, false, Boolean.TRUE, Boolean.FALSE, 42));
+				new Integer[] { 1 }, "", true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L));
 	}
 
 }
