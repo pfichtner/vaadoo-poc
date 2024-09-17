@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.checkerframework.checker.signature.qual.PrimitiveType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,6 +36,7 @@ import com.github.pfichtner.vaadoo.supplier.Blanks;
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Classes.Types;
 import com.github.pfichtner.vaadoo.supplier.NonBlanks;
+import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.google.common.base.Supplier;
 
 import jakarta.validation.constraints.AssertFalse;
@@ -183,7 +185,7 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankOks( //
-			@ForAll(supplier = Classes.class) @Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
+			@ForAll(supplier = Classes.class) @Classes.Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
 			@ForAll(supplier = NonBlanks.class) String nonBlank //
 	) throws Exception {
 		var config = config().withEntry(entry(tuple.get1(), "param", nonBlank).withAnno(NotBlank.class));
@@ -193,7 +195,7 @@ class DynamicByteCodeTest {
 
 	@Property
 	void notBlankNoks( //
-			@ForAll(supplier = Classes.class) @Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
+			@ForAll(supplier = Classes.class) @Classes.Types(CHARSEQUENCES) Tuple2<Class<Object>, Object> tuple, //
 			@WithNull @ForAll(supplier = Blanks.class) String blankString //
 	) throws Exception {
 		var parameterName = "param";
@@ -209,7 +211,7 @@ class DynamicByteCodeTest {
 	@Property
 	void notEmptyOks( //
 			@ForAll(supplier = Classes.class) //
-			@Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
 	) throws Exception {
 		var config = config()
 				.withEntry(entry(tuple.get1(), "param", convertValue(tuple.get2(), false)).withAnno(NotEmpty.class));
@@ -220,7 +222,7 @@ class DynamicByteCodeTest {
 	@Property
 	void notEmptyNoks( //
 			@ForAll(supplier = Classes.class) //
-			@Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
+			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) Tuple2<Class<Object>, Object> tuple //
 	) throws Exception {
 		var parameterName = "param";
 		var config = config().withEntry(
@@ -233,43 +235,49 @@ class DynamicByteCodeTest {
 //	void minEmptyOks(@ForAll(supplier = Primitives.class) Tuple2<Class<Object>, Object> tuple, @ForAll long minValue)
 //			throws Exception {
 	@Property
-	void minValues(@ForAll int value, @ForAll long minValue) throws Exception {
+	void minValues( //
+			@ForAll(supplier = Primitives.class) @Primitives.Types(value = { int.class,
+					long.class }) Tuple2<Class<Object>, Object> tuple,
+			@ForAll long minValue) throws Exception {
 		var parameterName = "param";
+		Number value = (Number) tuple.get2();
 		var config = config()
-				.withEntry(entry(int.class, parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
+				.withEntry(entry(tuple.get1(), parameterName, value).withAnno(Min.class, Map.of("value", minValue)));
 		var transformedClass = transform(dynamicClass(config));
 		var execResult = provideExecException(transformedClass, config);
-		if (value < minValue) {
+		if (value.longValue() < minValue) {
 			assertException(execResult, parameterName + " should be >= " + minValue, IllegalArgumentException.class);
 		} else {
-			assertThat(execResult).isEmpty();
+			assertNoException(execResult);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Object convertValue(Object value, boolean empty) {
+	private static Object convertValue(Object in, boolean empty) {
+		Object result = in;
 		if (empty) {
-			if (value instanceof CharSequence) {
-				value = "";
-			} else if (value instanceof Collection collection) {
+			if (result instanceof CharSequence) {
+				result = "";
+			} else if (result instanceof Collection collection) {
 				collection.clear();
-			} else if (value instanceof Map map) {
+			} else if (result instanceof Map map) {
 				map.clear();
-			} else if (value.getClass().isArray()) {
-				value = Array.newInstance(value.getClass().getComponentType(), 0);
+			} else if (result.getClass().isArray()) {
+				result = Array.newInstance(result.getClass().getComponentType(), 0);
 			}
 		} else {
-			if (value instanceof CharSequence) {
-				value = " ";
-			} else if (value instanceof Collection collection) {
+			if (result instanceof CharSequence) {
+				result = " ";
+			} else if (result instanceof Collection collection) {
 				collection.add(new Object());
-			} else if (value instanceof Map map) {
+			} else if (result instanceof Map map) {
 				map.put(new Object(), new Object());
-			} else if (value.getClass().isArray()) {
-				value = Array.newInstance(value.getClass().getComponentType(), 1);
+			} else if (result.getClass().isArray()) {
+				// empty but of size "one"
+				result = Array.newInstance(result.getClass().getComponentType(), 1);
 			}
 		}
-		return value;
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -291,6 +299,10 @@ class DynamicByteCodeTest {
 
 	private void assertNoException(Config config, Class<?> transformedClass) throws Exception {
 		assertThat(provideExecException(transformedClass, config)).isEmpty();
+	}
+
+	private void assertNoException(Optional<Throwable> execResult) {
+		assertThat(execResult).isEmpty();
 	}
 
 	private static Optional<Throwable> provideExecException(Class<?> dynamicClass, Config config) throws Exception {

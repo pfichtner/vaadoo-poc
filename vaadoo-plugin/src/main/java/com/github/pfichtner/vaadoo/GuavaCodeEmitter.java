@@ -19,6 +19,7 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKEINTERFACE;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKEVIRTUAL;
 import static net.bytebuddy.jar.asm.Opcodes.LCMP;
+import static net.bytebuddy.jar.asm.Opcodes.LLOAD;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -145,8 +146,14 @@ public class GuavaCodeEmitter implements CodeEmitter {
 	public void addMinCheck(MethodVisitor mv, ParameterInfo parameter) {
 		Long min = parameter.annotationValue("value").map(String::valueOf).map(Long::valueOf)
 				.orElseThrow(() -> new IllegalStateException("Min does not define attribute 'value'"));
-		mv.visitVarInsn(ILOAD, parameter.index());
-		mv.visitInsn(I2L);
+		if (parameter.typeIs(long.class)) {
+			mv.visitVarInsn(LLOAD, parameter.index());
+		} else if (parameter.typeIs(int.class)) {
+			mv.visitVarInsn(ILOAD, parameter.index());
+			mv.visitInsn(I2L);
+		} else {
+			throw new IllegalStateException("Cannot handle type " + parameter.type());
+		}
 		mv.visitLdcInsn(min);
 		mv.visitInsn(LCMP);
 		negated(mv, IFLT);
