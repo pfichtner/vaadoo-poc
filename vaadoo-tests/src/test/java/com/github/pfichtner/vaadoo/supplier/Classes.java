@@ -3,6 +3,7 @@ package com.github.pfichtner.vaadoo.supplier;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Collections.emptySet;
+import static java.util.EnumSet.allOf;
 import static java.util.function.Predicate.not;
 
 import java.lang.annotation.Retention;
@@ -11,7 +12,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -83,18 +83,17 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> get() {
-		var allowed = allClasses(EnumSet.allOf(SubTypes.class)).stream().toList();
+		var allowed = allClasses(allOf(SubTypes.class)).stream().toList();
 		return arbitraries(allowed);
 	}
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
 		var annotation = targetType.findAnnotation(Types.class);
-		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of)
-				.orElseGet(() -> EnumSet.allOf(SubTypes.class));
+		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).orElseGet(() -> allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
 				.toList();
-		var allowed = allClasses(EnumSet.allOf(SubTypes.class)).stream().filter(filter(annotation))
+		var allowed = allClasses(allOf(SubTypes.class)).stream().filter(filter(annotation))
 				.filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes)).toList();
 		return arbitraries(allowed);
 	}

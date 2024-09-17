@@ -42,7 +42,7 @@ public class Primitives implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
 		return arbitrariesFor(targetType.findAnnotation(Types.class) //
 				.map(Types::value).map(Set::of) //
-				.orElseGet(() -> suppliers.keySet()));
+				.orElseGet(suppliers::keySet));
 	}
 
 	private Arbitrary<Tuple2<Class<?>, Object>> arbitrariesFor(Set<Class<?>> classses) {

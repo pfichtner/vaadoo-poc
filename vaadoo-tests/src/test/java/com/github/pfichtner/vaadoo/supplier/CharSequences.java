@@ -2,11 +2,11 @@ package com.github.pfichtner.vaadoo.supplier;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.EnumSet.allOf;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Set;
 
 import net.jqwik.api.Arbitraries;
@@ -41,16 +41,17 @@ public class CharSequences implements ArbitrarySupplier<CharSequence> {
 
 	@Override
 	public Arbitrary<CharSequence> get() {
-		return arbitraries(EnumSet.allOf(Type.class));
+		return arbitraries(allOf(Type.class));
 	}
 
 	@Override
 	public Arbitrary<CharSequence> supplyFor(TypeUsage targetType) {
-		return arbitraries(targetType.findAnnotation(Types.class).map(Types::value).map(Set::of)
-				.orElseGet(() -> EnumSet.allOf(Type.class)));
+		return arbitraries(targetType.findAnnotation(Types.class) //
+				.map(Types::value).map(Set::of) //
+				.orElseGet(() -> allOf(Type.class)));
 	}
 
-	private Arbitrary<CharSequence> arbitraries(Set<Type> type) {
+	private static Arbitrary<CharSequence> arbitraries(Set<Type> type) {
 		return Arbitraries.of(type.stream().map(Type::sequences).map(Set::of).flatMap(Collection::stream).toList());
 	}
 
