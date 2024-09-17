@@ -9,7 +9,7 @@ Validating automatically domain objects: It's magic
 When implementing an application using Spring it's very handy to use the JSR 380 annotations. But where to place them? 
 - If the code does not have exlicitly DTOs but mapping it's domain objects directly, the annotations have to been placed on the domain objects but then your domain won't be able to validate the classes until it has some dependency to any JSR 380 implementation
 - If your code differs between DTOs and domain objects, you have to options: 
-  - Place the JSR 380 annotations to the DTO but then your internal vali state would rely on the checks done in a non-domain layer
+  - Place the JSR 380 annotations on the DTO but then your internal valid state would rely on the checks done in a non-domain layer
   - Again make your donain dependant on a JSR 380 implemenation
 
 So if you decide, that none of these possibilites is an option you cannot just declare things like this...
