@@ -4,11 +4,14 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Collections.emptySet;
 import static java.util.EnumSet.allOf;
+import static java.util.Map.entry;
 import static java.util.function.Predicate.not;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,12 +48,14 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 
 	public static enum SubTypes {
 		OBJECT(Object.class), //
-		WRAPPERS(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Short.class, Character.class),
+		WRAPPERS(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Short.class, Byte.class,
+				Character.class),
 		LISTS(List.class, ArrayList.class, LinkedList.class, CopyOnWriteArrayList.class), //
 		SETS(Set.class, HashSet.class, LinkedHashSet.class), //
 		COLLECTIONS(Collection.class), //
 		MAPS(Map.class, HashMap.class, LinkedHashMap.class, ConcurrentMap.class, ConcurrentHashMap.class), //
 		CHARSEQUENCES(CharSequence.class, String.class), //
+		NUMBERS(Integer.class, Long.class, Short.class, Byte.class, BigDecimal.class, BigInteger.class), //
 		ARRAYS(Object[].class, Boolean[].class, Integer[].class, Long[].class, Double[].class, Float[].class,
 				Short[].class, Character[].class);
 
@@ -66,15 +71,18 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 
 	}
 
-	private static final Map<Class<?>, Arbitrary<?>> suppliers = Map.of( //
-			CharSequence.class, Arbitraries.strings(), //
-			Boolean.class, Arbitraries.of(Boolean.TRUE, Boolean.FALSE), //
-			Integer.class, Arbitraries.integers(), //
-			Long.class, Arbitraries.longs(), //
-			Double.class, Arbitraries.doubles(), //
-			Float.class, Arbitraries.floats(), //
-			Short.class, Arbitraries.shorts(), //
-			Character.class, Arbitraries.chars() //
+	private static final Map<Class<?>, Arbitrary<?>> suppliers = Map.ofEntries( //
+			entry(CharSequence.class, Arbitraries.strings()), //
+			entry(Boolean.class, Arbitraries.of(Boolean.TRUE, Boolean.FALSE)), //
+			entry(Integer.class, Arbitraries.integers()), //
+			entry(Long.class, Arbitraries.longs()), //
+			entry(Double.class, Arbitraries.doubles()), //
+			entry(Float.class, Arbitraries.floats()), //
+			entry(Short.class, Arbitraries.shorts()), //
+			entry(Byte.class, Arbitraries.bytes()), //
+			entry(Character.class, Arbitraries.chars()), //
+			entry(BigInteger.class, Arbitraries.bigIntegers()), //
+			entry(BigDecimal.class, Arbitraries.bigDecimals()) //
 	);
 
 	private List<Class<?>> allClasses(Set<SubTypes> subTypes) {
