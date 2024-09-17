@@ -2,6 +2,7 @@ package com.github.pfichtner.vaadoo.supplier;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.Collections.emptySet;
 import static java.util.function.Predicate.not;
 
 import java.lang.annotation.Retention;
@@ -18,10 +19,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
@@ -36,6 +39,8 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	@Target(PARAMETER)
 	public static @interface Types {
 		SubTypes[] value();
+
+		Class<?>[] ofType() default {};
 	}
 
 	public static enum SubTypes {
@@ -72,24 +77,34 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 			Character.class, Arbitraries.chars() //
 	);
 
-	private List<Class<?>> all(Set<SubTypes> sub) {
-		return sub.stream().map(SubTypes::types).flatMap(Collection::stream).toList();
+	private List<Class<?>> allClasses(Set<SubTypes> subTypes) {
+		return subTypes.stream().map(SubTypes::types).flatMap(Collection::stream).toList();
 	}
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> get() {
-		var all = all(EnumSet.allOf(SubTypes.class)).stream().toList();
-		return Arbitraries.of(all).flatMap(c -> supplierFor(c, all).map(t -> Tuple.of(c, t)));
+		var allowed = allClasses(EnumSet.allOf(SubTypes.class)).stream().toList();
+		return arbitraries(allowed);
 	}
 
 	@Override
 	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
-		Set<SubTypes> onlyTheseTypesAreAllowd = targetType.findAnnotation(Types.class).map(Types::value).map(Set::of)
+		var annotation = targetType.findAnnotation(Types.class);
+		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of)
 				.orElseGet(() -> EnumSet.allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
 				.toList();
-		var allowed = all(EnumSet.allOf(SubTypes.class)).stream().filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes))
-				.toList();
+		var allowed = allClasses(EnumSet.allOf(SubTypes.class)).stream().filter(filter(annotation))
+				.filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes)).toList();
+		return arbitraries(allowed);
+	}
+
+	private static Predicate<Class<?>> filter(Optional<Types> annotation) {
+		var only = annotation.map(Types::ofType).map(Set::of).orElse(emptySet());
+		return only.isEmpty() ? c -> true : only::contains;
+	}
+
+	private static Arbitrary<Tuple2<Class<?>, Object>> arbitraries(List<Class<?>> allowed) {
 		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> Tuple.of(c, t)));
 	}
 
@@ -97,14 +112,14 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 		return allowedSuperTypes.stream().anyMatch(s -> s.isAssignableFrom(c));
 	}
 
-	private Arbitrary<?> supplierFor(Class<?> clazz, List<Class<?>> matchingTypes) {
+	private static Arbitrary<?> supplierFor(Class<?> clazz, List<Class<?>> matchingTypes) {
 		var arbitrary = suppliers.get(clazz);
 		return arbitrary == null //
 				? Arbitraries.of(instantiables(clazz, matchingTypes)).map(Classes::newInstance) //
 				: arbitrary;
 	}
 
-	private List<Class<?>> instantiables(Class<?> clazz, List<Class<?>> matchingTypes) {
+	private static List<Class<?>> instantiables(Class<?> clazz, List<Class<?>> matchingTypes) {
 		List<Class<?>> list = matchingTypes.stream() //
 				.filter(t -> clazz.isAssignableFrom(t)) //
 				.filter(not(Class::isInterface)) //
