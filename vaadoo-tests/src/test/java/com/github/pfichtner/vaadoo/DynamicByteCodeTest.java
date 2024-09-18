@@ -357,7 +357,6 @@ class DynamicByteCodeTest {
 	}
 
 	@Property
-	@Disabled("WIP")
 	void minValuesValueNullObjectsAreOk( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //

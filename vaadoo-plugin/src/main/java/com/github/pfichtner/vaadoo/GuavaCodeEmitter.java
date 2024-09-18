@@ -11,9 +11,11 @@ import static net.bytebuddy.jar.asm.Opcodes.I2L;
 import static net.bytebuddy.jar.asm.Opcodes.ICONST_0;
 import static net.bytebuddy.jar.asm.Opcodes.ICONST_1;
 import static net.bytebuddy.jar.asm.Opcodes.IFEQ;
+import static net.bytebuddy.jar.asm.Opcodes.IFGE;
 import static net.bytebuddy.jar.asm.Opcodes.IFLE;
 import static net.bytebuddy.jar.asm.Opcodes.IFLT;
 import static net.bytebuddy.jar.asm.Opcodes.IFNONNULL;
+import static net.bytebuddy.jar.asm.Opcodes.IFNULL;
 import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
 import static net.bytebuddy.jar.asm.Opcodes.INTEGER;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKEINTERFACE;
@@ -149,43 +151,77 @@ public class GuavaCodeEmitter implements CodeEmitter {
 
 	@Override
 	public void addMinCheck(MethodVisitor mv, ParameterInfo parameter) {
-		Long min = parameter.annotationValue("value").map(String::valueOf).map(Long::valueOf)
+		Long minValue = parameter.annotationValue("value").map(String::valueOf).map(Long::valueOf)
 				.orElseThrow(() -> new IllegalStateException("Min does not define attribute 'value'"));
 		String internalName = parameter.type().getInternalName();
-		if (parameter.typeIs(long.class)) {
-			mv.visitVarInsn(LLOAD, parameter.index());
-			mv.visitLdcInsn(min);
-			mv.visitInsn(LCMP);
-		} else if (parameter.typeIs(int.class) || parameter.typeIs(short.class) || parameter.typeIs(byte.class)) {
-			mv.visitVarInsn(ILOAD, parameter.index());
-			mv.visitInsn(I2L);
-			mv.visitLdcInsn(min);
-			mv.visitInsn(LCMP);
-		} else if (parameter.typeIs(Byte.class) || parameter.typeIs(Short.class) //
-				|| parameter.typeIs(Integer.class) || parameter.typeIs(Long.class)) {
-			mv.visitVarInsn(ALOAD, parameter.index());
-			mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "longValue", "()J", false);
-			mv.visitLdcInsn(min);
-			mv.visitInsn(LCMP);
-		} else if (parameter.typeIs(BigDecimal.class)) {
-			mv.visitVarInsn(ALOAD, parameter.index());
-			mv.visitTypeInsn(NEW, internalName);
-			mv.visitInsn(DUP);
-			mv.visitLdcInsn(min);
-			mv.visitMethodInsn(INVOKESPECIAL, internalName, "<init>", "(J)V", false);
-			mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "compareTo", "(L" + internalName + ";)I", false);
-		} else if (parameter.typeIs(BigInteger.class)) {
-			mv.visitVarInsn(ALOAD, parameter.index());
-			mv.visitLdcInsn(min);
-			mv.visitMethodInsn(INVOKESTATIC, internalName, "valueOf", "(J)L" + internalName + ";", false);
-			mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "compareTo", "(L" + internalName + ";)I", false);
+
+		boolean primitive = parameter.typeIs(long.class) || parameter.typeIs(int.class) || parameter.typeIs(short.class)
+				|| parameter.typeIs(byte.class);
+		if (primitive) {
+			if (parameter.typeIs(long.class)) {
+				mv.visitVarInsn(LLOAD, parameter.index());
+				mv.visitLdcInsn(minValue);
+				mv.visitInsn(LCMP);
+			} else if (parameter.typeIs(int.class) || parameter.typeIs(short.class) || parameter.typeIs(byte.class)) {
+				mv.visitVarInsn(ILOAD, parameter.index());
+				mv.visitInsn(I2L);
+				mv.visitLdcInsn(minValue);
+				mv.visitInsn(LCMP);
+			} else if (parameter.typeIs(Byte.class) || parameter.typeIs(Short.class) //
+					|| parameter.typeIs(Integer.class) || parameter.typeIs(Long.class)) {
+				mv.visitVarInsn(ALOAD, parameter.index());
+				mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "longValue", "()J", false);
+				mv.visitLdcInsn(minValue);
+				mv.visitInsn(LCMP);
+			} else {
+				throw new IllegalStateException("Cannot handle type " + parameter.type());
+			}
+			negated(mv, IFLT);
+			mv.visitLdcInsn(parameter.name() + " should be >= " + minValue);
+			mv.visitMethodInsn(INVOKESTATIC, "com/google/common/base/Preconditions", "checkArgument",
+					"(ZLjava/lang/Object;)V", false);
 		} else {
-			throw new IllegalStateException("Cannot handle type " + parameter.type());
+			mv.visitVarInsn(ALOAD, parameter.index());
+			Label label0 = new Label();
+			mv.visitJumpInsn(IFNULL, label0);
+			if (parameter.typeIs(Byte.class) || parameter.typeIs(Short.class) //
+					|| parameter.typeIs(Integer.class) || parameter.typeIs(Long.class)) {
+				mv.visitVarInsn(ALOAD, parameter.index());
+				mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "longValue", "()J", false);
+				mv.visitLdcInsn(minValue);
+				mv.visitInsn(LCMP);
+			} else if (parameter.typeIs(BigDecimal.class)) {
+				mv.visitVarInsn(ALOAD, parameter.index());
+				mv.visitTypeInsn(NEW, internalName);
+				mv.visitInsn(DUP);
+				mv.visitLdcInsn(minValue);
+				mv.visitMethodInsn(INVOKESPECIAL, internalName, "<init>", "(J)V", false);
+				mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "compareTo", "(L" + internalName + ";)I", false);
+			} else if (parameter.typeIs(BigInteger.class)) {
+				mv.visitVarInsn(ALOAD, parameter.index());
+				mv.visitLdcInsn(minValue);
+				mv.visitMethodInsn(INVOKESTATIC, internalName, "valueOf", "(J)L" + internalName + ";", false);
+				mv.visitMethodInsn(INVOKEVIRTUAL, internalName, "compareTo", "(L" + internalName + ";)I", false);
+			} else {
+				throw new IllegalStateException("Cannot handle type " + parameter.type());
+			}
+
+			mv.visitJumpInsn(IFGE, label0);
+			mv.visitInsn(ICONST_0);
+			Label label1 = new Label();
+			mv.visitJumpInsn(GOTO, label1);
+			mv.visitLabel(label0);
+			mv.visitFrame(F_SAME, 0, null, 0, null);
+			mv.visitInsn(ICONST_1);
+			mv.visitLabel(label1);
+			mv.visitFrame(F_SAME1, 0, null, 1, new Object[] { INTEGER });
+
+			mv.visitLdcInsn(parameter.name() + " should be >= " + minValue);
+			mv.visitMethodInsn(INVOKESTATIC, "com/google/common/base/Preconditions", "checkArgument",
+					"(ZLjava/lang/Object;)V", false);
+
 		}
-		negated(mv, IFLT);
-		mv.visitLdcInsn(parameter.name() + " should be >= " + min);
-		mv.visitMethodInsn(INVOKESTATIC, "com/google/common/base/Preconditions", "checkArgument",
-				"(ZLjava/lang/Object;)V", false);
+
 	}
 
 	private static void negated(MethodVisitor mv, int opcode) {
