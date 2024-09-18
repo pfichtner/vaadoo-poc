@@ -77,12 +77,12 @@ public final class DynamicByteCode {
 		}
 	}
 
-	static boolean lowerBoundOutOfLongRange(Number value) {
-		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MIN_VALUE)) < 0;
+	static boolean lowerBoundInLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MIN_VALUE)) >= 0;
 	}
 
-	static boolean upperBoundOutOfLongRange(Number value) {
-		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MAX_VALUE)) > 0;
+	static boolean upperBoundInLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MAX_VALUE)) <= 0;
 	}
 
 	public static Config randomConfigWith(ConfigEntry entry) {
