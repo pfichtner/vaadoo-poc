@@ -1,5 +1,7 @@
 package com.github.pfichtner.vaadoo.supplier;
 
+import java.util.Arrays;
+
 public class Example {
 
 	private final Class<Object> type;
@@ -21,6 +23,20 @@ public class Example {
 
 	public Object value() {
 		return example;
+	}
+
+	@Override
+	public String toString() {
+		Object value = valueString();
+		return "Example [type=" + type.getName() + ", example=" + value + "]";
+	}
+
+	private Object valueString() {
+		return example == null //
+				? null //
+				: example.getClass().isArray() //
+						? Arrays.toString((Object[]) example) //
+						: example;
 	}
 
 }
