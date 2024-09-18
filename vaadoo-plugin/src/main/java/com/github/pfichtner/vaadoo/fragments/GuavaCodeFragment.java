@@ -26,107 +26,107 @@ public class GuavaCodeFragment implements CodeFragment {
 	private static final String SHOULD_BE_FALSE = "%s should be false";
 
 	@Override
-	public void nullCheck(Null nill, Object ref) {
+	public void verify(Null nill, Object ref) {
 		checkArgument(ref == null, "%s expected to be null");
 	}
 
 	@Override
-	public void notNullCheck(NotNull notNull, Object ref) {
+	public void verify(NotNull notNull, Object ref) {
 		checkNotNull(ref, NOT_NULL);
 	}
 
 	@Override
-	public void notBlankCheck(NotBlank notBlank, CharSequence charSequence) {
+	public void verify(NotBlank notBlank, CharSequence charSequence) {
 		checkArgument(whitespace().negate().countIn(checkNotNull(charSequence, NOT_NULL)) > 0, NOT_BLANK);
 	}
 
 	@Override
-	public void notEmpty(NotEmpty notEmpty, CharSequence charSequence) {
+	public void verify(NotEmpty notEmpty, CharSequence charSequence) {
 		checkArgument(checkNotNull(charSequence, NOT_NULL).length() > 0, NOT_EMPTY);
 	}
 
-	public void notEmpty(NotEmpty notEmpty, Collection<?> collection) {
+	public void verify(NotEmpty notEmpty, Collection<?> collection) {
 		checkArgument(checkNotNull(collection, NOT_NULL).size() > 0, NOT_EMPTY);
 	}
 
 	@Override
-	public void notEmpty(NotEmpty notEmpty, Map<?, ?> map) {
+	public void verify(NotEmpty notEmpty, Map<?, ?> map) {
 		checkArgument(checkNotNull(map, NOT_NULL).size() > 0, NOT_EMPTY);
 	}
 
 	@Override
-	public void notEmpty(NotEmpty notEmpty, Object[] objects) {
+	public void verify(NotEmpty notEmpty, Object[] objects) {
 		checkArgument(checkNotNull(objects, NOT_NULL).length > 0, NOT_EMPTY);
 	}
 
 	@Override
-	public void assertTrue(AssertTrue assertTrue, boolean value) {
+	public void verify(AssertTrue assertTrue, boolean value) {
 		checkArgument(value, SHOULD_BE_TRUE);
 	}
 
 	@Override
-	public void assertTrue(AssertTrue assertTrue, Boolean value) {
+	public void verify(AssertTrue assertTrue, Boolean value) {
 		checkArgument(value == null || value, SHOULD_BE_TRUE);
 	}
 
 	@Override
-	public void assertFalse(AssertFalse assertFalse, boolean value) {
+	public void verify(AssertFalse assertFalse, boolean value) {
 		checkArgument(!value, SHOULD_BE_FALSE);
 	}
 
 	@Override
-	public void assertFalse(AssertFalse assertFalse, Boolean value) {
+	public void verify(AssertFalse assertFalse, Boolean value) {
 		checkArgument(value == null || !value, SHOULD_BE_FALSE);
 	}
 
 	@Override
-	public void min(Min min, byte value) {
+	public void verify(Min min, byte value) {
 		checkArgument(value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, short value) {
+	public void verify(Min min, short value) {
 		checkArgument(value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, int value) {
+	public void verify(Min min, int value) {
 		checkArgument(value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, long value) {
+	public void verify(Min min, long value) {
 		checkArgument(value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, Byte value) {
+	public void verify(Min min, Byte value) {
 		checkArgument(value == null || value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, Short value) {
+	public void verify(Min min, Short value) {
 		checkArgument(value == null || value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, Integer value) {
+	public void verify(Min min, Integer value) {
 		checkArgument(value == null || value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, Long value) {
+	public void verify(Min min, Long value) {
 		checkArgument(value == null || value >= min.value(), "%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, BigInteger value) {
+	public void verify(Min min, BigInteger value) {
 		checkArgument(value == null || value.compareTo(BigInteger.valueOf(min.value())) >= 0,
 				"%s should be >= " + min.value());
 	}
 
 	@Override
-	public void min(Min min, BigDecimal value) {
+	public void verify(Min min, BigDecimal value) {
 		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(min.value())) >= 0,
 				"%s should be >= " + min.value());
 	}

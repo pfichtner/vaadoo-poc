@@ -106,34 +106,32 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				for (ParameterInfo parameter : parameterInfos.values()) {
 					for (String annotation : parameter.getAnnotations()) {
 						if (annotation.equals(Type.getDescriptor(Null.class))) {
-							methodInjector.injectCode(mv, parameter, "nullCheck", Null.class, Object.class);
+							methodInjector.injectCode(mv, parameter, "verify", Null.class, Object.class);
 						} else if (annotation.equals(Type.getDescriptor(NotNull.class))) {
-							methodInjector.injectCode(mv, parameter, "notNullCheck", NotNull.class, Object.class);
+							methodInjector.injectCode(mv, parameter, "verify", NotNull.class, Object.class);
 						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
 							// TODO check if type is CharSequence
-							methodInjector.injectCode(mv, parameter, "notBlankCheck", NotBlank.class,
-									CharSequence.class);
+							methodInjector.injectCode(mv, parameter, "verify", NotBlank.class, CharSequence.class);
 						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
 							// TODO check if type is CharSequence/Collection/Map/Array
 							if (parameter.isArray()) {
-								methodInjector.injectCode(mv, parameter, "notEmpty", NotEmpty.class, Object[].class);
+								methodInjector.injectCode(mv, parameter, "verify", NotEmpty.class, Object[].class);
 							} else {
 								var superType = superType(loadClass(parameter.classname()), NotEmpty.class,
 										CharSequence.class, Collection.class, Map.class);
-								methodInjector.injectCode(mv, parameter, "notEmpty", NotEmpty.class, superType);
+								methodInjector.injectCode(mv, parameter, "verify", NotEmpty.class, superType);
 							}
 						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
 							// TODO check if type is boolean/Boolean
-							methodInjector.injectCode(mv, parameter, "assertTrue", AssertTrue.class,
-									parameter.classtype());
+							methodInjector.injectCode(mv, parameter, "verify", AssertTrue.class, parameter.classtype());
 						} else if (annotation.equals(Type.getDescriptor(AssertFalse.class))) {
 							// TODO check if type is boolean/Boolean
-							methodInjector.injectCode(mv, parameter, "assertFalse", AssertFalse.class,
+							methodInjector.injectCode(mv, parameter, "verify", AssertFalse.class,
 									parameter.classtype());
 						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
 							// TODO check if type is BigDecimal, BigInteger, byte, short, int, long and
 							// their respective wrappers
-							methodInjector.injectCode(mv, parameter, "min", Min.class, parameter.classtype());
+							methodInjector.injectCode(mv, parameter, "verify", Min.class, parameter.classtype());
 						}
 					}
 				}
