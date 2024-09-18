@@ -1,12 +1,16 @@
 package com.github.pfichtner.vaadoo.supplier;
 
-public class TypeAndExample {
+public class Example {
 
 	private final Class<Object> type;
 	private final Object example;
 
+	public static Object nullValue() {
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
-	public TypeAndExample(Class<?> type, Object example) {
+	public Example(Class<?> type, Object example) {
 		this.type = (Class<Object>) type;
 		this.example = example;
 	}
@@ -15,7 +19,7 @@ public class TypeAndExample {
 		return type;
 	}
 
-	public Object example() {
+	public Object value() {
 		return example;
 	}
 

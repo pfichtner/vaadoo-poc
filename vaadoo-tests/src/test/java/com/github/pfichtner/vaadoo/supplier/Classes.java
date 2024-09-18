@@ -35,7 +35,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ArbitrarySupplier;
 import net.jqwik.api.providers.TypeUsage;
 
-public class Classes implements ArbitrarySupplier<TypeAndExample> {
+public class Classes implements ArbitrarySupplier<Example> {
 
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
@@ -89,13 +89,13 @@ public class Classes implements ArbitrarySupplier<TypeAndExample> {
 	}
 
 	@Override
-	public Arbitrary<TypeAndExample> get() {
+	public Arbitrary<Example> get() {
 		var allowed = allClasses(allOf(SubTypes.class)).stream().toList();
 		return arbitraries(allowed);
 	}
 
 	@Override
-	public Arbitrary<TypeAndExample> supplyFor(TypeUsage targetType) {
+	public Arbitrary<Example> supplyFor(TypeUsage targetType) {
 		var annotation = targetType.findAnnotation(Types.class);
 		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).orElseGet(() -> allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
@@ -110,8 +110,8 @@ public class Classes implements ArbitrarySupplier<TypeAndExample> {
 		return only.isEmpty() ? c -> true : only::contains;
 	}
 
-	private static Arbitrary<TypeAndExample> arbitraries(Collection<Class<?>> allowed) {
-		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> new TypeAndExample(c, t)));
+	private static Arbitrary<Example> arbitraries(Collection<Class<?>> allowed) {
+		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> new Example(c, t)));
 	}
 
 	private boolean isSubtypeOfOneOf(Class<?> c, Collection<Class<?>> allowedSuperTypes) {

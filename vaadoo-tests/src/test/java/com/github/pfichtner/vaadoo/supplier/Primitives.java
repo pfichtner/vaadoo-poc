@@ -13,7 +13,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ArbitrarySupplier;
 import net.jqwik.api.providers.TypeUsage;
 
-public class Primitives implements ArbitrarySupplier<TypeAndExample> {
+public class Primitives implements ArbitrarySupplier<Example> {
 
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
@@ -33,18 +33,18 @@ public class Primitives implements ArbitrarySupplier<TypeAndExample> {
 	);
 
 	@Override
-	public Arbitrary<TypeAndExample> get() {
+	public Arbitrary<Example> get() {
 		return arbitrariesFor(suppliers.keySet());
 	}
 
 	@Override
-	public Arbitrary<TypeAndExample> supplyFor(TypeUsage targetType) {
+	public Arbitrary<Example> supplyFor(TypeUsage targetType) {
 		return arbitrariesFor(targetType.findAnnotation(Types.class) //
 				.map(Types::value).map(Set::of) //
 				.orElseGet(suppliers::keySet));
 	}
 
-	private Arbitrary<TypeAndExample> arbitrariesFor(Set<Class<?>> classses) {
-		return Arbitraries.of(classses).flatMap(c -> suppliers.get(c).map(t -> new TypeAndExample(c, t)));
+	private Arbitrary<Example> arbitrariesFor(Set<Class<?>> classses) {
+		return Arbitraries.of(classses).flatMap(c -> suppliers.get(c).map(t -> new Example(c, t)));
 	}
 }

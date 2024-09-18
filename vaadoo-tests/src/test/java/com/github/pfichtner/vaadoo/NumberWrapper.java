@@ -7,7 +7,7 @@ import java.math.BigInteger;
 
 public abstract class NumberWrapper {
 
-	private Class<?> type;
+	private final Class<?> type;
 
 	private static class IntWrapper extends NumberWrapper {
 
