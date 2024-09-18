@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +34,6 @@ import java.util.stream.Stream;
 
 import com.github.pfichtner.vaadoo.supplier.CharSequences;
 import com.github.pfichtner.vaadoo.supplier.Classes;
-import com.github.pfichtner.vaadoo.supplier.Classes.SubTypes;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.google.common.base.Supplier;
 
@@ -55,6 +55,7 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader.PersistenceHandler;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
 import net.jqwik.api.Assume;
+import net.jqwik.api.Disabled;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Tuple.Tuple2;
@@ -283,9 +284,6 @@ class DynamicByteCodeTest {
 		assertException(config, transformed, parameterName + " must not be empty", IllegalArgumentException.class);
 	}
 
-	// TODO add BigDecimal BigInteger Byte Short Integer Long
-//	void minEmptyOks(@ForAll(supplier = Primitives.class) Tuple2<Class<Object>, Object> tuple, @ForAll long minValue)
-//			throws Exception {
 	@Property
 	void minValuesValueLowerThanMin( //
 			@ForAll(supplier = Primitives.class) //
@@ -298,9 +296,9 @@ class DynamicByteCodeTest {
 
 		@SuppressWarnings("unchecked")
 		var config = config().withEntry(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
-				Map.of("value", value.value().longValue())));
+				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " should be >= " + value.value(),
+		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
 				IllegalArgumentException.class);
 	}
 
@@ -315,9 +313,30 @@ class DynamicByteCodeTest {
 
 		@SuppressWarnings("unchecked")
 		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
-				Map.of("value", value.value().longValue())));
+				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
+	}
+
+	@Property
+	void minValuesValueLowerThanMinObjects( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = NUMBERS) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), tuple.get2());
+		Assume.that(!value.isMin());
+
+		Number sub = value.sub(1);
+		Assume.that(!upperBoundOutOfLongRange(sub));
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(
+				entry(value.type(), parameterName, sub).withAnno(Min.class, Map.of("value", value.flooredLong())));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
+				IllegalArgumentException.class);
 	}
 
 	@Property
@@ -328,10 +347,64 @@ class DynamicByteCodeTest {
 	) throws Exception {
 		var parameterName = "param";
 		var value = numberWrapper(tuple.get1(), tuple.get2());
+		Assume.that(!lowerBoundOutOfLongRange(value.value()));
 
 		@SuppressWarnings("unchecked")
 		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
-				Map.of("value", value.value().longValue())));
+				Map.of("value", value.flooredLong())));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
+	}
+
+	@Property
+	@Disabled("WIP")
+	void minValuesValueNullObjectsAreOk( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = NUMBERS) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), tuple.get2());
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(
+				entry(value.type(), parameterName, null).withAnno(Min.class, Map.of("value", value.flooredLong())));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
+	}
+
+	private boolean lowerBoundOutOfLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MIN_VALUE)) < 0;
+	}
+
+	private boolean upperBoundOutOfLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MAX_VALUE)) > 0;
+	}
+
+	@Property
+	void minValuesValueGreaterThanMinObjects( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(value = NUMBERS) //
+			Tuple2<Class<?>, Object> tuple //
+	) throws Exception {
+		var parameterName = "param";
+		var value = numberWrapper(tuple.get1(), tuple.get2());
+		Assume.that(!value.isMax());
+		Assume.that(!lowerBoundOutOfLongRange(value.value()));
+
+		// TODO Do we need this code segment?
+//		Number max = value.value().longValue();
+//		if ((max instanceof BigDecimal bd && bd.compareTo(new BigDecimal(Long.MAX_VALUE)) > 0)
+//				|| (max instanceof BigInteger bi && bi.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0)) {
+//			max = Long.MAX_VALUE;
+//		} else if ((max instanceof BigDecimal bd && bd.compareTo(new BigDecimal(Long.MIN_VALUE)) < 0)
+//				|| (max instanceof BigInteger bi && bi.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0)) {
+//			max = Long.MIN_VALUE;
+//		}
+
+		@SuppressWarnings("unchecked")
+		var config = config().withEntry(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -348,7 +421,7 @@ class DynamicByteCodeTest {
 
 		@SuppressWarnings("unchecked")
 		var config = config().withEntry(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
-				Map.of("value", value.value().longValue())));
+				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}

@@ -1,5 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
+import static java.math.RoundingMode.FLOOR;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -22,13 +24,18 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
-			return number + subtrahend.intValue();
+		protected long flooredLong() {
+			return (long) number;
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
-			return number - subtrahend.intValue();
+		public Number add(Number subtrahend) {
+			return ((int) number + subtrahend.intValue());
+		}
+
+		@Override
+		public Number sub(Number subtrahend) {
+			return ((int) number - subtrahend.intValue());
 		}
 
 		@Override
@@ -58,13 +65,18 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
-			return number + subtrahend.longValue();
+		protected long flooredLong() {
+			return (long) number;
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
-			return number - subtrahend.longValue();
+		public Number add(Number subtrahend) {
+			return ((long) number + subtrahend.longValue());
+		}
+
+		@Override
+		public Number sub(Number subtrahend) {
+			return ((long) number - subtrahend.longValue());
 		}
 
 		@Override
@@ -94,13 +106,18 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
-			return (short) number + subtrahend.shortValue();
+		protected long flooredLong() {
+			return (long) number;
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
-			return (short) number - subtrahend.shortValue();
+		public Number add(Number subtrahend) {
+			return (short) (number + subtrahend.shortValue());
+		}
+
+		@Override
+		public Number sub(Number subtrahend) {
+			return (short) (number - subtrahend.shortValue());
 		}
 
 		@Override
@@ -126,17 +143,22 @@ public abstract class NumberWrapper {
 
 		@Override
 		protected Number value() {
-			return (byte) number;
+			return number;
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
-			return (byte) number + subtrahend.shortValue();
+		protected long flooredLong() {
+			return (long) number;
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
-			return (byte) number - subtrahend.shortValue();
+		public Number add(Number subtrahend) {
+			return (byte) (number + subtrahend.byteValue());
+		}
+
+		@Override
+		public Number sub(Number subtrahend) {
+			return (byte) (number - subtrahend.byteValue());
 		}
 
 		@Override
@@ -166,12 +188,17 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
+		protected long flooredLong() {
+			return number.setScale(0, FLOOR).longValue();
+		}
+
+		@Override
+		public Number add(Number subtrahend) {
 			return number.add(new BigDecimal(String.valueOf(subtrahend)));
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
+		public Number sub(Number subtrahend) {
 			return number.subtract(new BigDecimal(String.valueOf(subtrahend)));
 		}
 
@@ -202,12 +229,17 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
-		public Object add(Number subtrahend) {
+		protected long flooredLong() {
+			return number.longValue();
+		}
+
+		@Override
+		public Number add(Number subtrahend) {
 			return number.add(new BigInteger(String.valueOf(subtrahend)));
 		}
 
 		@Override
-		public Object sub(Number subtrahend) {
+		public Number sub(Number subtrahend) {
 			return number.subtract(new BigInteger(String.valueOf(subtrahend)));
 		}
 
@@ -252,9 +284,11 @@ public abstract class NumberWrapper {
 
 	protected abstract Number value();
 
-	protected abstract Object add(Number summand);
+	protected abstract long flooredLong();
 
-	public abstract Object sub(Number subtrahend);
+	protected abstract Number add(Number summand);
+
+	public abstract Number sub(Number subtrahend);
 
 	protected abstract boolean isMin();
 
