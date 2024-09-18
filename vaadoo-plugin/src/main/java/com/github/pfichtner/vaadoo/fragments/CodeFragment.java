@@ -15,46 +15,46 @@ import jakarta.validation.constraints.Null;
 
 public interface CodeFragment {
 
-	void nullCheck(Null nill, Object ref);
+	void verify(Null nill, Object ref);
 
-	void notNullCheck(NotNull notNull, Object ref);
+	void verify(NotNull notNull, Object ref);
 
-	void notBlankCheck(NotBlank notBlank, CharSequence charSequence);
+	void verify(NotBlank notBlank, CharSequence charSequence);
 
-	void notEmpty(NotEmpty notEmpty, CharSequence charSequence);
+	void verify(NotEmpty notEmpty, CharSequence charSequence);
 
-	void notEmpty(NotEmpty notEmpty, Collection<?> collection);
+	void verify(NotEmpty notEmpty, Collection<?> collection);
 
-	void notEmpty(NotEmpty notEmpty, Map<?, ?> map);
+	void verify(NotEmpty notEmpty, Map<?, ?> map);
 
-	void notEmpty(NotEmpty notEmpty, Object[] objects);
+	void verify(NotEmpty notEmpty, Object[] objects);
 
-	void assertTrue(AssertTrue assertTrue, boolean value);
+	void verify(AssertTrue assertTrue, boolean value);
 
-	void assertTrue(AssertTrue assertTrue, Boolean value);
+	void verify(AssertTrue assertTrue, Boolean value);
 
-	void assertFalse(AssertFalse assertFalse, boolean value);
+	void verify(AssertFalse assertFalse, boolean value);
 
-	void assertFalse(AssertFalse assertFalse, Boolean value);
+	void verify(AssertFalse assertFalse, Boolean value);
 
-	void min(Min min, byte value);
+	void verify(Min min, byte value);
 
-	void min(Min min, short value);
+	void verify(Min min, short value);
 
-	void min(Min min, int value);
+	void verify(Min min, int value);
 
-	void min(Min min, long value);
+	void verify(Min min, long value);
 
-	void min(Min min, Byte value);
+	void verify(Min min, Byte value);
 
-	void min(Min min, Short value);
+	void verify(Min min, Short value);
 
-	void min(Min min, Integer value);
+	void verify(Min min, Integer value);
 
-	void min(Min min, Long value);
+	void verify(Min min, Long value);
 
-	void min(Min min, BigInteger value);
+	void verify(Min min, BigInteger value);
 
-	void min(Min min, BigDecimal value);
+	void verify(Min min, BigDecimal value);
 
 }
