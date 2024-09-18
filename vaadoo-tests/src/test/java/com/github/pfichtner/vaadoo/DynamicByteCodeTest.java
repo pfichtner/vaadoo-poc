@@ -11,6 +11,7 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.NUMBERS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static java.util.UUID.randomUUID;
@@ -25,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 import com.github.pfichtner.vaadoo.supplier.CharSequences;
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
+import com.github.pfichtner.vaadoo.supplier.TypeAndExample;
 import com.google.common.base.Supplier;
 
 import jakarta.validation.constraints.AssertFalse;
@@ -55,10 +56,8 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader.PersistenceHandler;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
 import net.jqwik.api.Assume;
-import net.jqwik.api.Disabled;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
-import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.constraints.WithNull;
 
 /**
@@ -74,7 +73,7 @@ class DynamicByteCodeTest {
 		}
 
 		public static Config config() {
-			return new Config(Collections.emptyList());
+			return new Config(emptyList());
 		}
 
 		public Config withEntry(ConfigEntry newEntry) {
@@ -119,10 +118,10 @@ class DynamicByteCodeTest {
 	@Property
 	void nullOks( //
 			@ForAll(supplier = Classes.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		Object nullValue = null;
-		var config = randomConfigWith(entry(tuple.get1(), "param", nullValue).withAnno(Null.class));
+		var config = randomConfigWith(entry(tuple.type(), "param", nullValue).withAnno(Null.class));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -130,10 +129,10 @@ class DynamicByteCodeTest {
 	@Property
 	void nullNoks( //
 			@ForAll(supplier = Classes.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		var parameterName = "param";
-		var config = randomConfigWith(entry(tuple.get1(), parameterName, tuple.get2()).withAnno(Null.class));
+		var config = randomConfigWith(entry(tuple.type(), parameterName, tuple.example()).withAnno(Null.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " expected to be null", IllegalArgumentException.class);
 	}
@@ -141,10 +140,10 @@ class DynamicByteCodeTest {
 	@Property
 	void notnullOks( //
 			@ForAll(supplier = Classes.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		var parameterName = "param";
-		var config = randomConfigWith(entry(tuple.get1(), parameterName, null).withAnno(NotNull.class));
+		var config = randomConfigWith(entry(tuple.type(), parameterName, null).withAnno(NotNull.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must not be null", NullPointerException.class);
 	}
@@ -152,9 +151,9 @@ class DynamicByteCodeTest {
 	@Property
 	void notnullNoks( //
 			@ForAll(supplier = Classes.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
-		var config = randomConfigWith(entry(tuple.get1(), "param", tuple.get2()).withAnno(NotNull.class));
+		var config = randomConfigWith(entry(tuple.type(), "param", tuple.example()).withAnno(NotNull.class));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -163,7 +162,7 @@ class DynamicByteCodeTest {
 	void assertTruesPrimitives( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types(boolean.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		assertTrues(tuple);
 	}
@@ -172,16 +171,16 @@ class DynamicByteCodeTest {
 	void assertTruesWrappers( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		assertTrues(tuple);
 	}
 
-	private void assertTrues(Tuple2<Class<Object>, Object> tuple) throws Exception {
+	private void assertTrues(TypeAndExample tuple) throws Exception {
 		var parameterName = "param";
-		var value = (boolean) tuple.get2();
+		var value = (boolean) tuple.example();
 		var config = randomConfigWith(
-				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
+				entry(casted(tuple.type(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
 		var transformed = transform(dynamicClass(config));
 
 		var execResult = provideExecException(transformed, config);
@@ -196,7 +195,7 @@ class DynamicByteCodeTest {
 	void assertFalsesPrimitives( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types(boolean.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		assertFalses(tuple);
 	}
@@ -205,16 +204,16 @@ class DynamicByteCodeTest {
 	void assertFalsesWrappers( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = WRAPPERS, ofType = Boolean.class) //
-			Tuple2<Class<Object>, Object> tuple) //
+			TypeAndExample tuple) //
 			throws Exception {
 		assertFalses(tuple);
 	}
 
-	private void assertFalses(Tuple2<Class<Object>, Object> tuple) throws Exception {
+	private void assertFalses(TypeAndExample tuple) throws Exception {
 		var parameterName = "param";
-		var value = (boolean) tuple.get2();
+		var value = (boolean) tuple.example();
 		var config = randomConfigWith(
-				entry(casted(tuple.get1(), Boolean.class), parameterName, value).withAnno(AssertFalse.class));
+				entry(casted(tuple.type(), Boolean.class), parameterName, value).withAnno(AssertFalse.class));
 		var transformed = transform(dynamicClass(config));
 
 		var execResult = provideExecException(transformed, config);
@@ -229,12 +228,12 @@ class DynamicByteCodeTest {
 	void notBlankOks( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(CHARSEQUENCES) //
-			Tuple2<Class<Object>, Object> tuple, //
+			TypeAndExample tuple, //
 			@ForAll(supplier = CharSequences.class) //
 			@CharSequences.Types(NON_BLANKS) //
 			CharSequence nonBlank //
 	) throws Exception {
-		var config = config().withEntry(entry(tuple.get1(), "param", nonBlank).withAnno(NotBlank.class));
+		var config = randomConfigWith(entry(tuple.type(), "param", nonBlank).withAnno(NotBlank.class));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -243,7 +242,7 @@ class DynamicByteCodeTest {
 	void notBlankNoks( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(CHARSEQUENCES) //
-			Tuple2<Class<Object>, Object> tuple, //
+			TypeAndExample tuple, //
 			@WithNull //
 			@ForAll(supplier = CharSequences.class) //
 			@CharSequences.Types(BLANKS) //
@@ -251,8 +250,8 @@ class DynamicByteCodeTest {
 	) throws Exception {
 		var parameterName = "param";
 		boolean stringIsNull = blank == null;
-		var config = config().withEntry(
-				entry(casted(tuple.get1(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
+		var config = randomConfigWith(
+				entry(casted(tuple.type(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, //
 				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
@@ -263,10 +262,10 @@ class DynamicByteCodeTest {
 	void notEmptyOks( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) //
-			Tuple2<Class<Object>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
-		var config = config()
-				.withEntry(entry(tuple.get1(), "param", convertValue(tuple.get2(), false)).withAnno(NotEmpty.class));
+		var config = randomConfigWith(
+				entry(tuple.type(), "param", convertValue(tuple.example(), false)).withAnno(NotEmpty.class));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -275,11 +274,11 @@ class DynamicByteCodeTest {
 	void notEmptyNoks( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS, ARRAYS }) //
-			Tuple2<Class<Object>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var config = config().withEntry(
-				entry(tuple.get1(), parameterName, convertValue(tuple.get2(), true)).withAnno(NotEmpty.class));
+		var config = randomConfigWith(
+				entry(tuple.type(), parameterName, convertValue(tuple.example(), true)).withAnno(NotEmpty.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must not be empty", IllegalArgumentException.class);
 	}
@@ -288,14 +287,14 @@ class DynamicByteCodeTest {
 	void minValuesValueLowerThanMin( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 		Assume.that(!value.isMin());
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
@@ -306,13 +305,13 @@ class DynamicByteCodeTest {
 	void minValuesValueEqualMinPrimitives( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -322,17 +321,17 @@ class DynamicByteCodeTest {
 	void minValuesValueLowerThanMinObjects( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 		Assume.that(!value.isMin());
 
 		Number sub = value.sub(1);
 		Assume.that(!upperBoundOutOfLongRange(sub));
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(
+		var config = randomConfigWith(
 				entry(value.type(), parameterName, sub).withAnno(Min.class, Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
@@ -343,14 +342,14 @@ class DynamicByteCodeTest {
 	void minValuesValueEqualMinObjects( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 		Assume.that(!lowerBoundOutOfLongRange(value.value()));
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -360,49 +359,32 @@ class DynamicByteCodeTest {
 	void minValuesValueNullObjectsAreOk( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		Object nullValue = null;
+		var value = numberWrapper(tuple.type(), tuple.example());
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(
-				entry(value.type(), parameterName, null).withAnno(Min.class, Map.of("value", value.flooredLong())));
+		var config = randomConfigWith(entry(value.type(), parameterName, nullValue).withAnno(Min.class,
+				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
-	}
-
-	private boolean lowerBoundOutOfLongRange(Number value) {
-		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MIN_VALUE)) < 0;
-	}
-
-	private boolean upperBoundOutOfLongRange(Number value) {
-		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MAX_VALUE)) > 0;
 	}
 
 	@Property
 	void minValuesValueGreaterThanMinObjects( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 		Assume.that(!value.isMax());
 		Assume.that(!lowerBoundOutOfLongRange(value.value()));
 
-		// TODO Do we need this code segment?
-//		Number max = value.value().longValue();
-//		if ((max instanceof BigDecimal bd && bd.compareTo(new BigDecimal(Long.MAX_VALUE)) > 0)
-//				|| (max instanceof BigInteger bi && bi.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0)) {
-//			max = Long.MAX_VALUE;
-//		} else if ((max instanceof BigDecimal bd && bd.compareTo(new BigDecimal(Long.MIN_VALUE)) < 0)
-//				|| (max instanceof BigInteger bi && bi.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0)) {
-//			max = Long.MIN_VALUE;
-//		}
-
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -412,17 +394,25 @@ class DynamicByteCodeTest {
 	void minValuesValueGreaterThanMin( //
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
-			Tuple2<Class<?>, Object> tuple //
+			TypeAndExample tuple //
 	) throws Exception {
 		var parameterName = "param";
-		var value = numberWrapper(tuple.get1(), tuple.get2());
+		var value = numberWrapper(tuple.type(), tuple.example());
 		Assume.that(!value.isMax());
 
 		@SuppressWarnings("unchecked")
-		var config = config().withEntry(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
+	}
+
+	static boolean lowerBoundOutOfLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MIN_VALUE)) < 0;
+	}
+
+	static boolean upperBoundOutOfLongRange(Number value) {
+		return new BigDecimal(value.toString()).compareTo(new BigDecimal(Long.MAX_VALUE)) > 0;
 	}
 
 	private Config randomConfigWith(ConfigEntry entry) {

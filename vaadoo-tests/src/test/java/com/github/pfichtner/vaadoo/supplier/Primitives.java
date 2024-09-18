@@ -11,11 +11,9 @@ import java.util.Set;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ArbitrarySupplier;
-import net.jqwik.api.Tuple;
-import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.providers.TypeUsage;
 
-public class Primitives implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
+public class Primitives implements ArbitrarySupplier<TypeAndExample> {
 
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
@@ -35,18 +33,18 @@ public class Primitives implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	);
 
 	@Override
-	public Arbitrary<Tuple2<Class<?>, Object>> get() {
+	public Arbitrary<TypeAndExample> get() {
 		return arbitrariesFor(suppliers.keySet());
 	}
 
 	@Override
-	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
+	public Arbitrary<TypeAndExample> supplyFor(TypeUsage targetType) {
 		return arbitrariesFor(targetType.findAnnotation(Types.class) //
 				.map(Types::value).map(Set::of) //
 				.orElseGet(suppliers::keySet));
 	}
 
-	private Arbitrary<Tuple2<Class<?>, Object>> arbitrariesFor(Set<Class<?>> classses) {
-		return Arbitraries.of(classses).flatMap(c -> suppliers.get(c).map(t -> Tuple.of(c, t)));
+	private Arbitrary<TypeAndExample> arbitrariesFor(Set<Class<?>> classses) {
+		return Arbitraries.of(classses).flatMap(c -> suppliers.get(c).map(t -> new TypeAndExample(c, t)));
 	}
 }

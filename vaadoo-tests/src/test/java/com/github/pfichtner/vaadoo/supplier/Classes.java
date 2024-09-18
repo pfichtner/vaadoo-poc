@@ -33,11 +33,9 @@ import java.util.function.Predicate;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.ArbitrarySupplier;
-import net.jqwik.api.Tuple;
-import net.jqwik.api.Tuple.Tuple2;
 import net.jqwik.api.providers.TypeUsage;
 
-public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
+public class Classes implements ArbitrarySupplier<TypeAndExample> {
 
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
@@ -91,13 +89,13 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 	}
 
 	@Override
-	public Arbitrary<Tuple2<Class<?>, Object>> get() {
+	public Arbitrary<TypeAndExample> get() {
 		var allowed = allClasses(allOf(SubTypes.class)).stream().toList();
 		return arbitraries(allowed);
 	}
 
 	@Override
-	public Arbitrary<Tuple2<Class<?>, Object>> supplyFor(TypeUsage targetType) {
+	public Arbitrary<TypeAndExample> supplyFor(TypeUsage targetType) {
 		var annotation = targetType.findAnnotation(Types.class);
 		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).orElseGet(() -> allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
@@ -112,8 +110,8 @@ public class Classes implements ArbitrarySupplier<Tuple2<Class<?>, Object>> {
 		return only.isEmpty() ? c -> true : only::contains;
 	}
 
-	private static Arbitrary<Tuple2<Class<?>, Object>> arbitraries(Collection<Class<?>> allowed) {
-		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> Tuple.of(c, t)));
+	private static Arbitrary<TypeAndExample> arbitraries(Collection<Class<?>> allowed) {
+		return Arbitraries.of(allowed).flatMap(c -> supplierFor(c, allowed).map(t -> new TypeAndExample(c, t)));
 	}
 
 	private boolean isSubtypeOfOneOf(Class<?> c, Collection<Class<?>> allowedSuperTypes) {
