@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Preconditions;
-
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
@@ -31,7 +29,7 @@ public class SomeClass {
 	private final Boolean someFalseValueWrapper;
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	private final Long someLongWrapperValueThatIsMinimal42;
-	private final Short someLongWrapperValueThatIsNotNullAndMinimal42;
+	private final Short someShortWrapperValueThatIsNotNullAndMinimal42;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
@@ -49,7 +47,7 @@ public class SomeClass {
 			@AssertFalse Boolean someFalseValueWrapper, //
 			@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-			@NotNull @Min(42) Short someLongWrapperValueThatIsNotNullAndMinimal42) {
+			@NotNull @Min(42) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
 		this.someNullObject = someNullObject;
 		this.someObject = someObject;
 		this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -65,7 +63,7 @@ public class SomeClass {
 		this.someFalseValueWrapper = someFalseValueWrapper;
 		this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
 		this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
-		this.someLongWrapperValueThatIsNotNullAndMinimal42 = someLongWrapperValueThatIsNotNullAndMinimal42;
+		this.someShortWrapperValueThatIsNotNullAndMinimal42 = someShortWrapperValueThatIsNotNullAndMinimal42;
 	}
 
 	public static void main(String[] args) {

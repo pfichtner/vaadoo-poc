@@ -11,43 +11,44 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import lombok.Builder;
+import lombok.Value;
 
 @Builder
-//@FieldDefaults(level = AccessLevel.PRIVATE)
+@Value
 public class SomeLombokClass {
 
 	@Null
 	Object someNullObject;
 	@NotNull
-	private final Object someObject;
-	private final String valueWithoutAnnotation;
+	Object someObject;
+	String valueWithoutAnnotation;
 	@NotEmpty
-	private final CharSequence someNotEmptyCharSequence;
+	CharSequence someNotEmptyCharSequence;
 	@NotEmpty
-	private final String someNotEmptyString;
+	String someNotEmptyString;
 	@NotEmpty
-	private final Collection<String> someNotEmptyCollection;
+	Collection<String> someNotEmptyCollection;
 	@NotEmpty
-	private final Map<Integer, String> someNotEmptyMap;
+	Map<Integer, String> someNotEmptyMap;
 	@NotEmpty
-	private final Integer[] someNotEmptyArray;
+	Integer[] someNotEmptyArray;
 	@NotBlank
-	private final CharSequence someNonBlankValue;
+	CharSequence someNonBlankValue;
 	@AssertTrue
-	private final boolean someTrueValue;
+	boolean someTrueValue;
 	@AssertFalse
-	private final boolean someFalseValue;
+	boolean someFalseValue;
 	@AssertTrue
-	private final Boolean someTrueValueWrapper;
+	Boolean someTrueValueWrapper;
 	@AssertFalse
-	private final Boolean someFalseValueWrapper;
+	Boolean someFalseValueWrapper;
 	@Min(42)
-	private final int someIntPrimitiveValueThatIsMinimal42;
+	int someIntPrimitiveValueThatIsMinimal42;
 	@Min(42)
 	Long someLongWrapperValueThatIsMinimal42;
 	@NotNull
 	@Min(42)
-	Short someLongWrapperValueThatIsNotNullAndMinimal42;
+	Short someShortWrapperValueThatIsNotNullAndMinimal42;
 
 	public static void main(String[] args) {
 		System.out.println(SomeLombokClass.builder().someObject("isNotNull").someNonBlankValue("").build());

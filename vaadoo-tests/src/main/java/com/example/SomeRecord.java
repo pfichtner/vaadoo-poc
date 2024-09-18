@@ -28,7 +28,7 @@ public record SomeRecord( //
 		@AssertFalse Boolean someFalseValueWrapper, //
 		@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 		@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-		@NotNull @Min(42) Short someLongWrapperValueThatIsNotNullAndMinimal42) {
+		@NotNull @Min(42) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
 
 	public static void main(String[] args) {
 		System.out.println(
