@@ -9,10 +9,11 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.randomConfigWith;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.transform;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
+import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
-import com.github.pfichtner.vaadoo.supplier.Primitives;
 import com.github.pfichtner.vaadoo.supplier.Example;
+import com.github.pfichtner.vaadoo.supplier.Primitives;
 
 import jakarta.validation.constraints.AssertFalse;
 import net.jqwik.api.ForAll;
@@ -31,6 +32,17 @@ class AssertFalseTest {
 			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Example example)
 			throws Exception {
 		test(example);
+	}
+
+	@Property
+	void nullObjectIsOk(
+			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Example example)
+			throws Exception {
+		var parameterName = "param";
+		var config = randomConfigWith(
+				entry(Boolean.class, parameterName, (Boolean) nullValue()).withAnno(AssertFalse.class));
+		var transformed = transform(dynamicClass(config));
+		assertNoException(config, transformed);
 	}
 
 	private static void test(Example example) throws Exception {

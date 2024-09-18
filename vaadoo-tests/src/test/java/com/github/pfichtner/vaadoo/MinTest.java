@@ -93,7 +93,7 @@ class MinTest {
 	}
 
 	@Property
-	void nullObjectValueIsOk( //
+	void nullObjectIsOk( //
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(value = NUMBERS) //
 			Example example //

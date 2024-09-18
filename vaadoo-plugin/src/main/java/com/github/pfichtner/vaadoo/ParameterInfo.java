@@ -52,6 +52,38 @@ class ParameterInfo {
 		return type().equals(other);
 	}
 
+	public Class<?> classtype() {
+		try {
+			switch (type.getSort()) {
+			case Type.BOOLEAN:
+				return boolean.class;
+			case Type.CHAR:
+				return char.class;
+			case Type.BYTE:
+				return byte.class;
+			case Type.SHORT:
+				return short.class;
+			case Type.INT:
+				return int.class;
+			case Type.FLOAT:
+				return float.class;
+			case Type.LONG:
+				return long.class;
+			case Type.DOUBLE:
+				return double.class;
+			case Type.VOID:
+				return void.class;
+			case Type.ARRAY:
+			case Type.OBJECT:
+				return Class.forName(type.getClassName());
+			default:
+				throw new IllegalArgumentException("Unknown type: " + type);
+			}
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public boolean isArray() {
 		return type.getSort() == ARRAY;
 	}

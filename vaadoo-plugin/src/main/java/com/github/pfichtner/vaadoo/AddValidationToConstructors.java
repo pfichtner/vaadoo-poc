@@ -10,9 +10,13 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.github.pfichtner.vaadoo.fragments.CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -37,10 +41,10 @@ import net.bytebuddy.pool.TypePool;
 
 public class AddValidationToConstructors implements AsmVisitorWrapper {
 
-	private final CodeEmitter codeEmitter;
+	private final Class<? extends CodeFragment> codeFragment;
 
-	public AddValidationToConstructors(CodeEmitter codeEmitter) {
-		this.codeEmitter = codeEmitter;
+	public AddValidationToConstructors(Class<? extends CodeFragment> codeFragment) {
+		this.codeFragment = codeFragment;
 	}
 
 	@Override
@@ -98,30 +102,38 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameterInfos) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
+				MethodInjector methodInjector = new MethodInjector(codeFragment);
 				for (ParameterInfo parameter : parameterInfos.values()) {
 					for (String annotation : parameter.getAnnotations()) {
-						if (annotation.equals(Type.getDescriptor(NotNull.class))) {
-							codeEmitter.addNotNullCheck(mv, parameter);
-						} else if (annotation.equals(Type.getDescriptor(Null.class))) {
-							codeEmitter.addNullCheck(mv, parameter);
+						if (annotation.equals(Type.getDescriptor(Null.class))) {
+							methodInjector.injectCode(mv, parameter, "nullCheck", Null.class, Object.class);
+						} else if (annotation.equals(Type.getDescriptor(NotNull.class))) {
+							methodInjector.injectCode(mv, parameter, "notNullCheck", NotNull.class, Object.class);
 						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
 							// TODO check if type is CharSequence
-							codeEmitter.addNotNullCheck(mv, parameter);
-							codeEmitter.addNotBlankCheck(mv, parameter);
+							methodInjector.injectCode(mv, parameter, "notBlankCheck", NotBlank.class,
+									CharSequence.class);
 						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
 							// TODO check if type is CharSequence/Collection/Map/Array
-							codeEmitter.addNotNullCheck(mv, parameter);
-							codeEmitter.addNotEmptyCheck(mv, parameter);
+							if (parameter.isArray()) {
+								methodInjector.injectCode(mv, parameter, "notEmpty", NotEmpty.class, Object[].class);
+							} else {
+								var superType = superType(loadClass(parameter.classname()), NotEmpty.class,
+										CharSequence.class, Collection.class, Map.class);
+								methodInjector.injectCode(mv, parameter, "notEmpty", NotEmpty.class, superType);
+							}
 						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
 							// TODO check if type is boolean/Boolean
-							codeEmitter.addIsTrueCheck(mv, parameter);
+							methodInjector.injectCode(mv, parameter, "assertTrue", AssertTrue.class,
+									parameter.classtype());
 						} else if (annotation.equals(Type.getDescriptor(AssertFalse.class))) {
 							// TODO check if type is boolean/Boolean
-							codeEmitter.addIsFalseCheck(mv, parameter);
+							methodInjector.injectCode(mv, parameter, "assertFalse", AssertFalse.class,
+									parameter.classtype());
 						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
 							// TODO check if type is BigDecimal, BigInteger, byte, short, int, long and
 							// their respective wrappers
-							codeEmitter.addMinCheck(mv, parameter);
+							methodInjector.injectCode(mv, parameter, "min", Min.class, parameter.classtype());
 						}
 					}
 				}
@@ -129,6 +141,19 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				mv.visitInsn(RETURN);
 				mv.visitMaxs(parameterInfos.entrySet().size(), parameterInfos.entrySet().size());
 				mv.visitEnd();
+			}
+
+			@SafeVarargs
+			private Class<?> superType(Class<?> classToCheck, Class<?>... superTypes) {
+				return Arrays.stream(superTypes).filter(t -> t.isAssignableFrom(classToCheck)).findFirst().orElse(null);
+			}
+
+			private Class<?> loadClass(String className) {
+				try {
+					return Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					throw new RuntimeException(e);
+				}
 			}
 
 		};
