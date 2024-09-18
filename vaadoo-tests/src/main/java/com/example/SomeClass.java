@@ -31,6 +31,7 @@ public class SomeClass {
 	private final Boolean someFalseValueWrapper;
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	private final Long someLongWrapperValueThatIsMinimal42;
+	private final Short someLongWrapperValueThatIsNotNullAndMinimal42;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
@@ -47,7 +48,8 @@ public class SomeClass {
 			@AssertTrue Boolean someTrueValueWrapper, //
 			@AssertFalse Boolean someFalseValueWrapper, //
 			@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
-			@Min(42) Long someLongWrapperValueThatIsMinimal42) {
+			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
+			@NotNull @Min(42) Short someLongWrapperValueThatIsNotNullAndMinimal42) {
 		this.someNullObject = someNullObject;
 		this.someObject = someObject;
 		this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -63,11 +65,12 @@ public class SomeClass {
 		this.someFalseValueWrapper = someFalseValueWrapper;
 		this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
 		this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
+		this.someLongWrapperValueThatIsNotNullAndMinimal42 = someLongWrapperValueThatIsNotNullAndMinimal42;
 	}
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L));
+				true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }

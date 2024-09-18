@@ -29,9 +29,10 @@ public class SomeClass {
    private final Boolean someFalseValueWrapper;
    private final int someIntPrimitiveValueThatIsMinimal42;
    private final Long someLongWrapperValueThatIsMinimal42;
+   private final Short someLongWrapperValueThatIsNotNullAndMinimal42;
 
-   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42) {
-      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42);
+   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) Short someLongWrapperValueThatIsNotNullAndMinimal42) {
+      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someLongWrapperValueThatIsNotNullAndMinimal42);
       this.someNullObject = someNullObject;
       this.someObject = someObject;
       this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -47,13 +48,14 @@ public class SomeClass {
       this.someFalseValueWrapper = someFalseValueWrapper;
       this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
       this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
+      this.someLongWrapperValueThatIsNotNullAndMinimal42 = someLongWrapperValueThatIsNotNullAndMinimal42;
    }
 
    public static void main(String[] args) {
-      System.out.println(new SomeClass((Object)null, "isNotNull", (String)null, (CharSequence)null, (String)null, List.of(), Map.of(), new Integer[0], "", true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L));
+      System.out.println(new SomeClass((Object)null, "isNotNull", (String)null, (CharSequence)null, (String)null, List.of(), Map.of(), new Integer[0], "", true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L, Short.valueOf((short)42)));
    }
 
-   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, boolean var9, boolean var10, Boolean var11, Boolean var12, int var13, Long var14) {
+   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, boolean var9, boolean var10, Boolean var11, Boolean var12, int var13, Long var14, Short var15) {
       Preconditions.checkArgument(var0 == null, "someNullObject expected to be null");
       Preconditions.checkNotNull(var1, "someObject must not be null");
       Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be null");
@@ -73,6 +75,8 @@ public class SomeClass {
       Preconditions.checkArgument(Boolean.TRUE.equals(var11), "someTrueValueWrapper should be true");
       Preconditions.checkArgument(Boolean.FALSE.equals(var12), "someFalseValueWrapper should be false");
       Preconditions.checkArgument((long)var13 >= 42L, "someIntPrimitiveValueThatIsMinimal42 should be >= 42");
-      Preconditions.checkArgument(var14.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 should be >= 42");
+      Preconditions.checkArgument(var14 == null || var14.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 should be >= 42");
+      Preconditions.checkNotNull(var15, "someLongWrapperValueThatIsNotNullAndMinimal42 must not be null");
+      Preconditions.checkArgument(var15 == null || var15.longValue() >= 42L, "someLongWrapperValueThatIsNotNullAndMinimal42 should be >= 42");
    }
 }

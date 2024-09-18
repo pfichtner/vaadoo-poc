@@ -98,30 +98,31 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameterInfos) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
-
 				for (ParameterInfo parameter : parameterInfos.values()) {
-					if (parameter.hasAnnotation(Type.getDescriptor(NotNull.class))) {
-						codeEmitter.addNotNullCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(Null.class))) {
-						codeEmitter.addNullCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(NotBlank.class))) {
-						// TODO check if type is CharSequence
-						codeEmitter.addNotNullCheck(mv, parameter);
-						codeEmitter.addNotBlankCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(NotEmpty.class))) {
-						// TODO check if type is CharSequence/Collection/Map/Array
-						codeEmitter.addNotNullCheck(mv, parameter);
-						codeEmitter.addNotEmptyCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(AssertTrue.class))) {
-						// TODO check if type is boolean/Boolean
-						codeEmitter.addIsTrueCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(AssertFalse.class))) {
-						// TODO check if type is boolean/Boolean
-						codeEmitter.addIsFalseCheck(mv, parameter);
-					} else if (parameter.hasAnnotation(Type.getDescriptor(Min.class))) {
-						// TODO check if type is BigDecimal, BigInteger, byte, short, int, long and
-						// their respective wrappers
-						codeEmitter.addMinCheck(mv, parameter);
+					for (String annotation : parameter.getAnnotations()) {
+						if (annotation.equals(Type.getDescriptor(NotNull.class))) {
+							codeEmitter.addNotNullCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(Null.class))) {
+							codeEmitter.addNullCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
+							// TODO check if type is CharSequence
+							codeEmitter.addNotNullCheck(mv, parameter);
+							codeEmitter.addNotBlankCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
+							// TODO check if type is CharSequence/Collection/Map/Array
+							codeEmitter.addNotNullCheck(mv, parameter);
+							codeEmitter.addNotEmptyCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
+							// TODO check if type is boolean/Boolean
+							codeEmitter.addIsTrueCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(AssertFalse.class))) {
+							// TODO check if type is boolean/Boolean
+							codeEmitter.addIsFalseCheck(mv, parameter);
+						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
+							// TODO check if type is BigDecimal, BigInteger, byte, short, int, long and
+							// their respective wrappers
+							codeEmitter.addMinCheck(mv, parameter);
+						}
 					}
 				}
 

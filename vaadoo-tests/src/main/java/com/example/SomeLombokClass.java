@@ -45,6 +45,9 @@ public class SomeLombokClass {
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	@Min(42)
 	Long someLongWrapperValueThatIsMinimal42;
+	@NotNull
+	@Min(42)
+	Short someLongWrapperValueThatIsNotNullAndMinimal42;
 
 	public static void main(String[] args) {
 		System.out.println(SomeLombokClass.builder().someObject("isNotNull").someNonBlankValue("").build());

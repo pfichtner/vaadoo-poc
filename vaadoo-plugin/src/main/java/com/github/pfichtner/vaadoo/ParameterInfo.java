@@ -64,8 +64,8 @@ class ParameterInfo {
 		annotations.add(descriptor);
 	}
 
-	public boolean hasAnnotation(String descriptor) {
-		return annotations.contains(descriptor);
+	public List<String> getAnnotations() {
+		return annotations;
 	}
 
 	public void addAnnotationValue(String key, Object value) {
