@@ -2,8 +2,8 @@ package com.github.pfichtner.vaadoo;
 
 import java.io.IOException;
 
-import com.github.pfichtner.vaadoo.fragments.GuavaCodeFragment;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
+import com.github.pfichtner.vaadoo.fragments.impl.GuavaCodeFragment;
 
 import net.bytebuddy.build.Plugin;
 import net.bytebuddy.description.type.TypeDescription;
