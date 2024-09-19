@@ -1,6 +1,5 @@
 package com.example;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -65,8 +64,8 @@ public class SomeClass {
       Preconditions.checkArgument(((Collection)Preconditions.checkNotNull(var5, "someNotEmptyCollection must not be empty")).size() > 0, "someNotEmptyCollection must not be empty");
       Preconditions.checkArgument(((Map)Preconditions.checkNotNull(var6, "someNotEmptyMap must not be empty")).size() > 0, "someNotEmptyMap must not be empty");
       Preconditions.checkArgument(((Object[])Preconditions.checkNotNull(var7, "someNotEmptyArray must not be empty")).length > 0, "someNotEmptyArray must not be empty");
-      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn((CharSequence)Preconditions.checkNotNull(var8, "someNonBlankValue must not be blank")) > 0, "someNonBlankValue must not be blank");
-      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn((CharSequence)Preconditions.checkNotNull(var9, "my custom message")) > 0, "my custom message");
+      Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var8, "someNonBlankValue must not be blank")).toString().trim().length() > 0, "someNonBlankValue must not be blank");
+      Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var9, "my custom message")).toString().trim().length() > 0, "my custom message");
       Preconditions.checkArgument(var10, "someTrueValue should be true");
       Preconditions.checkArgument(!var11, "someFalseValue should be false");
       Preconditions.checkArgument(var12 == null || var12.booleanValue(), "someTrueValueWrapper should be true");

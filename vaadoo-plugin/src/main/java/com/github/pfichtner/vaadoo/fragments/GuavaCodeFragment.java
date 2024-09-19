@@ -1,6 +1,5 @@
 package com.github.pfichtner.vaadoo.fragments;
 
-import static com.google.common.base.CharMatcher.whitespace;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,7 +30,7 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(NotBlank notBlank, CharSequence charSequence) {
-		checkArgument(whitespace().negate().countIn(checkNotNull(charSequence, notBlank.message())) > 0,
+		checkArgument(checkNotNull(charSequence, notBlank.message()).toString().trim().length() > 0,
 				notBlank.message());
 	}
 
