@@ -11,6 +11,8 @@ import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.NON_BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
 
+import java.util.Map;
+
 import com.github.pfichtner.vaadoo.supplier.CharSequences;
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Example;
@@ -52,7 +54,24 @@ class NotBlankTest {
 				entry(casted(example.type(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, //
-				parameterName + " must not be " + (stringIsNull ? "null" : "blank"),
+				parameterName + " must not be blank",
+				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
+	}
+
+	@Property
+	void customMessage(@ForAll(supplier = Classes.class) //
+	@Classes.Types(CHARSEQUENCES) //
+	Example example, //
+			@WithNull //
+			@ForAll(supplier = CharSequences.class) //
+			@CharSequences.Types(BLANKS) //
+			CharSequence blank, //
+			@ForAll String message) throws Exception {
+		boolean stringIsNull = blank == null;
+		var config = randomConfigWith(
+				entry(example.type(), "param", blank).withAnno(NotBlank.class, Map.of("message", message)));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, message,
 				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
 	}
 

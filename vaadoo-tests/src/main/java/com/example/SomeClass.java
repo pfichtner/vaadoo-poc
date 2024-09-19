@@ -30,6 +30,7 @@ public class SomeClass {
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	private final Long someLongWrapperValueThatIsMinimal42;
 	private final Short someShortWrapperValueThatIsNotNullAndMinimal42;
+	private @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
@@ -41,6 +42,7 @@ public class SomeClass {
 			@NotEmpty Map<Integer, String> someNotEmptyMap, //
 			@NotEmpty Integer[] someNotEmptyArray, //
 			@NotBlank CharSequence someNonBlankValue, //
+			@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
 			@AssertTrue boolean someTrueValue, //
 			@AssertFalse boolean someFalseValue, //
 			@AssertTrue Boolean someTrueValueWrapper, //
@@ -57,6 +59,7 @@ public class SomeClass {
 		this.someNotEmptyMap = someNotEmptyMap;
 		this.someNotEmptyArray = someNotEmptyArray;
 		this.someNonBlankValue = someNonBlankValue;
+		this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
 		this.someTrueValue = someTrueValue;
 		this.someFalseValue = someFalseValue;
 		this.someTrueValueWrapper = someTrueValueWrapper;
@@ -68,7 +71,7 @@ public class SomeClass {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
+				"", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }

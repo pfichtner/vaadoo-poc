@@ -93,11 +93,8 @@ class MinTest {
 	}
 
 	@Property
-	void nullObjectIsOk( //
-			@ForAll(supplier = Classes.class) //
-			@Classes.Types(value = NUMBERS) //
-			Example example //
-	) throws Exception {
+	void nullObjectIsOk(@ForAll(supplier = Classes.class) @Classes.Types(value = NUMBERS) Example example)
+			throws Exception {
 		var parameterName = "param";
 		var value = numberWrapper(example.type(), example.value());
 		@SuppressWarnings("unchecked")
@@ -138,6 +135,36 @@ class MinTest {
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
+	}
+
+	@Property
+	void primitiveCustomMessage( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types({ int.class, long.class, short.class, byte.class }) //
+			Example example, //
+			@ForAll String message) throws Exception {
+		var value = numberWrapper(example.type(), example.value());
+		Assume.that(!value.isMin());
+		@SuppressWarnings("unchecked")
+		var config = randomConfigWith(entry(value.type(), "param", value.sub(1)).withAnno(Min.class,
+				Map.of("value", value.flooredLong(), "message", message)));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, message, IllegalArgumentException.class);
+
+	}
+
+	@Property
+	void objectCustomMessage(@ForAll(supplier = Classes.class) @Classes.Types(value = NUMBERS) Example example,
+			@ForAll String message) throws Exception {
+		var value = numberWrapper(example.type(), example.value());
+		Assume.that(!value.isMin());
+		Number sub = value.sub(1);
+		Assume.that(upperBoundInLongRange(sub));
+		@SuppressWarnings("unchecked")
+		var config = randomConfigWith(entry(value.type(), "param", sub).withAnno(Min.class,
+				Map.of("value", value.flooredLong(), "message", message)));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, message, IllegalArgumentException.class);
 	}
 
 }

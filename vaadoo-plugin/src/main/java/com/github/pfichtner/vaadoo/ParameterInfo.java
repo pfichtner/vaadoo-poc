@@ -1,5 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
+import static java.lang.reflect.Array.newInstance;
 import static net.bytebuddy.jar.asm.Type.ARRAY;
 
 import java.util.ArrayList;
@@ -74,6 +75,8 @@ class ParameterInfo {
 			case Type.VOID:
 				return void.class;
 			case Type.ARRAY:
+				var elementType = type.getElementType();
+				return newInstance(Class.forName(elementType.getClassName()), elementType.getDimensions()).getClass();
 			case Type.OBJECT:
 				return Class.forName(type.getClassName());
 			default:
@@ -106,6 +109,10 @@ class ParameterInfo {
 
 	public Optional<Object> annotationValue(String key) {
 		return Optional.ofNullable(annotationValues.get(key));
+	}
+
+	public Map<String, Object> annotationValues() {
+		return Map.copyOf(annotationValues);
 	}
 
 	@Override
