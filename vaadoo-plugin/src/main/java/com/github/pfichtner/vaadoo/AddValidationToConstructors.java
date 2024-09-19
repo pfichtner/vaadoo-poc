@@ -106,12 +106,12 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				}
 			}
 
-			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameterInfos) {
+			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
-				MethodInjector injector = new MethodInjector(codeFragment);
-				for (ParameterInfo parameter : parameterInfos.values()) {
-					for (String annotation : parameter.getAnnotations()) {
+				var injector = new MethodInjector(codeFragment);
+				for (var parameter : parameters.values()) {
+					for (var annotation : parameter.getAnnotations()) {
 						if (annotation.equals(Type.getDescriptor(Null.class))) {
 							injector.inject(mv, parameter, checkMethod(parameter, Null.class, Object.class));
 						} else if (annotation.equals(Type.getDescriptor(NotNull.class))) {
@@ -139,7 +139,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				}
 
 				mv.visitInsn(RETURN);
-				mv.visitMaxs(parameterInfos.entrySet().size(), parameterInfos.entrySet().size());
+				mv.visitMaxs(parameters.entrySet().size(), parameters.entrySet().size());
 				mv.visitEnd();
 			}
 
