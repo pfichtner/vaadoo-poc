@@ -83,28 +83,23 @@ public class SomeLombokClass {
       return new SomeLombokClassBuilder();
    }
 
-   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, boolean var9, boolean var10, Boolean var11, Boolean var12, int var13, Long var14, Short var15) {
+   private static void validate(Object var0, Object notNull, String ref, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, boolean var10, boolean var11, Boolean var12, Boolean var13, int var14, Long var15, Short var16) {
       Preconditions.checkArgument(var0 == null, "someNullObject expected to be null");
-      Preconditions.checkNotNull(var1, "someObject must not be null");
-      Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be null");
-      Preconditions.checkArgument(var3.length() > 0, "someNotEmptyCharSequence must not be empty");
-      Preconditions.checkNotNull(var4, "someNotEmptyString must not be null");
-      Preconditions.checkArgument(var4.length() > 0, "someNotEmptyString must not be empty");
-      Preconditions.checkNotNull(var5, "someNotEmptyCollection must not be null");
-      Preconditions.checkArgument(var5.size() > 0, "someNotEmptyCollection must not be empty");
-      Preconditions.checkNotNull(var6, "someNotEmptyMap must not be null");
-      Preconditions.checkArgument(var6.size() > 0, "someNotEmptyMap must not be empty");
-      Preconditions.checkNotNull(var7, "someNotEmptyArray must not be null");
-      Preconditions.checkArgument(var7.length > 0, "someNotEmptyArray must not be empty");
-      Preconditions.checkNotNull(var8, "someNonBlankValue must not be null");
-      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn(var8) > 0, "someNonBlankValue must not be blank");
-      Preconditions.checkArgument(var9, "someTrueValue should be true");
-      Preconditions.checkArgument(!var10, "someFalseValue should be false");
-      Preconditions.checkArgument(Boolean.TRUE.equals(var11), "someTrueValueWrapper should be true");
-      Preconditions.checkArgument(Boolean.FALSE.equals(var12), "someFalseValueWrapper should be false");
-      Preconditions.checkArgument((long)var13 >= 42L, "someIntPrimitiveValueThatIsMinimal42 should be >= 42");
-      Preconditions.checkArgument(var14 == null || var14.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 should be >= 42");
-      Preconditions.checkNotNull(var15, "someShortWrapperValueThatIsNotNullAndMinimal42 must not be null");
-      Preconditions.checkArgument(var15 == null || var15.longValue() >= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 should be >= 42");
+      Preconditions.checkNotNull(notNull, "someObject must not be null");
+      Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be empty")).length() > 0, "someNotEmptyCharSequence must not be empty");
+      Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var4, "someNotEmptyString must not be empty")).length() > 0, "someNotEmptyString must not be empty");
+      Preconditions.checkArgument(((Collection)Preconditions.checkNotNull(var5, "someNotEmptyCollection must not be empty")).size() > 0, "someNotEmptyCollection must not be empty");
+      Preconditions.checkArgument(((Map)Preconditions.checkNotNull(var6, "someNotEmptyMap must not be empty")).size() > 0, "someNotEmptyMap must not be empty");
+      Preconditions.checkArgument(((Object[])Preconditions.checkNotNull(var7, "someNotEmptyArray must not be empty")).length > 0, "someNotEmptyArray must not be empty");
+      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn((CharSequence)Preconditions.checkNotNull(var8, "someNonBlankValue must not be blank")) > 0, "someNonBlankValue must not be blank");
+      Preconditions.checkArgument(CharMatcher.whitespace().negate().countIn((CharSequence)Preconditions.checkNotNull(var9, "my custom message")) > 0, "my custom message");
+      Preconditions.checkArgument(var10, "someTrueValue should be true");
+      Preconditions.checkArgument(!var11, "someFalseValue should be false");
+      Preconditions.checkArgument(var12 == null || var12.booleanValue(), "someTrueValueWrapper should be true");
+      Preconditions.checkArgument(var13 == null || !var13.booleanValue(), "someFalseValueWrapper should be false");
+      Preconditions.checkArgument((long)var14 >= 42L, "someIntPrimitiveValueThatIsMinimal42 should be >= 42");
+      Preconditions.checkArgument(var15 == null || var15.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 should be >= 42");
+      Preconditions.checkNotNull(var16, "someShortWrapperValueThatIsNotNullAndMinimal42 must not be null");
+      Preconditions.checkArgument(var16 == null || (long)var16.shortValue() >= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 should be >= 42");
    }
 }
