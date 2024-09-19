@@ -23,6 +23,7 @@ public class SomeClass {
 	private final Map<Integer, String> someNotEmptyMap;
 	private final Integer[] someNotEmptyArray;
 	private final CharSequence someNonBlankValue;
+	private final String someNonBlankValueWithCustomMessage;
 	private final boolean someTrueValue;
 	private final boolean someFalseValue;
 	private final Boolean someTrueValueWrapper;
@@ -30,7 +31,6 @@ public class SomeClass {
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	private final Long someLongWrapperValueThatIsMinimal42;
 	private final Short someShortWrapperValueThatIsNotNullAndMinimal42;
-	private @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
