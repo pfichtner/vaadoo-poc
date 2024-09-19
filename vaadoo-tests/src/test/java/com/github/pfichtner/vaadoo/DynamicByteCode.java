@@ -196,10 +196,13 @@ public final class DynamicByteCode {
 			if (value.annoClass() != null) {
 				Builder annoBuilder = AnnotationDescription.Builder.ofType(value.annoClass());
 
-				for (Entry<String, Object> annoValue : value.annoValues().entrySet()) {
-					// TODO at the moment only longs are supported, add accordingly
-					long longVal = (long) annoValue.getValue();
-					annoBuilder = annoBuilder.define(annoValue.getKey(), longVal);
+				for (Entry<String, Object> entry : value.annoValues().entrySet()) {
+					Object annoValue = entry.getValue();
+					if (annoValue instanceof Long) {
+						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
+					} else if (annoValue instanceof String) {
+						annoBuilder = annoBuilder.define(entry.getKey(), (String) annoValue);
+					}
 				}
 
 				inner = inner.annotateParameter(annoBuilder.build());
@@ -213,7 +216,9 @@ public final class DynamicByteCode {
 	public static Class<?> transform(Unloaded<Object> dynamicClass)
 			throws NoSuchMethodException, ClassNotFoundException {
 		var name = dynamicClass.getTypeDescription().getName();
-		var originalClassLoader = sut.getClass().getClassLoader();
+		// parent is the SystemClassLoader so if the class depends on other classes that
+		// the classes there, we fail (what is what we want here)
+		var originalClassLoader = ClassLoader.getSystemClassLoader();
 
 		var loadedClass = new ByteArrayClassLoader(originalClassLoader, singletonMap(name, dynamicClass.getBytes()),
 				PersistenceHandler.MANIFEST).loadClass(name);

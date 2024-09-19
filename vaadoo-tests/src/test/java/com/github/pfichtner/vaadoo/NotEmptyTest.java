@@ -12,6 +12,8 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCE
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
 
+import java.util.Map;
+
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Example;
 
@@ -38,6 +40,15 @@ class NotEmptyTest {
 				entry(example.type(), parameterName, convertValue(example.value(), true)).withAnno(NotEmpty.class));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must not be empty", IllegalArgumentException.class);
+	}
+
+	@Property
+	void customMessage(@ForAll(supplier = Classes.class) @Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS,
+			ARRAYS }) Example example, @ForAll String message) throws Exception {
+		var config = randomConfigWith(entry(example.type(), "param", convertValue(example.value(), true))
+				.withAnno(NotEmpty.class, Map.of("message", message)));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, message, IllegalArgumentException.class);
 	}
 
 }

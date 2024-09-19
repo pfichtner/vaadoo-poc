@@ -36,6 +36,8 @@ public class SomeLombokClass {
 	Integer[] someNotEmptyArray;
 	@NotBlank
 	CharSequence someNonBlankValue;
+	@NotBlank(message = "my custom message")
+	String someNonBlankValueWithCustomMessage;
 	@AssertTrue
 	boolean someTrueValue;
 	@AssertFalse

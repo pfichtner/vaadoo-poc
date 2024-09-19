@@ -11,6 +11,8 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
 import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 
+import java.util.Map;
+
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Example;
 import com.github.pfichtner.vaadoo.supplier.Primitives;
@@ -43,6 +45,16 @@ class AssertFalseTest {
 				entry(Boolean.class, parameterName, (Boolean) nullValue()).withAnno(AssertFalse.class));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
+	}
+
+	@Property
+	void customMessage(
+			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Example example,
+			@ForAll String message) throws Exception {
+		var config = randomConfigWith(
+				entry(example.type(), "param", true).withAnno(AssertFalse.class, Map.of("message", message)));
+		var transformed = transform(dynamicClass(config));
+		assertException(config, transformed, message, IllegalArgumentException.class);
 	}
 
 	private static void test(Example example) throws Exception {

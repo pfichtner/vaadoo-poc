@@ -32,6 +32,10 @@ public class SomeLombokClass {
    private final Integer[] someNotEmptyArray;
    @NotBlank
    private final CharSequence someNonBlankValue;
+   @NotBlank(
+      message = "my custom message"
+   )
+   private final String someNonBlankValueWithCustomMessage;
    @AssertTrue
    private final boolean someTrueValue;
    @AssertFalse
@@ -53,8 +57,8 @@ public class SomeLombokClass {
    }
 
    @Generated
-   SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
-      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndMinimal42);
+   SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
+      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndMinimal42);
       this.someNullObject = someNullObject;
       this.someObject = someObject;
       this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -64,6 +68,7 @@ public class SomeLombokClass {
       this.someNotEmptyMap = someNotEmptyMap;
       this.someNotEmptyArray = someNotEmptyArray;
       this.someNonBlankValue = someNonBlankValue;
+      this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
       this.someTrueValue = someTrueValue;
       this.someFalseValue = someFalseValue;
       this.someTrueValueWrapper = someTrueValueWrapper;

@@ -22,6 +22,7 @@ public record SomeRecord( //
 		@NotEmpty Map<Integer, String> someNotEmptyMap, //
 		@NotEmpty Integer[] someNotEmptyArray, //
 		@NotBlank CharSequence someNonBlankValue, //
+		@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
 		@AssertTrue boolean someTrueValue, //
 		@AssertFalse boolean someFalseValue, //
 		@AssertTrue Boolean someTrueValueWrapper, //
@@ -33,7 +34,7 @@ public record SomeRecord( //
 	public static void main(String[] args) {
 		System.out.println(
 				new SomeRecord(null, "isNotNull", " ", " ", " ", List.of(" "), Map.of(0, " "), new Integer[] { 1 }, "",
-						true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
+						"", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }
