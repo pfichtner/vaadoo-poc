@@ -1,8 +1,10 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.NamedPlaceholders.quote;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toMap;
 import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.ARETURN;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
@@ -31,8 +33,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
@@ -90,13 +90,13 @@ public class MethodInjector {
 					return new MethodVisitor(ASM9, mv) {
 
 						private final Map<String, String> fallbackMessages = Map.of( //
-								unquote(defaultValue(Null.class, "message")), "{@@@name@@@} expected to be null", //
-								unquote(defaultValue(NotNull.class, "message")), "{@@@name@@@} must not be null", //
-								unquote(defaultValue(NotBlank.class, "message")), "{@@@name@@@} must not be blank", //
-								unquote(defaultValue(NotEmpty.class, "message")), "{@@@name@@@} must not be empty", //
-								unquote(defaultValue(AssertTrue.class, "message")), "{@@@name@@@} should be true", //
-								unquote(defaultValue(AssertFalse.class, "message")), "{@@@name@@@} should be false", //
-								unquote(defaultValue(Min.class, "message")), "{@@@name@@@} should be >= {value}" //
+								defaultValue(Null.class, "message"), "{@@@name@@@} expected to be null", //
+								defaultValue(NotNull.class, "message"), "{@@@name@@@} must not be null", //
+								defaultValue(NotBlank.class, "message"), "{@@@name@@@} must not be blank", //
+								defaultValue(NotEmpty.class, "message"), "{@@@name@@@} must not be empty", //
+								defaultValue(AssertTrue.class, "message"), "{@@@name@@@} should be true", //
+								defaultValue(AssertFalse.class, "message"), "{@@@name@@@} should be false", //
+								defaultValue(Min.class, "message"), "{@@@name@@@} should be >= {value}" //
 						);
 
 						private boolean firstParamLoadStart;
@@ -115,12 +115,6 @@ public class MethodInjector {
 						@Override
 						public void visitMaxs(int maxStack, int maxLocals) {
 							// ignore
-						}
-
-						private String unquote(String value) {
-							Matcher matcher = Pattern.compile("\\{([^}]+)\\}").matcher(value);
-							return matcher.find() ? matcher.group(1) : value;
-
 						}
 
 						@Override
@@ -196,36 +190,16 @@ public class MethodInjector {
 									: value);
 						}
 
-						private String formatMessage(ParameterInfo parameter, String value) {
-							Map<String, Object> mutable = new HashMap<>(fallbackMessages);
-							mutable.put("@@@name@@@", parameter.name());
-							mutable.putAll(parameter.annotationValues());
-							return replaceNamedPlaceholders(value, mutable);
+						private String formatMessage(ParameterInfo parameter, String template) {
+							return NamedPlaceholders.replace(template, replacements(parameter));
 						}
 
-						private String replaceNamedPlaceholders(String template, Map<String, Object> replacements) {
-							Pattern pattern = Pattern.compile("\\{([^}]+)\\}");
-							String result = template;
-							while (true) {
-								Matcher matcher = pattern.matcher(result);
-								StringBuffer sb = new StringBuffer();
-								boolean replaced = false;
-								while (matcher.find()) {
-									String key = matcher.group(1);
-									String newValue = "{" + key + "}";
-									String replacement = replacements.getOrDefault(key, newValue).toString();
-									if (!replacement.equals(newValue)) {
-										replaced = true;
-										matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
-									}
-								}
-								matcher.appendTail(sb);
-								if (!replaced) {
-									break;
-								}
-								result = sb.toString();
-							}
-							return result;
+						private Map<String, Object> replacements(ParameterInfo parameter) {
+							Map<String, Object> mutable = new HashMap<>(fallbackMessages);
+							mutable.put(quote("@@@name@@@"), parameter.name());
+							mutable.putAll(parameter.annotationValues()
+									.collect(toMap(k -> quote(k.getKey()), Map.Entry::getValue)));
+							return mutable;
 						}
 
 						private String defaultValue(String className, String name) {

@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import net.bytebuddy.jar.asm.Type;
 
@@ -111,8 +113,8 @@ class ParameterInfo {
 		return Optional.ofNullable(annotationValues.get(key));
 	}
 
-	public Map<String, Object> annotationValues() {
-		return Map.copyOf(annotationValues);
+	public Stream<Entry<String, Object>> annotationValues() {
+		return annotationValues.entrySet().stream();
 	}
 
 	@Override
