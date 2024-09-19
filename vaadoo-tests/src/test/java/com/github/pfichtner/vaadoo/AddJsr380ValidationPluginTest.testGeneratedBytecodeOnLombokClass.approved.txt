@@ -83,9 +83,9 @@ public class SomeLombokClass {
       return new SomeLombokClassBuilder();
    }
 
-   private static void validate(Object var0, Object notNull, String ref, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, boolean var10, boolean var11, Boolean var12, Boolean var13, int var14, Long var15, Short var16) {
+   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, boolean var10, boolean var11, Boolean var12, Boolean var13, int var14, Long var15, Short var16) {
       Preconditions.checkArgument(var0 == null, "someNullObject expected to be null");
-      Preconditions.checkNotNull(notNull, "someObject must not be null");
+      Preconditions.checkNotNull(var1, "someObject must not be null");
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be empty")).length() > 0, "someNotEmptyCharSequence must not be empty");
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var4, "someNotEmptyString must not be empty")).length() > 0, "someNotEmptyString must not be empty");
       Preconditions.checkArgument(((Collection)Preconditions.checkNotNull(var5, "someNotEmptyCollection must not be empty")).size() > 0, "someNotEmptyCollection must not be empty");

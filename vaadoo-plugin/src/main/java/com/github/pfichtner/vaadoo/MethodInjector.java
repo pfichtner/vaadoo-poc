@@ -107,15 +107,20 @@ public class MethodInjector {
 							// ignore
 						}
 
-						private String unquote(String value) {
-							Matcher matcher = Pattern.compile("\\{([^}]+)\\}").matcher(value);
-							return matcher.find() ? matcher.group(1) : value;
-
+						public void visitLocalVariable(String name, String descriptor, String signature, Label start,
+								Label end, int index) {
+							// ignore, we would have to rewrite owner
 						}
 
 						@Override
 						public void visitMaxs(int maxStack, int maxLocals) {
 							// ignore
+						}
+
+						private String unquote(String value) {
+							Matcher matcher = Pattern.compile("\\{([^}]+)\\}").matcher(value);
+							return matcher.find() ? matcher.group(1) : value;
+
 						}
 
 						@Override
