@@ -19,6 +19,7 @@ import static net.bytebuddy.jar.asm.Opcodes.ISTORE;
 import static net.bytebuddy.jar.asm.Opcodes.LLOAD;
 import static net.bytebuddy.jar.asm.Opcodes.LRETURN;
 import static net.bytebuddy.jar.asm.Opcodes.LSTORE;
+import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 import static net.bytebuddy.jar.asm.Type.getObjectType;
@@ -179,8 +180,8 @@ public class MethodInjector {
 						}
 
 						private boolean isReturnOpcode(int opcode) {
-							return opcode == ARETURN || opcode == IRETURN || opcode == LRETURN //
-									|| opcode == FRETURN || opcode == DRETURN;
+							return opcode == RETURN || opcode == ARETURN || opcode == IRETURN //
+									|| opcode == LRETURN || opcode == FRETURN || opcode == DRETURN;
 						}
 
 						@Override
