@@ -76,3 +76,7 @@ void sendMail(@Email String value, @NotBlank @Max(256) String value, @Max(4 * 10
 
 This is not what vaadoo was thought for! 
 
+## Drawbacks
+- no runtime internationalization (i18n) since messages are copied during compile-time into the bytecode
+
+
