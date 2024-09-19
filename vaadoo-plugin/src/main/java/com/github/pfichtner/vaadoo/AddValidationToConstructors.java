@@ -23,6 +23,7 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -131,6 +132,8 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 									checkMethod(parameter, AssertFalse.class, parameter.classtype()));
 						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
 							injector.inject(mv, parameter, checkMethod(parameter, Min.class, parameter.classtype()));
+						} else if (annotation.equals(Type.getDescriptor(Max.class))) {
+							injector.inject(mv, parameter, checkMethod(parameter, Max.class, parameter.classtype()));
 						}
 					}
 				}

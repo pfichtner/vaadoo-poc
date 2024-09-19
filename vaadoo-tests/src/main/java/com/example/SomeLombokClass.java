@@ -7,6 +7,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -52,6 +53,7 @@ public class SomeLombokClass {
 	Long someLongWrapperValueThatIsMinimal42;
 	@NotNull
 	@Min(42)
+	@Max(42)
 	Short someShortWrapperValueThatIsNotNullAndMinimal42;
 
 	public static void main(String[] args) {

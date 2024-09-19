@@ -10,6 +10,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -73,6 +74,8 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 		checkArgument(value == null || !value, assertFalse.message());
 	}
 
+	// -----------------------------------------------------------------
+
 	@Override
 	public void check(Min min, byte value) {
 		checkArgument(value >= min.value(), min.message());
@@ -122,5 +125,59 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	public void check(Min min, BigDecimal value) {
 		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(min.value())) >= 0, min.message());
 	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Max max, byte value) {
+		checkArgument(value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, short value) {
+		checkArgument(value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, int value) {
+		checkArgument(value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, long value) {
+		checkArgument(value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, Byte value) {
+		checkArgument(value == null || value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, Short value) {
+		checkArgument(value == null || value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, Integer value) {
+		checkArgument(value == null || value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, Long value) {
+		checkArgument(value == null || value <= max.value(), max.message());
+	}
+
+	@Override
+	public void check(Max max, BigInteger value) {
+		checkArgument(value == null || value.compareTo(BigInteger.valueOf(max.value())) <= 0, max.message());
+	}
+
+	@Override
+	public void check(Max max, BigDecimal value) {
+		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(max.value())) <= 0, max.message());
+	}
+
+	// -----------------------------------------------------------------
 
 }

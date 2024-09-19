@@ -4,6 +4,7 @@ import com.example.SomeLombokClass.SomeLombokClassBuilder;
 import com.google.common.base.Preconditions;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -49,6 +50,7 @@ public class SomeLombokClass {
    private final Long someLongWrapperValueThatIsMinimal42;
    @NotNull
    @Min(42L)
+   @Max(42L)
    private final Short someShortWrapperValueThatIsNotNullAndMinimal42;
 
    public static void main(String[] args) {

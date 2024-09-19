@@ -1,5 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
+import static java.math.RoundingMode.CEILING;
 import static java.math.RoundingMode.FLOOR;
 
 import java.math.BigDecimal;
@@ -25,6 +26,11 @@ public abstract class NumberWrapper {
 
 		@Override
 		protected long flooredLong() {
+			return (long) number;
+		}
+
+		@Override
+		protected long roundedLong() {
 			return (long) number;
 		}
 
@@ -70,6 +76,11 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
+		protected long roundedLong() {
+			return (long) number;
+		}
+
+		@Override
 		public Number add(Number subtrahend) {
 			return ((long) number + subtrahend.longValue());
 		}
@@ -107,6 +118,11 @@ public abstract class NumberWrapper {
 
 		@Override
 		protected long flooredLong() {
+			return (long) number;
+		}
+
+		@Override
+		protected long roundedLong() {
 			return (long) number;
 		}
 
@@ -152,6 +168,11 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
+		protected long roundedLong() {
+			return (long) number;
+		}
+
+		@Override
 		public Number add(Number subtrahend) {
 			return (byte) (number + subtrahend.byteValue());
 		}
@@ -193,6 +214,11 @@ public abstract class NumberWrapper {
 		}
 
 		@Override
+		protected long roundedLong() {
+			return number.setScale(0, CEILING).longValue();
+		}
+
+		@Override
 		public Number add(Number subtrahend) {
 			return number.add(new BigDecimal(String.valueOf(subtrahend)));
 		}
@@ -230,6 +256,11 @@ public abstract class NumberWrapper {
 
 		@Override
 		protected long flooredLong() {
+			return number.longValue();
+		}
+
+		@Override
+		protected long roundedLong() {
 			return number.longValue();
 		}
 
@@ -285,6 +316,8 @@ public abstract class NumberWrapper {
 	protected abstract Number value();
 
 	protected abstract long flooredLong();
+
+	protected abstract long roundedLong();
 
 	protected abstract Number add(Number summand);
 

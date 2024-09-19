@@ -38,6 +38,7 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -53,11 +54,9 @@ import net.bytebuddy.jar.asm.Type;
 public class MethodInjector {
 
 	private static final String NAME = "{@@@name@@@}";
-	private final Class<? extends Jsr380CodeFragment> clazz;
 	private final ClassReader classReader;
 
 	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz) {
-		this.clazz = clazz;
 		String className = clazz.getName().replace('.', '/') + ".class";
 
 		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(className)) {
@@ -92,7 +91,8 @@ public class MethodInjector {
 								defaultValue(NotEmpty.class, "message"), format("%s must not be empty", NAME), //
 								defaultValue(AssertTrue.class, "message"), format("%s should be true", NAME), //
 								defaultValue(AssertFalse.class, "message"), format("%s should be false", NAME), //
-								defaultValue(Min.class, "message"), format("%s should be >= {value}", NAME) //
+								defaultValue(Min.class, "message"), format("%s should be >= {value}", NAME), //
+								defaultValue(Max.class, "message"), format("%s should be <= {value}", NAME) //
 						);
 
 						private boolean firstParamLoadStart;

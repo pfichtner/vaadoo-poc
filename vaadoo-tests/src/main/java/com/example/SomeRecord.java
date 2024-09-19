@@ -6,6 +6,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -29,7 +30,7 @@ public record SomeRecord( //
 		@AssertFalse Boolean someFalseValueWrapper, //
 		@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 		@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-		@NotNull @Min(42) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
+		@NotNull @Min(42) @Max(42) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
 
 	public static void main(String[] args) {
 		System.out.println(

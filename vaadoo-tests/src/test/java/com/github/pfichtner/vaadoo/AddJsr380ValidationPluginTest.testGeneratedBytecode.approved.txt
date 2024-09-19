@@ -3,6 +3,7 @@ package com.example;
 import com.google.common.base.Preconditions;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -29,9 +30,9 @@ public class SomeClass {
    private final Boolean someFalseValueWrapper;
    private final int someIntPrimitiveValueThatIsMinimal42;
    private final Long someLongWrapperValueThatIsMinimal42;
-   private final Short someShortWrapperValueThatIsNotNullAndMinimal42;
+   private final Short someShortWrapperValueThatIsNotNullAndBetween42And42;
 
-   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
+   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) @Max(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
       validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndMinimal42);
       this.someNullObject = someNullObject;
       this.someObject = someObject;
@@ -49,7 +50,7 @@ public class SomeClass {
       this.someFalseValueWrapper = someFalseValueWrapper;
       this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
       this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
-      this.someShortWrapperValueThatIsNotNullAndMinimal42 = someShortWrapperValueThatIsNotNullAndMinimal42;
+      this.someShortWrapperValueThatIsNotNullAndBetween42And42 = someShortWrapperValueThatIsNotNullAndMinimal42;
    }
 
    public static void main(String[] args) {
@@ -74,5 +75,6 @@ public class SomeClass {
       Preconditions.checkArgument(var15 == null || var15.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 should be >= 42");
       Preconditions.checkNotNull(var16, "someShortWrapperValueThatIsNotNullAndMinimal42 must not be null");
       Preconditions.checkArgument(var16 == null || (long)var16.shortValue() >= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 should be >= 42");
+      Preconditions.checkArgument(var16 == null || (long)var16.shortValue() <= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 should be <= 42");
    }
 }
