@@ -10,6 +10,7 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKESPECIAL;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,9 +45,12 @@ import net.bytebuddy.pool.TypePool;
 public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 	private final Class<? extends Jsr380CodeFragment> codeFragment;
+	private final List<Method> codeFragmentMethods;
 
 	public AddValidationToConstructors(Class<? extends Jsr380CodeFragment> codeFragment) {
 		this.codeFragment = codeFragment;
+		this.codeFragmentMethods = Arrays.asList(codeFragment.getMethods());
+
 	}
 
 	@Override
@@ -104,33 +108,29 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameterInfos) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
-				MethodInjector methodInjector = new MethodInjector(codeFragment);
+				MethodInjector injector = new MethodInjector(codeFragment);
 				for (ParameterInfo parameter : parameterInfos.values()) {
 					for (String annotation : parameter.getAnnotations()) {
 						if (annotation.equals(Type.getDescriptor(Null.class))) {
-							methodInjector.injectCheck(mv, parameter, Null.class, Object.class);
+							injector.inject(mv, parameter, checkMethod(parameter, Null.class, Object.class));
 						} else if (annotation.equals(Type.getDescriptor(NotNull.class))) {
-							methodInjector.injectCheck(mv, parameter, NotNull.class, Object.class);
+							injector.inject(mv, parameter, checkMethod(parameter, NotNull.class, Object.class));
 						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
-							// TODO check if type is CharSequence
-							methodInjector.injectCheck(mv, parameter, NotBlank.class, CharSequence.class);
+							injector.inject(mv, parameter, checkMethod(parameter, NotBlank.class, CharSequence.class));
 						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
-							// TODO check if type is Array/CharSequence/Collection/Map/Array
 							var superType = superType(parameter.classtype(), NotEmpty.class, Object[].class,
 									CharSequence.class, Collection.class, Map.class)
 									.orElseThrow(() -> new IllegalStateException(format("%s not supported on type %s",
 											NotEmpty.class.getSimpleName(), parameter.classname())));
-							methodInjector.injectCheck(mv, parameter, NotEmpty.class, superType);
+							injector.inject(mv, parameter, checkMethod(parameter, NotEmpty.class, superType));
 						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
-							// TODO check if type is boolean/Boolean
-							methodInjector.injectCheck(mv, parameter, AssertTrue.class, parameter.classtype());
+							injector.inject(mv, parameter,
+									checkMethod(parameter, AssertTrue.class, parameter.classtype()));
 						} else if (annotation.equals(Type.getDescriptor(AssertFalse.class))) {
-							// TODO check if type is boolean/Boolean
-							methodInjector.injectCheck(mv, parameter, AssertFalse.class, parameter.classtype());
+							injector.inject(mv, parameter,
+									checkMethod(parameter, AssertFalse.class, parameter.classtype()));
 						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
-							// TODO check if type is BigDecimal, BigInteger, byte, short, int, long and
-							// their respective wrappers
-							methodInjector.injectCheck(mv, parameter, Min.class, parameter.classtype());
+							injector.inject(mv, parameter, checkMethod(parameter, Min.class, parameter.classtype()));
 						}
 					}
 				}
@@ -138,6 +138,24 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				mv.visitInsn(RETURN);
 				mv.visitMaxs(parameterInfos.entrySet().size(), parameterInfos.entrySet().size());
 				mv.visitEnd();
+			}
+
+			private Method checkMethod(ParameterInfo parameter, Class<?>... parameters) {
+				return checkMethod(parameters).map(m -> {
+					if (m.getParameterTypes()[1].isAssignableFrom(parameters[1])) {
+						return m;
+					}
+					throw new IllegalStateException(
+							format("Invocation of %s with parameter of type %s would fail", m, parameters[1]));
+				}).orElseThrow(() -> new IllegalStateException(
+						format("No fragment with parameters %s found", Arrays.toString(parameters))));
+
+			}
+
+			private Optional<Method> checkMethod(Class<?>... parameters) {
+				return codeFragmentMethods.stream()
+						.filter(m -> "check".equals(m.getName()) && Arrays.equals(m.getParameterTypes(), parameters))
+						.findFirst();
 			}
 
 			@SafeVarargs

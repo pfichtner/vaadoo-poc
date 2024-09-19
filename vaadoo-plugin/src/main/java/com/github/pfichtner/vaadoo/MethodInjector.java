@@ -71,12 +71,7 @@ public class MethodInjector {
 		}
 	}
 
-	public void injectCheck(MethodVisitor mv, ParameterInfo parameter, Class<?>... parameters) {
-		inject(mv, parameter, "check", parameters);
-	}
-
-	public void inject(MethodVisitor mv, ParameterInfo parameter, String methodName, Class<?>... parameters) {
-		Method sourceMethod = findMethod(methodName, parameters);
+	public void inject(MethodVisitor mv, ParameterInfo parameter, Method sourceMethod) {
 		int offset = isStatic(sourceMethod.getModifiers()) ? 0 : 1;
 
 		this.classReader.accept(new ClassVisitor(ASM9) {
@@ -87,7 +82,7 @@ public class MethodInjector {
 
 				String searchDescriptor = getMethodDescriptor(sourceMethod);
 
-				if (name.equals(methodName) && descriptor.equals(searchDescriptor)) {
+				if (name.equals(sourceMethod.getName()) && descriptor.equals(searchDescriptor)) {
 					return new MethodVisitor(ASM9, mv) {
 
 						private final Map<String, String> fallbackMessages = Map.of( //
@@ -243,14 +238,6 @@ public class MethodInjector {
 				return super.visitMethod(access, name, descriptor, signature, exceptions);
 			}
 		}, 0);
-	}
-
-	private Method findMethod(String methodName, Class<?>... parameters) {
-		try {
-			return clazz.getMethod(methodName, parameters);
-		} catch (NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }
