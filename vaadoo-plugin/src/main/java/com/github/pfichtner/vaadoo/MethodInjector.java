@@ -52,6 +52,7 @@ import net.bytebuddy.jar.asm.Type;
 
 public class MethodInjector {
 
+	private static final String NAME = "{@@@name@@@}";
 	private final Class<? extends Jsr380CodeFragment> clazz;
 	private final ClassReader classReader;
 
@@ -90,13 +91,13 @@ public class MethodInjector {
 					return new MethodVisitor(ASM9, mv) {
 
 						private final Map<String, String> fallbackMessages = Map.of( //
-								defaultValue(Null.class, "message"), "{@@@name@@@} expected to be null", //
-								defaultValue(NotNull.class, "message"), "{@@@name@@@} must not be null", //
-								defaultValue(NotBlank.class, "message"), "{@@@name@@@} must not be blank", //
-								defaultValue(NotEmpty.class, "message"), "{@@@name@@@} must not be empty", //
-								defaultValue(AssertTrue.class, "message"), "{@@@name@@@} should be true", //
-								defaultValue(AssertFalse.class, "message"), "{@@@name@@@} should be false", //
-								defaultValue(Min.class, "message"), "{@@@name@@@} should be >= {value}" //
+								defaultValue(Null.class, "message"), format("%s expected to be null", NAME), //
+								defaultValue(NotNull.class, "message"), format("%s must not be null", NAME), //
+								defaultValue(NotBlank.class, "message"), format("%s must not be blank", NAME), //
+								defaultValue(NotEmpty.class, "message"), format("%s must not be empty", NAME), //
+								defaultValue(AssertTrue.class, "message"), format("%s should be true", NAME), //
+								defaultValue(AssertFalse.class, "message"), format("%s should be false", NAME), //
+								defaultValue(Min.class, "message"), format("%s should be >= {value}", NAME) //
 						);
 
 						private boolean firstParamLoadStart;

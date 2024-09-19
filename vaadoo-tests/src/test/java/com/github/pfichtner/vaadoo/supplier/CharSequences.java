@@ -67,8 +67,8 @@ public class CharSequences implements ArbitrarySupplier<CharSequence> {
 	}
 
 	private static Arbitrary<CharSequence> generateNonBlankArbitrary() {
-		var blanksArbitrary = Arbitraries.of(SequenceChunks.BLANKS.sequences()).list().ofMinSize(1);
-		var nonBlanksArbitrary = Arbitraries.of(SequenceChunks.NON_BLANKS.sequences()).list().ofMinSize(1);
+		var blanksArbitrary = Arbitraries.of(SequenceChunks.BLANKS.sequences()).list().ofMinSize(1).ofMaxSize(10);
+		var nonBlanksArbitrary = Arbitraries.of(SequenceChunks.NON_BLANKS.sequences()).list().ofMinSize(1).ofMinSize(3);
 		return blanksArbitrary.flatMap(blanks -> nonBlanksArbitrary
 				.map(nonBlanks -> concat(blanks.stream(), nonBlanks.stream()).collect(joining())));
 	}
