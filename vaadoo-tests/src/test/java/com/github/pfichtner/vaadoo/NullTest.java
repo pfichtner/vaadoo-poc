@@ -31,7 +31,7 @@ class NullTest {
 		var parameterName = "param";
 		var config = randomConfigWith(entry(example.type(), parameterName, example.value()).withAnno(Null.class));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " expected to be null", IllegalArgumentException.class);
+		assertException(config, transformed, parameterName + " must be null", IllegalArgumentException.class);
 	}
 
 	@Property

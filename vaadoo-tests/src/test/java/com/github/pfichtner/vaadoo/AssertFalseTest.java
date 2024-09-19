@@ -65,7 +65,7 @@ class AssertFalseTest {
 		var transformed = transform(dynamicClass(config));
 		var execResult = provideExecException(transformed, config);
 		if (value) {
-			assertException(execResult, parameterName + " should be false", IllegalArgumentException.class);
+			assertException(execResult, parameterName + " must be false", IllegalArgumentException.class);
 		} else {
 			assertNoException(execResult);
 		}

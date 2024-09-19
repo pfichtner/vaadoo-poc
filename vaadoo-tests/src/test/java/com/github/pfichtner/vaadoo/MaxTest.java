@@ -116,7 +116,7 @@ class MaxTest {
 		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Max.class,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " should be <= " + value.roundedLong(),
+		assertException(config, transformed, parameterName + " must be less than or equal to " + value.roundedLong(),
 				IllegalArgumentException.class);
 	}
 
@@ -133,7 +133,7 @@ class MaxTest {
 		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Max.class,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " should be <= " + value.roundedLong(),
+		assertException(config, transformed, parameterName + " must be less than or equal to " + value.roundedLong(),
 				IllegalArgumentException.class);
 	}
 

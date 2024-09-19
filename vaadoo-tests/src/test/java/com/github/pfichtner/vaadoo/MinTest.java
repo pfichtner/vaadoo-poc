@@ -38,7 +38,7 @@ class MinTest {
 		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
+		assertException(config, transformed, parameterName + " must be greater than or equal to " + value.flooredLong(),
 				IllegalArgumentException.class);
 	}
 
@@ -72,7 +72,7 @@ class MinTest {
 		var config = randomConfigWith(
 				entry(value.type(), parameterName, sub).withAnno(Min.class, Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
-		assertException(config, transformed, parameterName + " should be >= " + value.flooredLong(),
+		assertException(config, transformed, parameterName + " must be greater than or equal to " + value.flooredLong(),
 				IllegalArgumentException.class);
 	}
 

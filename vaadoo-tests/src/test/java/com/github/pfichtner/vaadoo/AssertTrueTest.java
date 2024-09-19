@@ -67,7 +67,7 @@ class AssertTrueTest {
 		if (value) {
 			assertNoException(execResult);
 		} else {
-			assertException(execResult, parameterName + " should be true", IllegalArgumentException.class);
+			assertException(execResult, parameterName + " must be true", IllegalArgumentException.class);
 		}
 	}
 
