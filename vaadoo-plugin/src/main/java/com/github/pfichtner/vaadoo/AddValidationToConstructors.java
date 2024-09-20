@@ -147,12 +147,11 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private Method checkMethod(ParameterInfo parameter, Class<?>... parameters) {
 				return checkMethod(parameters).map(m -> {
 					var supportedType = m.getParameterTypes()[1];
-					if (supportedType.isAssignableFrom(parameter.classtype())) {
+					if (supportedType.isAssignableFrom((Class<?>) parameter.classtype())) {
 						return m;
 					}
-					throw new IllegalStateException(
-							format("Annotation %s on type %s not allowed, allowed only on type: %s",
-									parameters[0].getName(), parameter.classtype().getName(), supportedType));
+					throw annotationOnTypeNotValid(parameters[0], parameter.classtype(),
+							List.of(supportedType.getName()));
 				}).orElseThrow(() -> unsupportedType(parameters));
 
 			}
@@ -165,9 +164,13 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 						.filter(m -> m.getParameterTypes()[0] == parameters[0]) //
 						.map(m -> m.getParameterTypes()[1].getName()) //
 						.collect(toList());
+				return annotationOnTypeNotValid(parameters[0], parameters[1], supported);
+			}
+
+			private IllegalStateException annotationOnTypeNotValid(Class<?> anno, Class<?> type, List<String> valids) {
 				return new IllegalStateException(
-						format("Annotation %s on type %s not allowed, allowed only on types: %s",
-								parameters[0].getName(), parameters[1].getName(), supported));
+						format("Annotation %s on type %s not allowed, allowed only on types: %s", anno.getName(),
+								type.getName(), valids));
 			}
 
 			private Optional<Method> checkMethod(Class<?>... parameters) {
