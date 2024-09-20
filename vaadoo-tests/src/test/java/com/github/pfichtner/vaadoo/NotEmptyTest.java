@@ -11,6 +11,9 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.ARRAYS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.COLLECTIONS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.MAPS;
+import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.Map;
 
@@ -49,6 +52,15 @@ class NotEmptyTest {
 				.withAnno(NotEmpty.class, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
+	}
+
+	@Property
+	void invalidParameterType(@ForAll(supplier = Classes.class) @Classes.Types(not = true, value = { CHARSEQUENCES,
+			COLLECTIONS, MAPS, ARRAYS }) Example example) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(entry(example.type(), "param", nullValue()).withAnno(NotEmpty.class));
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(NotEmpty.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
 	}
 
 }

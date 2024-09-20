@@ -120,10 +120,12 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
 							injector.inject(mv, parameter, checkMethod(parameter, NotBlank.class, CharSequence.class));
 						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
-							var superType = superType(parameter.classtype(), NotEmpty.class, Object[].class,
-									CharSequence.class, Collection.class, Map.class)
-									.orElseThrow(() -> new IllegalStateException(format("%s not supported on type %s",
-											NotEmpty.class.getSimpleName(), parameter.classname())));
+							var validTypes = List.of(NotEmpty.class, Object[].class, CharSequence.class,
+									Collection.class, Map.class);
+							var superType = superType(parameter.classtype(), validTypes).orElseThrow(() -> {
+								return annotationOnTypeNotValid(NotEmpty.class, parameter.classtype(),
+										validTypes.stream().map(Class::getName).collect(toList()));
+							});
 							injector.inject(mv, parameter, checkMethod(parameter, NotEmpty.class, superType));
 						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
 							injector.inject(mv, parameter,
@@ -147,7 +149,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private Method checkMethod(ParameterInfo parameter, Class<?>... parameters) {
 				return checkMethod(parameters).map(m -> {
 					var supportedType = m.getParameterTypes()[1];
-					if (supportedType.isAssignableFrom((Class<?>) parameter.classtype())) {
+					if (supportedType.isAssignableFrom(parameter.classtype())) {
 						return m;
 					}
 					throw annotationOnTypeNotValid(parameters[0], parameter.classtype(),
@@ -182,9 +184,8 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				return "check".equals(m.getName());
 			}
 
-			@SafeVarargs
-			private Optional<Class<?>> superType(Class<?> classToCheck, Class<?>... superTypes) {
-				return Arrays.stream(superTypes).filter(t -> t.isAssignableFrom(classToCheck)).findFirst();
+			private Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {
+				return superTypes.stream().filter(t -> t.isAssignableFrom(classToCheck)).findFirst();
 			}
 
 		};
