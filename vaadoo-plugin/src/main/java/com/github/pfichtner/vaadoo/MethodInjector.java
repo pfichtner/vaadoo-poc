@@ -1,28 +1,15 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.AsmUtil.isLoadOpcode;
+import static com.github.pfichtner.vaadoo.AsmUtil.isReturnOpcode;
+import static com.github.pfichtner.vaadoo.AsmUtil.isStoreOpcode;
 import static com.github.pfichtner.vaadoo.NamedPlaceholders.quote;
 import static com.github.pfichtner.vaadoo.NamedPlaceholders.unquote;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Map.entry;
-import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
-import static net.bytebuddy.jar.asm.Opcodes.ARETURN;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
-import static net.bytebuddy.jar.asm.Opcodes.ASTORE;
-import static net.bytebuddy.jar.asm.Opcodes.DLOAD;
-import static net.bytebuddy.jar.asm.Opcodes.DRETURN;
-import static net.bytebuddy.jar.asm.Opcodes.DSTORE;
-import static net.bytebuddy.jar.asm.Opcodes.FLOAD;
-import static net.bytebuddy.jar.asm.Opcodes.FRETURN;
-import static net.bytebuddy.jar.asm.Opcodes.FSTORE;
-import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
-import static net.bytebuddy.jar.asm.Opcodes.IRETURN;
-import static net.bytebuddy.jar.asm.Opcodes.ISTORE;
-import static net.bytebuddy.jar.asm.Opcodes.LLOAD;
-import static net.bytebuddy.jar.asm.Opcodes.LRETURN;
-import static net.bytebuddy.jar.asm.Opcodes.LSTORE;
-import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 import static net.bytebuddy.jar.asm.Type.getObjectType;
@@ -53,6 +40,131 @@ import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Type;
 
 public class MethodInjector {
+
+	private static final class MethodInjectorClassVisitor extends ClassVisitor {
+
+		private final Method sourceMethod;
+		private final MethodVisitor mv;
+		private final ParameterInfo parameter;
+		private final int offset;
+
+		private MethodInjectorClassVisitor(int api, Method sourceMethod, MethodVisitor mv, ParameterInfo parameter,
+				int offset) {
+			super(api);
+			this.sourceMethod = sourceMethod;
+			this.mv = mv;
+			this.parameter = parameter;
+			this.offset = offset;
+		}
+
+		@Override
+		public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
+				String[] exceptions) {
+
+			String searchDescriptor = getMethodDescriptor(sourceMethod);
+
+			if (name.equals(sourceMethod.getName()) && descriptor.equals(searchDescriptor)) {
+				return new MethodVisitor(ASM9, mv) {
+
+					Function<String, String> paramNameResolver = k -> k.equals(QUOTED_NAME) ? parameter.name() : k;
+					Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
+							.getOrDefault(unquote(k), k);
+					Function<String, Object> resolver = defaultMessageResolver.andThen(paramNameResolver)
+							.andThen(annotationValueResolver);
+
+					private boolean firstParamLoadStart;
+					private Type handledAnnotation;
+
+					@Override
+					public void visitLineNumber(int line, Label start) {
+						// ignore
+					}
+
+					public void visitLocalVariable(String name, String descriptor, String signature, Label start,
+							Label end, int index) {
+						// ignore, we would have to rewrite owner
+					}
+
+					@Override
+					public void visitMaxs(int maxStack, int maxLocals) {
+						// ignore
+					}
+
+					@Override
+					public void visitVarInsn(int opcode, int var) {
+						if (isLoadOpcode(opcode) && var == 0 + offset) {
+							firstParamLoadStart = true;
+						} else {
+							super.visitVarInsn(opcode, adjustOpcode(opcode, var, parameter));
+						}
+					}
+
+					private int adjustOpcode(int opcode, int var, ParameterInfo parameter) {
+						return isLoadOpcode(opcode) || isStoreOpcode(opcode) //
+								? var + parameter.index() - 1 - offset
+								: var;
+					}
+
+					public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
+							boolean isInterface) {
+						this.handledAnnotation = getObjectType(owner);
+						if (firstParamLoadStart) {
+							visitLdcInsn(annotationsLdcInsnValue(parameter, owner, name, descriptor));
+							firstParamLoadStart = false;
+						} else {
+							super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+						}
+					}
+
+					private Object annotationsLdcInsnValue(ParameterInfo parameter, String owner, String name,
+							String descriptor) {
+						var returnType = getReturnType(descriptor);
+						var valueFromClass = parameter.annotationValue(name).map(String::valueOf);
+						if (LONG_TYPE.equals(returnType)) {
+							return valueFromClass
+									.or(() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
+									.map(Long::valueOf).orElseThrow(() -> new IllegalStateException(
+											format("'%s' does not define attribute '%s'", owner, name)));
+						} else if (Type.getType(String.class).equals(returnType)) {
+							return valueFromClass
+									.or(() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
+									.orElseThrow(() -> new IllegalStateException(
+											format("'%s' does not define attribute '%s'", owner, name)));
+						}
+						throw new IllegalStateException("Unsupported type " + returnType);
+					};
+
+					@Override
+					public void visitInsn(int opcode) {
+						if (!isReturnOpcode(opcode)) {
+							super.visitInsn(opcode);
+						}
+					}
+
+					@Override
+					public void visitLdcInsn(Object value) {
+						super.visitLdcInsn(value instanceof String //
+								? NamedPlaceholders.replace((String) value, resolver) //
+								: value);
+					}
+
+					public void visitInvokeDynamicInsn(String name, String descriptor, Handle handle, Object... args) {
+						if ("makeConcatWithConstants".equals(name) && "(J)Ljava/lang/String;".equals(descriptor)
+								&& "makeConcatWithConstants".equals(handle.getName())
+								&& "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;"
+										.equals(handle.getDesc())
+								&& "java/lang/invoke/StringConcatFactory".equals(handle.getOwner()) && args.length >= 0
+								&& args[0] instanceof String) {
+							args[0] = format((String) args[0], parameter.name());
+						}
+						super.visitInvokeDynamicInsn(name, descriptor, handle, args);
+					};
+
+				};
+			}
+			return super.visitMethod(access, name, descriptor, signature, exceptions);
+		}
+	}
 
 	private final ClassReader classReader;
 
@@ -103,132 +215,7 @@ public class MethodInjector {
 	public void inject(MethodVisitor mv, ParameterInfo parameter, Method sourceMethod) {
 		int offset = isStatic(sourceMethod.getModifiers()) ? 0 : 1;
 
-		this.classReader.accept(new ClassVisitor(ASM9) {
-
-			@Override
-			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
-					String[] exceptions) {
-
-				String searchDescriptor = getMethodDescriptor(sourceMethod);
-
-				if (name.equals(sourceMethod.getName()) && descriptor.equals(searchDescriptor)) {
-					return new MethodVisitor(ASM9, mv) {
-
-						Function<String, String> paramNameResolver = k -> k.equals(QUOTED_NAME) ? parameter.name() : k;
-						Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
-								.getOrDefault(unquote(k), k);
-						Function<String, Object> resolver = defaultMessageResolver.andThen(paramNameResolver)
-								.andThen(annotationValueResolver);
-
-						private boolean firstParamLoadStart;
-						private Type handledAnnotation;
-
-						@Override
-						public void visitLineNumber(int line, Label start) {
-							// ignore
-						}
-
-						public void visitLocalVariable(String name, String descriptor, String signature, Label start,
-								Label end, int index) {
-							// ignore, we would have to rewrite owner
-						}
-
-						@Override
-						public void visitMaxs(int maxStack, int maxLocals) {
-							// ignore
-						}
-
-						@Override
-						public void visitVarInsn(int opcode, int var) {
-							if (isLoadOpcode(opcode) && var == 0 + offset) {
-								firstParamLoadStart = true;
-							} else {
-								super.visitVarInsn(opcode, adjustOpcode(opcode, var, parameter));
-							}
-						}
-
-						private int adjustOpcode(int opcode, int var, ParameterInfo parameter) {
-							return isLoadOpcode(opcode) || isStoreOpcode(opcode) //
-									? var + parameter.index() - 1 - offset //
-									: var;
-						}
-
-						public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
-								boolean isInterface) {
-							this.handledAnnotation = getObjectType(owner);
-							if (firstParamLoadStart) {
-								visitLdcInsn(annotationsLdcInsnValue(parameter, owner, name, descriptor));
-								firstParamLoadStart = false;
-							} else {
-								super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-							}
-						}
-
-						private Object annotationsLdcInsnValue(ParameterInfo parameter, String owner, String name,
-								String descriptor) {
-							var returnType = getReturnType(descriptor);
-							var valueFromClass = parameter.annotationValue(name).map(String::valueOf);
-							if (LONG_TYPE.equals(returnType)) {
-								return valueFromClass.or(
-										() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
-										.map(Long::valueOf).orElseThrow(() -> new IllegalStateException(
-												format("'%s' does not define attribute '%s'", owner, name)));
-							} else if (Type.getType(String.class).equals(returnType)) {
-								return valueFromClass.or(
-										() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
-										.orElseThrow(() -> new IllegalStateException(
-												format("'%s' does not define attribute '%s'", owner, name)));
-							}
-							throw new IllegalStateException("Unsupported type " + returnType);
-						};
-
-						@Override
-						public void visitInsn(int opcode) {
-							if (!isReturnOpcode(opcode)) {
-								super.visitInsn(opcode);
-							}
-						}
-
-						private boolean isLoadOpcode(int opcode) {
-							return opcode == ALOAD || opcode == ILOAD || opcode == LLOAD //
-									|| opcode == FLOAD || opcode == DLOAD;
-						}
-
-						private boolean isStoreOpcode(int opcode) {
-							return opcode == ASTORE || opcode == ISTORE || opcode == LSTORE //
-									|| opcode == FSTORE || opcode == DSTORE;
-						}
-
-						private boolean isReturnOpcode(int opcode) {
-							return opcode == RETURN || opcode == ARETURN || opcode == IRETURN //
-									|| opcode == LRETURN || opcode == FRETURN || opcode == DRETURN;
-						}
-
-						@Override
-						public void visitLdcInsn(Object value) {
-							super.visitLdcInsn(value instanceof String //
-									? NamedPlaceholders.replace((String) value, resolver) //
-									: value);
-						}
-
-						public void visitInvokeDynamicInsn(String name, String descriptor, Handle handle,
-								Object... args) {
-							if ("makeConcatWithConstants".equals(name) && "(J)Ljava/lang/String;".equals(descriptor)
-									&& "makeConcatWithConstants".equals(handle.getName())
-									&& "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;"
-											.equals(handle.getDesc())
-									&& "java/lang/invoke/StringConcatFactory".equals(handle.getOwner())
-									&& args.length >= 0 && args[0] instanceof String) {
-								args[0] = format((String) args[0], parameter.name());
-							}
-							super.visitInvokeDynamicInsn(name, descriptor, handle, args);
-						};
-
-					};
-				}
-				return super.visitMethod(access, name, descriptor, signature, exceptions);
-			}
-		}, 0);
+		this.classReader.accept(new MethodInjectorClassVisitor(ASM9, sourceMethod, mv, parameter, offset), 0);
 	}
 
 	private static String message(Class<?> clazz) {

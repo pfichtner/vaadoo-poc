@@ -1,18 +1,12 @@
 package com.github.pfichtner.vaadoo;
 
-import static java.lang.reflect.Array.newInstance;
 import static java.util.Collections.unmodifiableMap;
-import static net.bytebuddy.jar.asm.Type.ARRAY;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import net.bytebuddy.jar.asm.Type;
 
@@ -60,41 +54,11 @@ class ParameterInfo {
 	}
 
 	public Class<?> classtype() {
-		try {
-			switch (type.getSort()) {
-			case Type.BOOLEAN:
-				return boolean.class;
-			case Type.CHAR:
-				return char.class;
-			case Type.BYTE:
-				return byte.class;
-			case Type.SHORT:
-				return short.class;
-			case Type.INT:
-				return int.class;
-			case Type.FLOAT:
-				return float.class;
-			case Type.LONG:
-				return long.class;
-			case Type.DOUBLE:
-				return double.class;
-			case Type.VOID:
-				return void.class;
-			case Type.ARRAY:
-				var elementType = type.getElementType();
-				return newInstance(Class.forName(elementType.getClassName()), elementType.getDimensions()).getClass();
-			case Type.OBJECT:
-				return Class.forName(type.getClassName());
-			default:
-				throw new IllegalArgumentException("Unknown type: " + type);
-			}
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+		return AsmUtil.classtype(type);
 	}
 
 	public boolean isArray() {
-		return type.getSort() == ARRAY;
+		return AsmUtil.isArray(type);
 	}
 
 	public String classname() {
