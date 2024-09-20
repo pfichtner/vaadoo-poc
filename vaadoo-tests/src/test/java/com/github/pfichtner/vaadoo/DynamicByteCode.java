@@ -2,6 +2,7 @@ package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -202,6 +203,9 @@ public final class DynamicByteCode {
 						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
 					} else if (annoValue instanceof String) {
 						annoBuilder = annoBuilder.define(entry.getKey(), (String) annoValue);
+					} else {
+						throw new IllegalStateException(
+								format("Unsupported type %s for %s", annoValue.getClass(), annoValue));
 					}
 				}
 
