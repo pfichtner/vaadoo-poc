@@ -3,12 +3,9 @@ package com.github.pfichtner.vaadoo;
 import static com.github.pfichtner.vaadoo.AsmUtil.isLoadOpcode;
 import static com.github.pfichtner.vaadoo.AsmUtil.isReturnOpcode;
 import static com.github.pfichtner.vaadoo.AsmUtil.isStoreOpcode;
-import static com.github.pfichtner.vaadoo.NamedPlaceholders.quote;
-import static com.github.pfichtner.vaadoo.NamedPlaceholders.unquote;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
-import static java.util.Map.entry;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
@@ -18,20 +15,11 @@ import static net.bytebuddy.jar.asm.Type.getReturnType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import net.bytebuddy.jar.asm.ClassReader;
 import net.bytebuddy.jar.asm.ClassVisitor;
 import net.bytebuddy.jar.asm.Handle;
@@ -66,14 +54,16 @@ public class MethodInjector {
 			if (name.equals(sourceMethod.getName()) && descriptor.equals(searchDescriptor)) {
 				return new MethodVisitor(ASM9, mv) {
 
-					Function<String, String> paramNameResolver = k -> k.equals(QUOTED_NAME) ? parameter.name() : k;
-					Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
-							.getOrDefault(unquote(k), k);
-					Function<String, Object> resolver = defaultMessageResolver.andThen(paramNameResolver)
-							.andThen(annotationValueResolver);
-
 					private boolean firstParamLoadStart;
 					private Type handledAnnotation;
+
+					private final Function<String, String> rbResolver = Resources::message;
+					private final Function<String, String> paramNameResolver = k -> k.equals(NAME) ? parameter.name()
+							: k;
+					private final Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
+							.getOrDefault(k, k);
+					private final Function<String, Object> resolver = rbResolver.andThen(paramNameResolver)
+							.andThen(annotationValueResolver);
 
 					@Override
 					public void visitLineNumber(int line, Label start) {
@@ -168,35 +158,7 @@ public class MethodInjector {
 
 	private final ClassReader classReader;
 
-	private static final String NAME = "{@@@name@@@}";
-	private static final String QUOTED_NAME = quote("@@@name@@@");
-
-	private final static Map<String, String> defaultMessages = Map.ofEntries( //
-			entry(message(Null.class), format("%s must be null", NAME)), //
-			entry(message(NotNull.class), format("%s must not be null", NAME)), //
-			entry(message(NotBlank.class), format("%s must not be blank", NAME)), //
-			entry(message(NotEmpty.class), format("%s must not be empty", NAME)), //
-			entry(message(AssertTrue.class), format("%s must be true", NAME)), //
-			entry(message(AssertFalse.class), format("%s must be false", NAME)), //
-			entry(message(Min.class), format("%s must be greater than or equal to {value}", NAME)), //
-			entry(message(Max.class), format("%s must be less than or equal to {value}", NAME)) //
-
-//			entry(message(DecimalMax.class), format("%s must be less than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
-//			entry(message(DecimalMin.class), format("%s must be greater than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
-//			entry(message(Digits.class), format("%s numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected)", NAME)), //
-//			entry(message(Email.class), format("%s must be a well-formed email address", NAME)), //
-//			entry(message(Future.class), format("%s must be a future date", NAME)), //
-//			entry(message(FutureOrPresent.class), format("%s must be a date in the present or in the future", NAME)), //
-//			entry(message(Negative.class), format("%s must be less than 0", NAME)), //
-//			entry(message(NegativeOrZero.class), format("%s must be less than or equal to 0", NAME)), //
-//			entry(message(Past.class), format("%s must be a past date", NAME)), //
-//			entry(message(PastOrPresent.class), format("%s must be a date in the past or in the present", NAME)), //
-//			entry(message(Pattern.class), format("%s must match \"{regexp}\"", NAME)), //
-//			entry(message(Positive.class), format("%s must be greater than 0", NAME)), //
-//			entry(message(PositiveOrZero.class), format("%s must be greater than or equal to 0", NAME)), //
-//			entry(message(Size.class), format("%s size must be between {min} and {max}", NAME)) //
-	);
-	private static final Function<String, String> defaultMessageResolver = k -> defaultMessages.getOrDefault(k, k);
+	private static final String NAME = "@@@NAME@@@";
 
 	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz) {
 		String className = clazz.getName().replace('.', '/') + ".class";
@@ -216,10 +178,6 @@ public class MethodInjector {
 		int offset = isStatic(sourceMethod.getModifiers()) ? 0 : 1;
 
 		this.classReader.accept(new MethodInjectorClassVisitor(ASM9, sourceMethod, mv, parameter, offset), 0);
-	}
-
-	private static String message(Class<?> clazz) {
-		return getDefaultValue(clazz, "message");
 	}
 
 	private static String defaultValue(String className, String name) {
