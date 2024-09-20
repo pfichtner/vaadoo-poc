@@ -1,9 +1,12 @@
 package com.github.pfichtner.vaadoo;
 
 import static java.lang.reflect.Array.newInstance;
+import static java.util.Collections.unmodifiableMap;
 import static net.bytebuddy.jar.asm.Type.ARRAY;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ class ParameterInfo {
 	private Type type;
 	private final List<String> annotations = new ArrayList<>();
 	private final Map<String, Object> annotationValues = new HashMap<String, Object>();
+	private final Map<String, Object> annotationValues_ = unmodifiableMap(annotationValues);
 
 	public ParameterInfo(int index) {
 		this.index = index;
@@ -113,8 +117,8 @@ class ParameterInfo {
 		return Optional.ofNullable(annotationValues.get(key));
 	}
 
-	public Stream<Entry<String, Object>> annotationValues() {
-		return annotationValues.entrySet().stream();
+	public Map<String, Object> annotationValues() {
+		return annotationValues_;
 	}
 
 	@Override

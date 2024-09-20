@@ -1,11 +1,11 @@
 package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.NamedPlaceholders.quote;
+import static com.github.pfichtner.vaadoo.NamedPlaceholders.unquote;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Map.entry;
-import static java.util.stream.Collectors.toMap;
 import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.ARETURN;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
@@ -31,9 +31,9 @@ import static net.bytebuddy.jar.asm.Type.getReturnType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
@@ -54,8 +54,37 @@ import net.bytebuddy.jar.asm.Type;
 
 public class MethodInjector {
 
-	private static final String NAME = "{@@@name@@@}";
 	private final ClassReader classReader;
+
+	private static final String NAME = "{@@@name@@@}";
+	private static final String QUOTED_NAME = quote("@@@name@@@");
+
+	private final static Map<String, String> defaultMessages = Map.ofEntries( //
+			entry(message(Null.class), format("%s must be null", NAME)), //
+			entry(message(NotNull.class), format("%s must not be null", NAME)), //
+			entry(message(NotBlank.class), format("%s must not be blank", NAME)), //
+			entry(message(NotEmpty.class), format("%s must not be empty", NAME)), //
+			entry(message(AssertTrue.class), format("%s must be true", NAME)), //
+			entry(message(AssertFalse.class), format("%s must be false", NAME)), //
+			entry(message(Min.class), format("%s must be greater than or equal to {value}", NAME)), //
+			entry(message(Max.class), format("%s must be less than or equal to {value}", NAME)) //
+
+//			entry(message(DecimalMax.class), format("%s must be less than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
+//			entry(message(DecimalMin.class), format("%s must be greater than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
+//			entry(message(Digits.class), format("%s numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected)", NAME)), //
+//			entry(message(Email.class), format("%s must be a well-formed email address", NAME)), //
+//			entry(message(Future.class), format("%s must be a future date", NAME)), //
+//			entry(message(FutureOrPresent.class), format("%s must be a date in the present or in the future", NAME)), //
+//			entry(message(Negative.class), format("%s must be less than 0", NAME)), //
+//			entry(message(NegativeOrZero.class), format("%s must be less than or equal to 0", NAME)), //
+//			entry(message(Past.class), format("%s must be a past date", NAME)), //
+//			entry(message(PastOrPresent.class), format("%s must be a date in the past or in the present", NAME)), //
+//			entry(message(Pattern.class), format("%s must match \"{regexp}\"", NAME)), //
+//			entry(message(Positive.class), format("%s must be greater than 0", NAME)), //
+//			entry(message(PositiveOrZero.class), format("%s must be greater than or equal to 0", NAME)), //
+//			entry(message(Size.class), format("%s size must be between {min} and {max}", NAME)) //
+	);
+	private static final Function<String, String> defaultMessageResolver = k -> defaultMessages.getOrDefault(k, k);
 
 	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz) {
 		String className = clazz.getName().replace('.', '/') + ".class";
@@ -85,31 +114,11 @@ public class MethodInjector {
 				if (name.equals(sourceMethod.getName()) && descriptor.equals(searchDescriptor)) {
 					return new MethodVisitor(ASM9, mv) {
 
-						private final Map<String, String> defaultMessages = Map.ofEntries( //
-								entry(message(Null.class), format("%s must be null", NAME)), //
-								entry(message(NotNull.class), format("%s must not be null", NAME)), //
-								entry(message(NotBlank.class), format("%s must not be blank", NAME)), //
-								entry(message(NotEmpty.class), format("%s must not be empty", NAME)), //
-								entry(message(AssertTrue.class), format("%s must be true", NAME)), //
-								entry(message(AssertFalse.class), format("%s must be false", NAME)), //
-								entry(message(Min.class), format("%s must be greater than or equal to {value}", NAME)), //
-								entry(message(Max.class), format("%s must be less than or equal to {value}", NAME)) //
-
-//								entry(message(DecimalMax.class), format("%s must be less than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
-//								entry(message(DecimalMin.class), format("%s must be greater than ${inclusive == true ? 'or equal to ' : ''}{value}", NAME)), //
-//								entry(message(Digits.class), format("%s numeric value out of bounds (<{integer} digits>.<{fraction} digits> expected)", NAME)), //
-//								entry(message(Email.class), format("%s must be a well-formed email address", NAME)), //
-//								entry(message(Future.class), format("%s must be a future date", NAME)), //
-//								entry(message(FutureOrPresent.class), format("%s must be a date in the present or in the future", NAME)), //
-//								entry(message(Negative.class), format("%s must be less than 0", NAME)), //
-//								entry(message(NegativeOrZero.class), format("%s must be less than or equal to 0", NAME)), //
-//								entry(message(Past.class), format("%s must be a past date", NAME)), //
-//								entry(message(PastOrPresent.class), format("%s must be a date in the past or in the present", NAME)), //
-//								entry(message(Pattern.class), format("%s must match \"{regexp}\"", NAME)), //
-//								entry(message(Positive.class), format("%s must be greater than 0", NAME)), //
-//								entry(message(PositiveOrZero.class), format("%s must be greater than or equal to 0", NAME)), //
-//								entry(message(Size.class), format("%s size must be between {min} and {max}", NAME)) //
-						);
+						Function<String, String> paramNameResolver = k -> k.equals(QUOTED_NAME) ? parameter.name() : k;
+						Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
+								.getOrDefault(unquote(k), k);
+						Function<String, Object> resolver = defaultMessageResolver.andThen(paramNameResolver)
+								.andThen(annotationValueResolver);
 
 						private boolean firstParamLoadStart;
 						private Type handledAnnotation;
@@ -198,46 +207,8 @@ public class MethodInjector {
 						@Override
 						public void visitLdcInsn(Object value) {
 							super.visitLdcInsn(value instanceof String //
-									? formatMessage(parameter, (String) value) //
+									? NamedPlaceholders.replace((String) value, resolver) //
 									: value);
-						}
-
-						private String formatMessage(ParameterInfo parameter, String template) {
-							return NamedPlaceholders.replace(template, replacements(parameter));
-						}
-
-						private Map<String, Object> replacements(ParameterInfo parameter) {
-							Map<String, Object> mutable = new HashMap<>(defaultMessages);
-							mutable.put(quote("@@@name@@@"), parameter.name());
-							mutable.putAll(parameter.annotationValues()
-									.collect(toMap(k -> quote(k.getKey()), Map.Entry::getValue)));
-							return mutable;
-						}
-
-						private String defaultValue(String className, String name) {
-							try {
-								return defaultValue(Class.forName(className), name);
-							} catch (ClassNotFoundException e) {
-								throw new IllegalStateException(e);
-							}
-						}
-
-						private String message(Class<?> clazz) {
-							return getDefaultValue(clazz, "message");
-						}
-
-						private String defaultValue(Class<?> clazz, String name) {
-							return getDefaultValue(clazz, name);
-						}
-
-						private String getDefaultValue(Class<?> clazz, String name) {
-							return stream(clazz //
-									.getMethods()) //
-									.filter(m -> name.equals(m.getName())) //
-									.findFirst() //
-									.map(Method::getDefaultValue) //
-									.map(String::valueOf) //
-									.orElse(null);
 						}
 
 						public void visitInvokeDynamicInsn(String name, String descriptor, Handle handle,
@@ -258,6 +229,32 @@ public class MethodInjector {
 				return super.visitMethod(access, name, descriptor, signature, exceptions);
 			}
 		}, 0);
+	}
+
+	private static String message(Class<?> clazz) {
+		return getDefaultValue(clazz, "message");
+	}
+
+	private static String defaultValue(String className, String name) {
+		try {
+			return defaultValue(Class.forName(className), name);
+		} catch (ClassNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private static String defaultValue(Class<?> clazz, String name) {
+		return getDefaultValue(clazz, name);
+	}
+
+	private static String getDefaultValue(Class<?> clazz, String name) {
+		return stream(clazz //
+				.getMethods()) //
+				.filter(m -> name.equals(m.getName())) //
+				.findFirst() //
+				.map(Method::getDefaultValue) //
+				.map(String::valueOf) //
+				.orElse(null);
 	}
 
 }
