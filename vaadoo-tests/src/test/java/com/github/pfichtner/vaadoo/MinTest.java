@@ -11,8 +11,13 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.NUMBERS;
 import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.Map;
+
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Example;
@@ -165,6 +170,31 @@ class MinTest {
 				Map.of("value", value.flooredLong(), "message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
+	}
+
+	@Property
+	void primitiveInvalidParameterType( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types(not = true, value = { int.class, long.class, short.class, byte.class }) //
+			Example example) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(
+				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
+		transformError(() -> transform(dynamicClass(config))).hasMessageContaining(example.type().getName());
+	}
+
+	@Property
+	void objectInvalidParameterType( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(not = true, value = NUMBERS) //
+			Example example) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(
+				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
+		transformError(() -> transform(dynamicClass(config))).hasMessageContaining(example.type().getName());
+	}
+
+	private AbstractThrowableAssert<?, IllegalStateException> transformError(ThrowingCallable callable) {
+		return assertThat(catchIllegalStateException(callable)).hasMessageContainingAll(Min.class.getName(),
+				"not allowed");
 	}
 
 }

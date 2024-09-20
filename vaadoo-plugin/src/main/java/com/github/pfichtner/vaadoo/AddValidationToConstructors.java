@@ -1,6 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.ClassWriter.COMPUTE_FRAMES;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
@@ -150,15 +151,30 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 					}
 					throw new IllegalStateException(
 							format("Invocation of %s with parameter of type %s would fail", m, parameters[1]));
-				}).orElseThrow(() -> new IllegalStateException(
-						format("No fragment with parameters %s found", Arrays.toString(parameters))));
+				}).orElseThrow(() -> unsupportedType(parameters));
 
 			}
 
+			private IllegalStateException unsupportedType(Class<?>... parameters) {
+				assert parameters.length >= 2 : "Expected to get 2 parameters, got " + Arrays.toString(parameters);
+				var supported = codeFragmentMethods.stream() //
+						.filter(this::isCheckMethod) //
+						.filter(m -> m.getParameterCount() > 1) //
+						.filter(m -> m.getParameterTypes()[0] == parameters[0]) //
+						.map(m -> m.getParameterTypes()[1].getName()) //
+						.collect(toList());
+				return new IllegalStateException(
+						format("Annotation %s on type %s not allowed, allowed only on types: %s",
+								parameters[0].getName(), parameters[1].getName(), supported));
+			}
+
 			private Optional<Method> checkMethod(Class<?>... parameters) {
-				return codeFragmentMethods.stream()
-						.filter(m -> "check".equals(m.getName()) && Arrays.equals(m.getParameterTypes(), parameters))
-						.findFirst();
+				return codeFragmentMethods.stream().filter(this::isCheckMethod)
+						.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
+			}
+
+			private boolean isCheckMethod(Method m) {
+				return "check".equals(m.getName());
 			}
 
 			@SafeVarargs
