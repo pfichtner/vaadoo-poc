@@ -2,9 +2,12 @@ package com.github.pfichtner.vaadoo.supplier;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +22,8 @@ public class Primitives implements ArbitrarySupplier<Example> {
 	@Target(PARAMETER)
 	public static @interface Types {
 		Class<?>[] value();
+
+		boolean not() default false;
 	}
 
 	private static final Map<Class<?>, Arbitrary<?>> suppliers = Map.of( //
@@ -39,12 +44,19 @@ public class Primitives implements ArbitrarySupplier<Example> {
 
 	@Override
 	public Arbitrary<Example> supplyFor(TypeUsage targetType) {
-		return arbitrariesFor(targetType.findAnnotation(Types.class) //
+		var annotation = targetType.findAnnotation(Types.class);
+		var not = annotation.map(Types::not).filter(Boolean.TRUE::equals).isPresent();
+		var all = annotation //
 				.map(Types::value).map(Set::of) //
-				.orElseGet(suppliers::keySet));
+				.orElseGet(suppliers::keySet);
+		return arbitrariesFor(not ? negate(all) : all);
 	}
 
-	private Arbitrary<Example> arbitrariesFor(Set<Class<?>> classses) {
+	private Collection<Class<?>> negate(Collection<Class<?>> notAllowed) {
+		return suppliers.keySet().stream().filter(not(notAllowed::contains)).collect(toSet());
+	}
+
+	private Arbitrary<Example> arbitrariesFor(Collection<Class<?>> classses) {
 		return Arbitraries.of(classses).flatMap(c -> suppliers.get(c).map(t -> new Example(c, t)));
 	}
 }

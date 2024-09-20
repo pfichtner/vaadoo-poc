@@ -43,6 +43,8 @@ public class Classes implements ArbitrarySupplier<Example> {
 		SubTypes[] value();
 
 		Class<?>[] ofType() default {};
+
+		boolean not() default false;
 	}
 
 	public static enum SubTypes {
@@ -84,13 +86,13 @@ public class Classes implements ArbitrarySupplier<Example> {
 			entry(BigDecimal.class, Arbitraries.bigDecimals()) //
 	);
 
-	private List<Class<?>> allClasses(Set<SubTypes> subTypes) {
-		return subTypes.stream().map(SubTypes::types).flatMap(Collection::stream).toList();
+	private Collection<Class<?>> allClasses(Set<SubTypes> subTypes) {
+		return subTypes.stream().map(SubTypes::types).flatMap(Collection::stream).collect(toSet());
 	}
 
 	@Override
 	public Arbitrary<Example> get() {
-		var allowed = allClasses(allOf(SubTypes.class)).stream().toList();
+		var allowed = allClasses(allOf(SubTypes.class)).stream().collect(toSet());
 		return arbitraries(allowed);
 	}
 
@@ -102,7 +104,13 @@ public class Classes implements ArbitrarySupplier<Example> {
 				.collect(toSet());
 		var allowed = allClasses(allOf(SubTypes.class)).stream().filter(filter(annotation))
 				.filter(c -> isSubtypeOfOneOf(c, allowedSuperTypes)).collect(toSet());
-		return arbitraries(allowed);
+		return annotation.map(Types::not).filter(Boolean.TRUE::equals).isPresent() //
+				? arbitraries(negate(allowed)) //
+				: arbitraries(allowed);
+	}
+
+	private Collection<Class<?>> negate(Set<Class<?>> notAllowed) {
+		return allClasses(allOf(SubTypes.class)).stream().filter(not(notAllowed::contains)).collect(toSet());
 	}
 
 	private static Predicate<Class<?>> filter(Optional<Types> annotation) {
