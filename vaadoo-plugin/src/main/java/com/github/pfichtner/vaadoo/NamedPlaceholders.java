@@ -1,6 +1,5 @@
 package com.github.pfichtner.vaadoo;
 
-import static java.lang.String.format;
 import static java.util.regex.Matcher.quoteReplacement;
 import static java.util.regex.Pattern.compile;
 
@@ -16,7 +15,6 @@ public final class NamedPlaceholders {
 		super();
 	}
 
-
 	public static String replace(String template, Map<String, Object> replacements) {
 		return replace(template, k -> replacements.getOrDefault(k, k));
 	}
@@ -26,14 +24,14 @@ public final class NamedPlaceholders {
 		String result = template;
 		while (true) {
 			Matcher matcher = pattern.matcher(result);
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			boolean replaced = false;
 			while (matcher.find()) {
 				String key = matcher.group(1);
-				String replacement = resolver.apply(key).toString();
+				Object replacement = resolver.apply(key);
 				if (!Objects.equals(replacement, key)) {
 					replaced = true;
-					matcher.appendReplacement(sb, quoteReplacement(replacement));
+					matcher.appendReplacement(sb, quoteReplacement(String.valueOf(replacement)));
 				}
 			}
 			matcher.appendTail(sb);
