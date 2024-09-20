@@ -146,11 +146,13 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 			private Method checkMethod(ParameterInfo parameter, Class<?>... parameters) {
 				return checkMethod(parameters).map(m -> {
-					if (m.getParameterTypes()[1].isAssignableFrom(parameters[1])) {
+					var supportedType = m.getParameterTypes()[1];
+					if (supportedType.isAssignableFrom(parameter.classtype())) {
 						return m;
 					}
 					throw new IllegalStateException(
-							format("Invocation of %s with parameter of type %s would fail", m, parameters[1]));
+							format("Annotation %s on type %s not allowed, allowed only on type: %s",
+									parameters[0].getName(), parameter.classtype().getName(), supportedType));
 				}).orElseThrow(() -> unsupportedType(parameters));
 
 			}

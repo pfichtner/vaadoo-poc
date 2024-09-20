@@ -10,6 +10,8 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.CharSequences.Type.NON_BLANKS;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCES;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.Map;
 
@@ -59,9 +61,10 @@ class NotBlankTest {
 	}
 
 	@Property
-	void customMessage(@ForAll(supplier = Classes.class) //
-	@Classes.Types(CHARSEQUENCES) //
-	Example example, //
+	void customMessage( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(CHARSEQUENCES) //
+			Example example, //
 			@WithNull //
 			@ForAll(supplier = CharSequences.class) //
 			@CharSequences.Types(BLANKS) //
@@ -73,6 +76,18 @@ class NotBlankTest {
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message,
 				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
+	}
+
+	@Property
+	void invalidParameterType( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(not = true, value = CHARSEQUENCES) //
+			Example example //
+	) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(entry(example.type(), "param", "X").withAnno(NotBlank.class));
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(NotBlank.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
 	}
 
 }
