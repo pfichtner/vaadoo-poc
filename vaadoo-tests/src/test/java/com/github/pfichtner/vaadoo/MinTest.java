@@ -6,6 +6,7 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.dynamicClass;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.lowerBoundInLongRange;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.randomConfigWith;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.transform;
+import static com.github.pfichtner.vaadoo.DynamicByteCode.transformError;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.upperBoundInLongRange;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
@@ -190,11 +191,6 @@ class MinTest {
 		var config = randomConfigWith(
 				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
 		transformError(() -> transform(dynamicClass(config))).hasMessageContaining(example.type().getName());
-	}
-
-	private AbstractThrowableAssert<?, IllegalStateException> transformError(ThrowingCallable callable) {
-		return assertThat(catchIllegalStateException(callable)).hasMessageContainingAll(Min.class.getName(),
-				"not allowed");
 	}
 
 }
