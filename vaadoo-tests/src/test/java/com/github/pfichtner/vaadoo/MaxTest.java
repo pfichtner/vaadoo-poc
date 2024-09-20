@@ -12,6 +12,7 @@ import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.NUMBERS;
 import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
@@ -25,6 +26,8 @@ import net.jqwik.api.Property;
 
 class MaxTest {
 
+	private static final Class<? extends Annotation> ANNO_CLASS = Max.class;
+
 	@Property
 	void primitiveValueLowerMax( //
 			@ForAll(supplier = Primitives.class) //
@@ -35,7 +38,7 @@ class MaxTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMin());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -50,7 +53,7 @@ class MaxTest {
 		var parameterName = "param";
 		var value = numberWrapper(example.type(), example.value());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -69,7 +72,7 @@ class MaxTest {
 		Assume.that(upperBoundInLongRange(sub));
 		@SuppressWarnings("unchecked")
 		var config = randomConfigWith(
-				entry(value.type(), parameterName, sub).withAnno(Max.class, Map.of("value", value.roundedLong())));
+				entry(value.type(), parameterName, sub).withAnno(ANNO_CLASS, Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -84,7 +87,7 @@ class MaxTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(upperBoundInLongRange(value.value()));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -96,7 +99,7 @@ class MaxTest {
 		var parameterName = "param";
 		var value = numberWrapper(example.type(), example.value());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, nullValue()).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, nullValue()).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -113,7 +116,7 @@ class MaxTest {
 		Assume.that(!value.isMax());
 		Assume.that(lowerBoundInLongRange(value.value()));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must be less than or equal to " + value.roundedLong(),
@@ -130,7 +133,7 @@ class MaxTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMax());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must be less than or equal to " + value.roundedLong(),
@@ -146,7 +149,7 @@ class MaxTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMax());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), "param", value.add(1)).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), "param", value.add(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong(), "message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
@@ -161,7 +164,7 @@ class MaxTest {
 		Number add = value.add(1);
 		Assume.that(lowerBoundInLongRange(add));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), "param", add).withAnno(Max.class,
+		var config = randomConfigWith(entry(value.type(), "param", add).withAnno(ANNO_CLASS,
 				Map.of("value", value.roundedLong(), "message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);

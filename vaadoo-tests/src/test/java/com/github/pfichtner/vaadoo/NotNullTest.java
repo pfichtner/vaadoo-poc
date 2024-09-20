@@ -8,6 +8,7 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.transform;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
@@ -19,9 +20,11 @@ import net.jqwik.api.Property;
 
 class NotNullTest {
 
+	private static final Class<? extends Annotation> ANNO_CLASS = NotNull.class;
+
 	@Property
 	void oks(@ForAll(supplier = Classes.class) Example example) throws Exception {
-		var config = randomConfigWith(entry(example.type(), "param", example.value()).withAnno(NotNull.class));
+		var config = randomConfigWith(entry(example.type(), "param", example.value()).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -29,7 +32,7 @@ class NotNullTest {
 	@Property
 	void noks(@ForAll(supplier = Classes.class) Example example) throws Exception {
 		var parameterName = "param";
-		var config = randomConfigWith(entry(example.type(), parameterName, nullValue()).withAnno(NotNull.class));
+		var config = randomConfigWith(entry(example.type(), parameterName, nullValue()).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must not be null", NullPointerException.class);
 	}
@@ -37,7 +40,7 @@ class NotNullTest {
 	@Property
 	void customMessage(@ForAll(supplier = Classes.class) Example example, @ForAll String message) throws Exception {
 		var config = randomConfigWith(
-				entry(example.type(), "param", nullValue()).withAnno(NotNull.class, Map.of("message", message)));
+				entry(example.type(), "param", nullValue()).withAnno(ANNO_CLASS, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, NullPointerException.class);
 	}

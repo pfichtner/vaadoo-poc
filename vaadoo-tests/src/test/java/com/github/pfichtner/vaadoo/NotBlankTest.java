@@ -13,6 +13,7 @@ import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.CHARSEQUENCE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.CharSequences;
@@ -26,6 +27,8 @@ import net.jqwik.api.constraints.WithNull;
 
 class NotBlankTest {
 
+	private static final Class<? extends Annotation> ANNO_CLASS = NotBlank.class;
+
 	@Property
 	void oks( //
 			@ForAll(supplier = Classes.class) //
@@ -35,7 +38,7 @@ class NotBlankTest {
 			@CharSequences.Types(NON_BLANKS) //
 			CharSequence nonBlank //
 	) throws Exception {
-		var config = randomConfigWith(entry(example.type(), "param", nonBlank).withAnno(NotBlank.class));
+		var config = randomConfigWith(entry(example.type(), "param", nonBlank).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -53,7 +56,7 @@ class NotBlankTest {
 		var parameterName = "param";
 		boolean stringIsNull = blank == null;
 		var config = randomConfigWith(
-				entry(casted(example.type(), CharSequence.class), parameterName, blank).withAnno(NotBlank.class));
+				entry(casted(example.type(), CharSequence.class), parameterName, blank).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, //
 				parameterName + " must not be blank",
@@ -72,7 +75,7 @@ class NotBlankTest {
 			@ForAll String message) throws Exception {
 		boolean stringIsNull = blank == null;
 		var config = randomConfigWith(
-				entry(example.type(), "param", blank).withAnno(NotBlank.class, Map.of("message", message)));
+				entry(example.type(), "param", blank).withAnno(ANNO_CLASS, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message,
 				stringIsNull ? NullPointerException.class : IllegalArgumentException.class);
@@ -84,9 +87,9 @@ class NotBlankTest {
 			@Classes.Types(not = true, value = CHARSEQUENCES) //
 			Example example //
 	) throws NoSuchMethodException, ClassNotFoundException {
-		var config = randomConfigWith(entry(example.type(), "param", "X").withAnno(NotBlank.class));
+		var config = randomConfigWith(entry(example.type(), "param", "X").withAnno(ANNO_CLASS));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(NotBlank.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 

@@ -14,6 +14,7 @@ import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
@@ -27,6 +28,8 @@ import net.jqwik.api.Property;
 
 class MinTest {
 
+	private static final Class<? extends Annotation> ANNO_CLASS = Min.class;
+
 	@Property
 	void primitiveValueLowerMin( //
 			@ForAll(supplier = Primitives.class) //
@@ -37,7 +40,7 @@ class MinTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMin());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.sub(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must be greater than or equal to " + value.flooredLong(),
@@ -53,7 +56,7 @@ class MinTest {
 		var parameterName = "param";
 		var value = numberWrapper(example.type(), example.value());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -72,7 +75,7 @@ class MinTest {
 		Assume.that(upperBoundInLongRange(sub));
 		@SuppressWarnings("unchecked")
 		var config = randomConfigWith(
-				entry(value.type(), parameterName, sub).withAnno(Min.class, Map.of("value", value.flooredLong())));
+				entry(value.type(), parameterName, sub).withAnno(ANNO_CLASS, Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must be greater than or equal to " + value.flooredLong(),
 				IllegalArgumentException.class);
@@ -88,7 +91,7 @@ class MinTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(lowerBoundInLongRange(value.value()));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.value()).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -100,7 +103,7 @@ class MinTest {
 		var parameterName = "param";
 		var value = numberWrapper(example.type(), example.value());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, nullValue()).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, nullValue()).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -117,7 +120,7 @@ class MinTest {
 		Assume.that(!value.isMax());
 		Assume.that(lowerBoundInLongRange(value.value()));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -133,7 +136,7 @@ class MinTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMax());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), parameterName, value.add(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong())));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
@@ -148,7 +151,7 @@ class MinTest {
 		var value = numberWrapper(example.type(), example.value());
 		Assume.that(!value.isMin());
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), "param", value.sub(1)).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), "param", value.sub(1)).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong(), "message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
@@ -163,7 +166,7 @@ class MinTest {
 		Number sub = value.sub(1);
 		Assume.that(upperBoundInLongRange(sub));
 		@SuppressWarnings("unchecked")
-		var config = randomConfigWith(entry(value.type(), "param", sub).withAnno(Min.class,
+		var config = randomConfigWith(entry(value.type(), "param", sub).withAnno(ANNO_CLASS,
 				Map.of("value", value.flooredLong(), "message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
@@ -175,9 +178,9 @@ class MinTest {
 			@Primitives.Types(not = true, value = { int.class, long.class, short.class, byte.class }) //
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
 		var config = randomConfigWith(
-				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
+				entry(example.type(), "param", nullValue()).withAnno(ANNO_CLASS, Map.of("value", 0L)));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(Min.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 
@@ -187,9 +190,9 @@ class MinTest {
 			@Classes.Types(not = true, value = NUMBERS) //
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
 		var config = randomConfigWith(
-				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
+				entry(example.type(), "param", nullValue()).withAnno(ANNO_CLASS, Map.of("value", 0L)));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(Min.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 

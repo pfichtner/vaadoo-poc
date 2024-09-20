@@ -13,6 +13,7 @@ import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
@@ -24,6 +25,8 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 
 class AssertTrueTest {
+
+	private static final Class<? extends Annotation> ANNO_CLASS = AssertTrue.class;
 
 	@Property
 	void primitives(@ForAll(supplier = Primitives.class) @Primitives.Types(boolean.class) Example example)
@@ -43,8 +46,7 @@ class AssertTrueTest {
 			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Example example)
 			throws Exception {
 		var parameterName = "param";
-		var config = randomConfigWith(
-				entry(Boolean.class, parameterName, (Boolean) nullValue()).withAnno(AssertTrue.class));
+		var config = randomConfigWith(entry(Boolean.class, parameterName, (Boolean) nullValue()).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -54,7 +56,7 @@ class AssertTrueTest {
 			@ForAll(supplier = Classes.class) @Classes.Types(value = WRAPPERS, ofType = Boolean.class) Example example,
 			@ForAll String message) throws Exception {
 		var config = randomConfigWith(
-				entry(example.type(), "param", false).withAnno(AssertTrue.class, Map.of("message", message)));
+				entry(example.type(), "param", false).withAnno(ANNO_CLASS, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
 	}
@@ -64,9 +66,9 @@ class AssertTrueTest {
 			@ForAll(supplier = Primitives.class) //
 			@Primitives.Types(not = true, value = boolean.class) //
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
-		var config = randomConfigWith(entry(example.type(), "param", true).withAnno(AssertTrue.class));
+		var config = randomConfigWith(entry(example.type(), "param", true).withAnno(ANNO_CLASS));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(AssertTrue.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 
@@ -75,9 +77,9 @@ class AssertTrueTest {
 			@ForAll(supplier = Classes.class) //
 			@Classes.Types(not = true, ofType = Boolean.class) //
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
-		var config = randomConfigWith(entry(example.type(), "param", Boolean.TRUE).withAnno(AssertTrue.class));
+		var config = randomConfigWith(entry(example.type(), "param", Boolean.TRUE).withAnno(ANNO_CLASS));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(AssertTrue.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 
@@ -85,7 +87,7 @@ class AssertTrueTest {
 		var parameterName = "param";
 		var value = (boolean) example.value();
 		var config = randomConfigWith(
-				entry(casted(example.type(), Boolean.class), parameterName, value).withAnno(AssertTrue.class));
+				entry(casted(example.type(), Boolean.class), parameterName, value).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		var execResult = provideExecException(transformed, config);
 		if (value) {

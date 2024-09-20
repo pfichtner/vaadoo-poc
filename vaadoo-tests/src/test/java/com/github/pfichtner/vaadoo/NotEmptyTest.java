@@ -15,6 +15,7 @@ import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
+import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
@@ -26,11 +27,13 @@ import net.jqwik.api.Property;
 
 class NotEmptyTest {
 
+	private static final Class<? extends Annotation> ANNO_CLASS = NotEmpty.class;
+
 	@Property
 	void oks(@ForAll(supplier = Classes.class) @Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS,
 			ARRAYS }) Example example) throws Exception {
 		var config = randomConfigWith(
-				entry(example.type(), "param", convertValue(example.value(), false)).withAnno(NotEmpty.class));
+				entry(example.type(), "param", convertValue(example.value(), false)).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertNoException(config, transformed);
 	}
@@ -40,7 +43,7 @@ class NotEmptyTest {
 			ARRAYS }) Example example) throws Exception {
 		var parameterName = "param";
 		var config = randomConfigWith(
-				entry(example.type(), parameterName, convertValue(example.value(), true)).withAnno(NotEmpty.class));
+				entry(example.type(), parameterName, convertValue(example.value(), true)).withAnno(ANNO_CLASS));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, parameterName + " must not be empty", IllegalArgumentException.class);
 	}
@@ -49,7 +52,7 @@ class NotEmptyTest {
 	void customMessage(@ForAll(supplier = Classes.class) @Classes.Types({ CHARSEQUENCES, COLLECTIONS, MAPS,
 			ARRAYS }) Example example, @ForAll String message) throws Exception {
 		var config = randomConfigWith(entry(example.type(), "param", convertValue(example.value(), true))
-				.withAnno(NotEmpty.class, Map.of("message", message)));
+				.withAnno(ANNO_CLASS, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
 	}
@@ -57,9 +60,9 @@ class NotEmptyTest {
 	@Property
 	void invalidParameterType(@ForAll(supplier = Classes.class) @Classes.Types(not = true, value = { CHARSEQUENCES,
 			COLLECTIONS, MAPS, ARRAYS }) Example example) throws NoSuchMethodException, ClassNotFoundException {
-		var config = randomConfigWith(entry(example.type(), "param", nullValue()).withAnno(NotEmpty.class));
+		var config = randomConfigWith(entry(example.type(), "param", nullValue()).withAnno(ANNO_CLASS));
 		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
-				.hasMessageContainingAll(NotEmpty.class.getName(), "not allowed")
+				.hasMessageContainingAll(ANNO_CLASS.getName(), "not allowed")
 				.hasMessageContaining(example.type().getName());
 	}
 
