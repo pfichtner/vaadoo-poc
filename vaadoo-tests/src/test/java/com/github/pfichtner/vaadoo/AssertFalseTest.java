@@ -10,6 +10,8 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.transform;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.supplier.Classes.SubTypes.WRAPPERS;
 import static com.github.pfichtner.vaadoo.supplier.Example.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.Map;
 
@@ -55,6 +57,28 @@ class AssertFalseTest {
 				entry(example.type(), "param", true).withAnno(AssertFalse.class, Map.of("message", message)));
 		var transformed = transform(dynamicClass(config));
 		assertException(config, transformed, message, IllegalArgumentException.class);
+	}
+
+	@Property
+	void primitiveInvalidParameterType( //
+			@ForAll(supplier = Primitives.class) //
+			@Primitives.Types(not = true, value = boolean.class) //
+			Example example) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(entry(example.type(), "param", false).withAnno(AssertFalse.class));
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(AssertFalse.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
+	}
+
+	@Property
+	void objectInvalidParameterType( //
+			@ForAll(supplier = Classes.class) //
+			@Classes.Types(not = true, ofType = Boolean.class) //
+			Example example) throws NoSuchMethodException, ClassNotFoundException {
+		var config = randomConfigWith(entry(example.type(), "param", Boolean.FALSE).withAnno(AssertFalse.class));
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(AssertFalse.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
 	}
 
 	private static void test(Example example) throws Exception {

@@ -6,7 +6,6 @@ import static com.github.pfichtner.vaadoo.DynamicByteCode.dynamicClass;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.lowerBoundInLongRange;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.randomConfigWith;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.transform;
-import static com.github.pfichtner.vaadoo.DynamicByteCode.transformError;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.upperBoundInLongRange;
 import static com.github.pfichtner.vaadoo.DynamicByteCode.ConfigEntry.entry;
 import static com.github.pfichtner.vaadoo.NumberWrapper.numberWrapper;
@@ -16,9 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.util.Map;
-
-import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
 import com.github.pfichtner.vaadoo.supplier.Classes;
 import com.github.pfichtner.vaadoo.supplier.Example;
@@ -180,7 +176,9 @@ class MinTest {
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
 		var config = randomConfigWith(
 				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
-		transformError(() -> transform(dynamicClass(config))).hasMessageContaining(example.type().getName());
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(Min.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
 	}
 
 	@Property
@@ -190,7 +188,9 @@ class MinTest {
 			Example example) throws NoSuchMethodException, ClassNotFoundException {
 		var config = randomConfigWith(
 				entry(example.type(), "param", nullValue()).withAnno(Min.class, Map.of("value", 0L)));
-		transformError(() -> transform(dynamicClass(config))).hasMessageContaining(example.type().getName());
+		assertThat(catchIllegalStateException(() -> transform(dynamicClass(config))))
+				.hasMessageContainingAll(Min.class.getName(), "not allowed")
+				.hasMessageContaining(example.type().getName());
 	}
 
 }

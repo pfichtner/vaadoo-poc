@@ -11,7 +11,6 @@ import static java.util.stream.Stream.concat;
 import static java.util.stream.Stream.empty;
 import static net.bytebuddy.description.modifier.Visibility.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchIllegalStateException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -25,12 +24,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.assertj.core.api.AbstractThrowableAssert;
-import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
-
 import com.google.common.base.Supplier;
 
-import jakarta.validation.constraints.Min;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.annotation.AnnotationDescription.Builder;
@@ -166,11 +161,6 @@ public final class DynamicByteCode {
 		}
 	}
 
-	public static AbstractThrowableAssert<?, IllegalStateException> transformError(ThrowingCallable callable) {
-		return assertThat(catchIllegalStateException(callable)).hasMessageContainingAll(Min.class.getName(),
-				"not allowed");
-	}
-
 	private static Class<?>[] types(List<ConfigEntry> values) {
 		return values.stream().map(ConfigEntry::paramType).toArray(Class[]::new);
 	}
@@ -209,10 +199,10 @@ public final class DynamicByteCode {
 
 				for (Entry<String, Object> entry : value.annoValues().entrySet()) {
 					Object annoValue = entry.getValue();
-					if (annoValue instanceof Long) {
-						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
-					} else if (annoValue instanceof String) {
+					if (annoValue instanceof String) {
 						annoBuilder = annoBuilder.define(entry.getKey(), (String) annoValue);
+					} else if (annoValue instanceof Long) {
+						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
 					} else {
 						throw new IllegalStateException(
 								format("Unsupported type %s for %s", annoValue.getClass(), annoValue));

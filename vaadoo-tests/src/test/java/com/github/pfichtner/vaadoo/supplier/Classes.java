@@ -40,7 +40,7 @@ public class Classes implements ArbitrarySupplier<Example> {
 	@Retention(RUNTIME)
 	@Target(PARAMETER)
 	public static @interface Types {
-		SubTypes[] value();
+		SubTypes[] value() default {};
 
 		Class<?>[] ofType() default {};
 
@@ -99,7 +99,8 @@ public class Classes implements ArbitrarySupplier<Example> {
 	@Override
 	public Arbitrary<Example> supplyFor(TypeUsage targetType) {
 		var annotation = targetType.findAnnotation(Types.class);
-		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).orElseGet(() -> allOf(SubTypes.class));
+		var onlyTheseTypesAreAllowd = annotation.map(Types::value).map(Set::of).filter(not(Set::isEmpty))
+				.orElseGet(() -> allOf(SubTypes.class));
 		var allowedSuperTypes = onlyTheseTypesAreAllowd.stream().map(SubTypes::types).flatMap(Collection::stream)
 				.collect(toSet());
 		var allowed = allClasses(allOf(SubTypes.class)).stream().filter(filter(annotation))
