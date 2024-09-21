@@ -79,4 +79,8 @@ This is not what vaadoo was thought for!
 ## Drawbacks
 - no runtime internationalization (i18n) since messages are copied during compile-time into the bytecode
 
+## Other projects/approaches
+- https://github.com/opensanca/service-validator
+
+
 
