@@ -2,13 +2,14 @@ package com.github.pfichtner.vaadoo.fragments.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static java.util.regex.Pattern.compile;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.IDN;
 import java.util.Collection;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
@@ -21,7 +22,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Pattern;
 
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
@@ -42,24 +42,21 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	}
 
 	@Override
-	public void check(Pattern pattern, CharSequence charSequence) {
+	public void check(jakarta.validation.constraints.Pattern pattern, CharSequence charSequence) {
 		if (charSequence != null) {
 			int flagValue = 0;
-			for (Pattern.Flag flag : pattern.flags()) {
+			for (jakarta.validation.constraints.Pattern.Flag flag : pattern.flags()) {
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
 			// field
-			checkArgument(java.util.regex.Pattern.compile(pattern.regexp(), flagValue).matcher(charSequence).matches(),
-					pattern.message());
+			checkArgument(compile(pattern.regexp(), flagValue).matcher(charSequence).matches(), pattern.message());
 		}
 	}
 
 	@Override
 	public void check(Email email, CharSequence charSequence) {
-
-		if (charSequence == null || charSequence.length() == 0) {
-		} else {
+		if (charSequence != null && charSequence.length() != 0) {
 			String stringValue = charSequence.toString();
 			int splitPosition = stringValue.lastIndexOf('@');
 
@@ -68,26 +65,22 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 			String localPart = stringValue.substring(0, splitPosition);
 			String domainPart = stringValue.substring(splitPosition + 1);
 
-			checkArgument(
-					localPart.length() <= 64 && java.util.regex.Pattern
-							.compile("(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
-									+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")"
-									+ "+\")" + "(?:\\." + "(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
-									+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")"
-									+ "+\")" + ")*", java.util.regex.Pattern.CASE_INSENSITIVE)
-							.matcher(localPart).matches(),
-					email.message());
+			checkArgument(localPart.length() <= 64 && compile("(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]"
+					+ "+|\"" + "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")"
+					+ "+\")" + "(?:\\." + "(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
+					+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")" + "+\")" + ")*",
+					CASE_INSENSITIVE).matcher(localPart).matches(), email.message());
 
 			boolean validEmailDomainAddress = false;
 			try {
 				validEmailDomainAddress = !domainPart.endsWith(".") && IDN.toASCII(domainPart).length() <= 255
-						&& java.util.regex.Pattern.compile("(?:" + "[a-z\u0080-\uFFFF0-9!#$%&'*+/=?^_`{|}~]" + "-*)*"
+						&& compile("(?:" + "[a-z\u0080-\uFFFF0-9!#$%&'*+/=?^_`{|}~]" + "-*)*"
 								+ "[a-z\u0080-\uFFFF0-9!#$%&'*+/=?^_`{|}~]" + "+" + "+(?:\\." + "(?:"
 								+ "[a-z\u0080-\uFFFF0-9!#$%&'*+/=?^_`{|}~]" + "-*)*"
 								+ "[a-z\u0080-\uFFFF0-9!#$%&'*+/=?^_`{|}~]" + "+" + "+)*" + "|\\["
 								+ "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}" + "\\]|" + "\\[IPv6:"
 								+ "(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
-								+ "\\]", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(domainPart).matches();
+								+ "\\]", CASE_INSENSITIVE).matcher(domainPart).matches();
 
 			} catch (IllegalArgumentException e) {
 			}
@@ -97,11 +90,10 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 			// additional check
 			String regexp = email.regexp();
 			int flagValue = 0;
-			for (Pattern.Flag flag : email.flags()) {
+			for (jakarta.validation.constraints.Pattern.Flag flag : email.flags()) {
 				flagValue |= flag.getValue();
 			}
-			checkArgument(java.util.regex.Pattern.compile(regexp, flagValue).matcher(charSequence).matches(),
-					email.message());
+			checkArgument(compile(regexp, flagValue).matcher(charSequence).matches(), email.message());
 		}
 	}
 
