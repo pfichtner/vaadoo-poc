@@ -11,6 +11,7 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKESPECIAL;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +54,71 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 	public AddValidationToConstructors(Class<? extends Jsr380CodeFragment> codeFragment) {
 		this.codeFragment = codeFragment;
 		this.codeFragmentMethods = Arrays.asList(codeFragment.getMethods());
+	}
 
+	private static class ConfigEntry {
+		private Class<? extends Annotation> anno;
+
+		public ConfigEntry(Class<? extends Annotation> anno) {
+			this.anno = anno;
+		}
+
+		Class<?> anno() {
+			return anno;
+		}
+
+		String descriptor() {
+			return Type.getDescriptor(anno());
+		}
+
+		Class<?> resolveSuperType(Class<?> actual) {
+			return actual;
+		}
+	}
+
+	private static class FixedClassConfigEntry extends ConfigEntry {
+
+		private Class<?> superType;
+
+		public FixedClassConfigEntry(Class<? extends Annotation> anno, Class<?> superType) {
+			super(anno);
+			this.superType = superType;
+		}
+
+		@Override
+		public Class<?> resolveSuperType(Class<?> actual) {
+			return superType;
+		}
+
+	}
+
+	private static final List<ConfigEntry> entries = List.of( //
+			new FixedClassConfigEntry(Null.class, Object.class), //
+			new FixedClassConfigEntry(NotNull.class, Object.class), //
+			new FixedClassConfigEntry(NotBlank.class, CharSequence.class), //
+			new ConfigEntry(NotEmpty.class) {
+				@Override
+				Class<?> resolveSuperType(Class<?> actual) {
+					var validTypes = List.of(Object[].class, CharSequence.class, Collection.class, Map.class);
+					return superType(actual, validTypes).orElseThrow(() -> {
+						return annotationOnTypeNotValid(anno(), actual,
+								validTypes.stream().map(Class::getName).collect(toList()));
+					});
+				}
+			}, //
+			new FixedClassConfigEntry(Pattern.class, CharSequence.class), //
+			new ConfigEntry(AssertTrue.class), //
+			new ConfigEntry(AssertFalse.class), //
+			new ConfigEntry(Min.class), //
+			new ConfigEntry(Max.class));
+
+	private static Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {
+		return superTypes.stream().filter(t -> t.isAssignableFrom(classToCheck)).findFirst();
+	}
+
+	private static IllegalStateException annotationOnTypeNotValid(Class<?> anno, Class<?> type, List<String> valids) {
+		return new IllegalStateException(format("Annotation %s on type %s not allowed, allowed only on types: %s",
+				anno.getName(), type.getName(), valids));
 	}
 
 	@Override
@@ -111,35 +176,14 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
+
 				var injector = new MethodInjector(codeFragment, signature);
 				for (var parameter : parameters.values()) {
 					for (var annotation : parameter.getAnnotations()) {
-						if (annotation.equals(Type.getDescriptor(Null.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, Null.class, Object.class));
-						} else if (annotation.equals(Type.getDescriptor(NotNull.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, NotNull.class, Object.class));
-						} else if (annotation.equals(Type.getDescriptor(NotBlank.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, NotBlank.class, CharSequence.class));
-						} else if (annotation.equals(Type.getDescriptor(NotEmpty.class))) {
-							var validTypes = List.of(NotEmpty.class, Object[].class, CharSequence.class,
-									Collection.class, Map.class);
-							var superType = superType(parameter.classtype(), validTypes).orElseThrow(() -> {
-								return annotationOnTypeNotValid(NotEmpty.class, parameter.classtype(),
-										validTypes.stream().map(Class::getName).collect(toList()));
-							});
-							injector.inject(mv, parameter, checkMethod(parameter, NotEmpty.class, superType));
-						} else if (annotation.equals(Type.getDescriptor(Pattern.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, Pattern.class, CharSequence.class));
-						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
-							injector.inject(mv, parameter,
-									checkMethod(parameter, AssertTrue.class, parameter.classtype()));
-						} else if (annotation.equals(Type.getDescriptor(AssertFalse.class))) {
-							injector.inject(mv, parameter,
-									checkMethod(parameter, AssertFalse.class, parameter.classtype()));
-						} else if (annotation.equals(Type.getDescriptor(Min.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, Min.class, parameter.classtype()));
-						} else if (annotation.equals(Type.getDescriptor(Max.class))) {
-							injector.inject(mv, parameter, checkMethod(parameter, Max.class, parameter.classtype()));
+						for (var config : entries) {
+							if (annotation.equals(config.descriptor())) {
+								injector.inject(mv, parameter, checkMethod(config, parameter.classtype()));
+							}
 						}
 					}
 				}
@@ -149,16 +193,15 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				mv.visitEnd();
 			}
 
-			private Method checkMethod(ParameterInfo parameter, Class<?>... parameters) {
+			private Method checkMethod(ConfigEntry config, Class<?> actual) {
+				Class<?>[] parameters = new Class[] { config.anno(), config.resolveSuperType(actual) };
 				return checkMethod(parameters).map(m -> {
 					var supportedType = m.getParameterTypes()[1];
-					if (supportedType.isAssignableFrom(parameter.classtype())) {
+					if (supportedType.isAssignableFrom(actual)) {
 						return m;
 					}
-					throw annotationOnTypeNotValid(parameters[0], parameter.classtype(),
-							List.of(supportedType.getName()));
+					throw annotationOnTypeNotValid(parameters[0], actual, List.of(supportedType.getName()));
 				}).orElseThrow(() -> unsupportedType(parameters));
-
 			}
 
 			private IllegalStateException unsupportedType(Class<?>... parameters) {
@@ -172,12 +215,6 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				return annotationOnTypeNotValid(parameters[0], parameters[1], supported);
 			}
 
-			private IllegalStateException annotationOnTypeNotValid(Class<?> anno, Class<?> type, List<String> valids) {
-				return new IllegalStateException(
-						format("Annotation %s on type %s not allowed, allowed only on types: %s", anno.getName(),
-								type.getName(), valids));
-			}
-
 			private Optional<Method> checkMethod(Class<?>... parameters) {
 				return codeFragmentMethods.stream().filter(this::isCheckMethod)
 						.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
@@ -185,10 +222,6 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 			private boolean isCheckMethod(Method m) {
 				return "check".equals(m.getName());
-			}
-
-			private Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {
-				return superTypes.stream().filter(t -> t.isAssignableFrom(classToCheck)).findFirst();
 			}
 
 		};
