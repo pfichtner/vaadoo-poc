@@ -59,18 +59,16 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 		if (charSequence != null && charSequence.length() != 0) {
 			String stringValue = charSequence.toString();
 			int splitPosition = stringValue.lastIndexOf('@');
-
 			checkArgument(splitPosition >= 0, email.message());
 
 			String localPart = stringValue.substring(0, splitPosition);
-			String domainPart = stringValue.substring(splitPosition + 1);
-
 			checkArgument(localPart.length() <= 64 && compile("(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]"
 					+ "+|\"" + "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")"
 					+ "+\")" + "(?:\\." + "(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
 					+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")" + "+\")" + ")*",
 					CASE_INSENSITIVE).matcher(localPart).matches(), email.message());
 
+			String domainPart = stringValue.substring(splitPosition + 1);
 			boolean validEmailDomainAddress = false;
 			try {
 				validEmailDomainAddress = !domainPart.endsWith(".") && IDN.toASCII(domainPart).length() <= 255
@@ -84,15 +82,15 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 			} catch (IllegalArgumentException e) {
 			}
-
 			checkArgument(validEmailDomainAddress, email.message());
 
 			// additional check
+			String regexp = email.regexp();
 			int flagValue = 0;
 			for (jakarta.validation.constraints.Pattern.Flag flag : email.flags()) {
 				flagValue |= flag.getValue();
 			}
-			checkArgument(compile(email.regexp(), flagValue).matcher(charSequence).matches(), email.message());
+			checkArgument(compile(regexp, flagValue).matcher(charSequence).matches(), email.message());
 		}
 	}
 
