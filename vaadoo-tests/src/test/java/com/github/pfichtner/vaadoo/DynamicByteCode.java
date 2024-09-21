@@ -12,6 +12,8 @@ import static java.util.stream.Stream.empty;
 import static net.bytebuddy.description.modifier.Visibility.PUBLIC;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +28,7 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Supplier;
 
+import jakarta.validation.constraints.Pattern.Flag;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.annotation.AnnotationDescription.Builder;
@@ -38,6 +41,8 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodCall;
 
 public final class DynamicByteCode {
+
+	private static final boolean DEBUG = false;
 
 	// TODO add the moment the ByteBuddy generated code contains debug information,
 	// we want to support (and test both): Bytecode with and w/o debug information
@@ -203,6 +208,11 @@ public final class DynamicByteCode {
 						annoBuilder = annoBuilder.define(entry.getKey(), (String) annoValue);
 					} else if (annoValue instanceof Long) {
 						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
+					} else if (annoValue.getClass().isArray()) {
+						// TODO fix me
+						Class<Flag> enumerationType = Flag.class;
+						Flag[] elements = (Flag[]) annoValue;
+						annoBuilder = annoBuilder.defineEnumerationArray(entry.getKey(), enumerationType, elements);
 					} else {
 						throw new IllegalStateException(
 								format("Unsupported type %s for %s", annoValue.getClass(), annoValue));
@@ -214,7 +224,9 @@ public final class DynamicByteCode {
 		}
 
 		var builderSuf = inner == null ? builder : inner;
-		return builderSuf.intercept(MethodCall.invoke(Object.class.getConstructor())).make();
+		var result = builderSuf.intercept(MethodCall.invoke(Object.class.getConstructor())).make();
+		dump(result);
+		return result;
 	}
 
 	public static Class<?> transform(Unloaded<Object> dynamicClass)
@@ -228,9 +240,21 @@ public final class DynamicByteCode {
 				PersistenceHandler.MANIFEST).loadClass(name);
 		var builder = new ByteBuddy().redefine(loadedClass);
 		var transformed = sut.apply(builder, TypeDescription.ForLoadedType.of(loadedClass), null).make();
+		dump(transformed);
 		var transformedClassLoader = new ByteArrayClassLoader(originalClassLoader, emptyMap(),
 				PersistenceHandler.MANIFEST);
 		return transformed.load(transformedClassLoader, ClassLoadingStrategy.Default.WRAPPER).getLoaded();
+	}
+
+	private static Unloaded<?> dump(Unloaded<?> transformed) {
+		if (DEBUG) {
+			try {
+				transformed.saveIn(new File(System.getProperty("java.io.tmpdir")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return transformed;
 	}
 
 }

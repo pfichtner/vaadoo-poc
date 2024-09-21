@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,10 @@ public class SomeClass {
    private final Integer[] someNotEmptyArray;
    private final CharSequence someNonBlankValue;
    private final String someNonBlankValueWithCustomMessage;
+   @Pattern(
+      regexp = "\\d{1,4}"
+   )
+   private final String someFourDigits;
    private final boolean someTrueValue;
    private final boolean someFalseValue;
    private final Boolean someTrueValueWrapper;
@@ -32,8 +38,8 @@ public class SomeClass {
    private final Long someLongWrapperValueThatIsMinimal42;
    private final Short someShortWrapperValueThatIsNotNullAndBetween42And42;
 
-   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) @Max(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
-      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndMinimal42);
+   public SomeClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @Pattern(regexp = "\\d{1,4}",flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}) String someFourDigits, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(42L) @Max(42L) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
+      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someFourDigits, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndMinimal42);
       this.someNullObject = someNullObject;
       this.someObject = someObject;
       this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -44,6 +50,7 @@ public class SomeClass {
       this.someNotEmptyArray = someNotEmptyArray;
       this.someNonBlankValue = someNonBlankValue;
       this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
+      this.someFourDigits = someFourDigits;
       this.someTrueValue = someTrueValue;
       this.someFalseValue = someFalseValue;
       this.someTrueValueWrapper = someTrueValueWrapper;
@@ -54,10 +61,10 @@ public class SomeClass {
    }
 
    public static void main(String[] args) {
-      System.out.println(new SomeClass((Object)null, "isNotNull", (String)null, (CharSequence)null, (String)null, List.of(), Map.of(), new Integer[0], "", "", true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L, Short.valueOf((short)42)));
+      System.out.println(new SomeClass((Object)null, "isNotNull", (String)null, (CharSequence)null, (String)null, List.of(), Map.of(), new Integer[0], "", "", "1234", true, false, Boolean.TRUE, Boolean.FALSE, 42, 42L, Short.valueOf((short)42)));
    }
 
-   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, boolean var10, boolean var11, Boolean var12, Boolean var13, int var14, Long var15, Short var16) {
+   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, String var10, boolean var11, boolean var12, Boolean var13, Boolean var14, int var15, Long var16, Short var17) {
       Preconditions.checkArgument(var0 == null, "someNullObject must be null");
       Preconditions.checkNotNull(var1, "someObject must not be null");
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var3, "someNotEmptyCharSequence must not be empty")).length() > 0, "someNotEmptyCharSequence must not be empty");
@@ -67,14 +74,27 @@ public class SomeClass {
       Preconditions.checkArgument(((Object[])Preconditions.checkNotNull(var7, "someNotEmptyArray must not be empty")).length > 0, "someNotEmptyArray must not be empty");
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var8, "someNonBlankValue must not be blank")).toString().trim().length() > 0, "someNonBlankValue must not be blank");
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var9, "my custom message")).toString().trim().length() > 0, "my custom message");
-      Preconditions.checkArgument(var10, "someTrueValue must be true");
-      Preconditions.checkArgument(!var11, "someFalseValue must be false");
-      Preconditions.checkArgument(var12 == null || var12.booleanValue(), "someTrueValueWrapper must be true");
-      Preconditions.checkArgument(var13 == null || !var13.booleanValue(), "someFalseValueWrapper must be false");
-      Preconditions.checkArgument((long)var14 >= 42L, "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42");
-      Preconditions.checkArgument(var15 == null || var15.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42");
-      Preconditions.checkNotNull(var16, "someShortWrapperValueThatIsNotNullAndMinimal42 must not be null");
-      Preconditions.checkArgument(var16 == null || (long)var16.shortValue() >= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 must be greater than or equal to 42");
-      Preconditions.checkArgument(var16 == null || (long)var16.shortValue() <= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 must be less than or equal to 42");
+      if (var10 != null) {
+         int var18 = 0;
+         Flag[] var19 = new Flag[]{Flag.MULTILINE};
+         int var20 = var19.length;
+
+         for(int var21 = 0; var21 < var20; ++var21) {
+            Flag var22 = var19[var21];
+            var18 |= var22.getValue();
+         }
+
+         Preconditions.checkArgument(java.util.regex.Pattern.compile("\\d{1,4}", var18).matcher(var10).matches(), "someFourDigits must match \"\\d{1,4}\"");
+      }
+
+      Preconditions.checkArgument(var11, "someTrueValue must be true");
+      Preconditions.checkArgument(!var12, "someFalseValue must be false");
+      Preconditions.checkArgument(var13 == null || var13.booleanValue(), "someTrueValueWrapper must be true");
+      Preconditions.checkArgument(var14 == null || !var14.booleanValue(), "someFalseValueWrapper must be false");
+      Preconditions.checkArgument((long)var15 >= 42L, "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42");
+      Preconditions.checkArgument(var16 == null || var16.longValue() >= 42L, "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42");
+      Preconditions.checkNotNull(var17, "someShortWrapperValueThatIsNotNullAndMinimal42 must not be null");
+      Preconditions.checkArgument(var17 == null || (long)var17.shortValue() >= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 must be greater than or equal to 42");
+      Preconditions.checkArgument(var17 == null || (long)var17.shortValue() <= 42L, "someShortWrapperValueThatIsNotNullAndMinimal42 must be less than or equal to 42");
    }
 }

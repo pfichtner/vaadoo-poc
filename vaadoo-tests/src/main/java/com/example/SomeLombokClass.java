@@ -1,5 +1,7 @@
 package com.example;
 
+import static jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE;
+import static jakarta.validation.constraints.Pattern.Flag.MULTILINE;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.util.Collection;
@@ -13,6 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 
@@ -39,6 +42,8 @@ public class SomeLombokClass {
 	CharSequence someNonBlankValue;
 	@NotBlank(message = "my custom message")
 	String someNonBlankValueWithCustomMessage;
+	@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE })
+	String someFourDigits;
 	@AssertTrue
 	boolean someTrueValue;
 	@AssertFalse

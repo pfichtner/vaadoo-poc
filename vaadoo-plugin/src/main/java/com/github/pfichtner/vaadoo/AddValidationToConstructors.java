@@ -30,6 +30,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 import net.bytebuddy.asm.AsmVisitorWrapper;
 import net.bytebuddy.description.field.FieldDescription.InDefinedShape;
 import net.bytebuddy.description.field.FieldList;
@@ -127,6 +128,8 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 										validTypes.stream().map(Class::getName).collect(toList()));
 							});
 							injector.inject(mv, parameter, checkMethod(parameter, NotEmpty.class, superType));
+						} else if (annotation.equals(Type.getDescriptor(Pattern.class))) {
+							injector.inject(mv, parameter, checkMethod(parameter, Pattern.class, CharSequence.class));
 						} else if (annotation.equals(Type.getDescriptor(AssertTrue.class))) {
 							injector.inject(mv, parameter,
 									checkMethod(parameter, AssertTrue.class, parameter.classtype()));
@@ -221,11 +224,24 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			ParameterInfo parameterInfo = parameterInfo(parameter);
 			parameterInfo.addAnnotation(descriptor);
 			return new AnnotationVisitor(ASM9) {
+
 				@Override
 				public void visit(String name, Object value) {
 					parameterInfo.addAnnotationValue(name, value);
 					super.visit(name, value);
 				}
+
+				@Override
+				public AnnotationVisitor visitArray(String arrayName) {
+					return new AnnotationVisitor(ASM9) {
+						@Override
+						public void visitEnum(String name, String descriptor, String value) {
+							parameterInfo.addAnnotationArrayElement(arrayName, Type.getType(descriptor), value);
+							super.visitEnum(name, descriptor, value);
+						}
+					};
+				}
+
 			};
 		}
 

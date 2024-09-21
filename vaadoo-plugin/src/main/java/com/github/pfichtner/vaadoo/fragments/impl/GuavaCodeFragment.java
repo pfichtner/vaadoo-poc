@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
@@ -35,6 +36,20 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	public void check(NotBlank notBlank, CharSequence charSequence) {
 		checkArgument(checkNotNull(charSequence, notBlank.message()).toString().trim().length() > 0,
 				notBlank.message());
+	}
+
+	@Override
+	public void check(Pattern pattern, CharSequence charSequence) {
+		if (charSequence != null) {
+			int flagValue = 0;
+			for (Pattern.Flag flag : pattern.flags()) {
+				flagValue |= flag.getValue();
+			}
+			// TODO this should be optimized by converting this into private static final
+			// field
+			checkArgument(java.util.regex.Pattern.compile(pattern.regexp(), flagValue).matcher(charSequence).matches(),
+					pattern.message());
+		}
 	}
 
 	@Override

@@ -80,4 +80,12 @@ public final class AsmUtil {
 		return type.getSort() == ARRAY;
 	}
 
+	public static int sizeOf(Type[] args) {
+		int size = 0;
+		for (Type type : args) {
+			size += type.getSize();
+		}
+		return size;
+	}
+
 }

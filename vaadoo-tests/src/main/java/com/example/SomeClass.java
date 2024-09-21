@@ -1,5 +1,8 @@
 package com.example;
 
+import static jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE;
+import static jakarta.validation.constraints.Pattern.Flag.MULTILINE;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern;
 
 public class SomeClass {
 
@@ -25,6 +29,7 @@ public class SomeClass {
 	private final Integer[] someNotEmptyArray;
 	private final CharSequence someNonBlankValue;
 	private final String someNonBlankValueWithCustomMessage;
+	private final @Pattern(regexp = "\\d{1,4}") String someFourDigits;
 	private final boolean someTrueValue;
 	private final boolean someFalseValue;
 	private final Boolean someTrueValueWrapper;
@@ -44,13 +49,15 @@ public class SomeClass {
 			@NotEmpty Integer[] someNotEmptyArray, //
 			@NotBlank CharSequence someNonBlankValue, //
 			@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
+			@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE }) String someFourDigits, //
 			@AssertTrue boolean someTrueValue, //
 			@AssertFalse boolean someFalseValue, //
 			@AssertTrue Boolean someTrueValueWrapper, //
 			@AssertFalse Boolean someFalseValueWrapper, //
 			@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-			@NotNull @Min(42) @Max(42) Short someShortWrapperValueThatIsNotNullAndMinimal42) {
+			@NotNull @Min(42) @Max(42) Short someShortWrapperValueThatIsNotNullAndMinimal42 //
+	) {
 		this.someNullObject = someNullObject;
 		this.someObject = someObject;
 		this.valueWithoutAnnotation = valueWithoutAnnotation;
@@ -61,6 +68,7 @@ public class SomeClass {
 		this.someNotEmptyArray = someNotEmptyArray;
 		this.someNonBlankValue = someNonBlankValue;
 		this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
+		this.someFourDigits = someFourDigits;
 		this.someTrueValue = someTrueValue;
 		this.someFalseValue = someFalseValue;
 		this.someTrueValueWrapper = someTrueValueWrapper;
@@ -72,7 +80,7 @@ public class SomeClass {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				"", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
+				"", "1234", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }
