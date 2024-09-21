@@ -111,7 +111,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
 				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 				mv.visitCode();
-				var injector = new MethodInjector(codeFragment);
+				var injector = new MethodInjector(codeFragment, signature);
 				for (var parameter : parameters.values()) {
 					for (var annotation : parameter.getAnnotations()) {
 						if (annotation.equals(Type.getDescriptor(Null.class))) {

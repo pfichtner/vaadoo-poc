@@ -10,7 +10,6 @@ import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static net.bytebuddy.jar.asm.Opcodes.AASTORE;
-import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
 import static net.bytebuddy.jar.asm.Opcodes.ANEWARRAY;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
@@ -25,6 +24,7 @@ import static net.bytebuddy.jar.asm.Type.getReturnType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -41,25 +41,40 @@ import net.bytebuddy.jar.asm.Type;
 
 public class MethodInjector {
 
+	// we remove the first arg (the code inserted has the annotation as it's first
+	// argument)
+	private static final int REMOVED_PARAMETERS = 1;
+	private static final boolean TARGET_METHOD_IS_STATIC = true;
+
 	private static final class MethodInjectorClassVisitor extends ClassVisitor {
 
 		private final String sourceMethodName;
 		private final String searchDescriptor;
 		private final MethodVisitor targetMethodVisitor;
 		private final ParameterInfo parameter;
-		private final int offset;
-		private final int firstLocal;
+
+		private int sourceFirstArgAt;
+		private int sourceFirstLocalAt;
+		private int argOffset;
+		private int localOffset;
 
 		private MethodInjectorClassVisitor(int api, Method sourceMethod, MethodVisitor targetMethodVisitor,
-				ParameterInfo parameter) {
+				String signatureOfTargetMethod, ParameterInfo parameter) {
 			super(api);
 			this.sourceMethodName = sourceMethod.getName();
 			this.searchDescriptor = getMethodDescriptor(sourceMethod);
 			this.targetMethodVisitor = targetMethodVisitor;
 			this.parameter = parameter;
-			this.offset = isStatic(sourceMethod.getModifiers()) ? 0 : 1;
-			this.firstLocal = offset
+
+			this.sourceFirstArgAt = Modifier.isStatic(sourceMethod.getModifiers()) ? 0 : 1;
+			this.sourceFirstLocalAt = sourceFirstArgAt
 					+ sizeOf(stream(sourceMethod.getParameterTypes()).map(Type::getType).toArray(Type[]::new));
+
+			int targetFirstArgAt = TARGET_METHOD_IS_STATIC ? 0 : 1;
+			int targetFirstLocalAt = targetFirstArgAt + sizeOf(getArgumentTypes(signatureOfTargetMethod));
+
+			this.argOffset = sourceFirstArgAt - targetFirstArgAt;
+			this.localOffset = sourceFirstLocalAt - targetFirstLocalAt;
 		}
 
 		@Override
@@ -69,6 +84,8 @@ public class MethodInjector {
 			if (name.equals(sourceMethodName) && descriptor.equals(searchDescriptor)) {
 				// TODO migrate to LocalVariablesSorter
 				return new MethodVisitor(ASM9, targetMethodVisitor) {
+
+					private final boolean isStatic = isStatic(access);
 
 					private boolean firstParamLoadStart;
 					private Type handledAnnotation;
@@ -80,11 +97,6 @@ public class MethodInjector {
 							.getOrDefault(k, k);
 					private final Function<String, Object> resolver = rbResolver.andThen(paramNameResolver)
 							.andThen(annotationValueResolver);
-
-					// source has e.g. 2 params, target has e.g. 8, so we would have to add 6 to
-					// each local variable access
-					private int localVarOffset = MethodInjectorClassVisitor.this.firstLocal
-							- ((ACC_STATIC & access) == 0 ? 1 : 0 + sizeOf(getArgumentTypes(descriptor)));
 
 					@Override
 					public void visitLineNumber(int line, Label start) {
@@ -103,27 +115,33 @@ public class MethodInjector {
 
 					@Override
 					public void visitVarInsn(int opcode, int var) {
-						if (var >= MethodInjectorClassVisitor.this.firstLocal
-								&& (isLoadOpcode(opcode) || isStoreOpcode(opcode))) {
-							super.visitVarInsn(opcode, var + localVarOffset);
-						} else {
-							if (isLoadOpcode(opcode) && var == 0 + offset) {
-								firstParamLoadStart = true;
+						boolean opcodeIsLoad = isLoadOpcode(opcode);
+						if (opcodeIsLoad || isStoreOpcode(opcode)) {
+							if (var >= sourceFirstLocalAt) {
+								super.visitVarInsn(opcode, remapLocal(var));
 							} else {
-								super.visitVarInsn(opcode, adjustOpcode(opcode, var, parameter));
+								if (opcodeIsLoad && var == sourceFirstArgAt) {
+									firstParamLoadStart = true;
+								} else {
+									super.visitVarInsn(opcode, remapArg(var));
+								}
 							}
+						} else {
+							super.visitVarInsn(opcode, var);
 						}
+					}
+
+					private int remapArg(int var) {
+						return var + parameter.index() - argOffset - REMOVED_PARAMETERS;
+					}
+
+					private int remapLocal(int varIndex) {
+						return varIndex - localOffset;
 					}
 
 					@Override
 					public void visitIincInsn(int varIndex, int increment) {
-						super.visitIincInsn(varIndex + localVarOffset, increment);
-					}
-
-					private int adjustOpcode(int opcode, int var, ParameterInfo parameter) {
-						return isLoadOpcode(opcode) || isStoreOpcode(opcode) //
-								? var + parameter.index() - 1 - offset
-								: var;
+						super.visitIincInsn(remapLocal(varIndex), increment);
 					}
 
 					public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
@@ -211,8 +229,9 @@ public class MethodInjector {
 	private final ClassReader classReader;
 
 	private static final String NAME = "@@@NAME@@@";
+	private String signatureOfTargetMethod;
 
-	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz) {
+	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz, String signatureOfTargetMethod) {
 		String className = clazz.getName().replace('.', '/') + ".class";
 
 		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(className)) {
@@ -221,13 +240,15 @@ public class MethodInjector {
 			}
 
 			this.classReader = new ClassReader(inputStream);
+			this.signatureOfTargetMethod = signatureOfTargetMethod;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void inject(MethodVisitor targetMethodVisitor, ParameterInfo parameter, Method sourceMethod) {
-		this.classReader.accept(new MethodInjectorClassVisitor(ASM9, sourceMethod, targetMethodVisitor, parameter), 0);
+		this.classReader.accept(new MethodInjectorClassVisitor(ASM9, sourceMethod, targetMethodVisitor,
+				signatureOfTargetMethod, parameter), 0);
 	}
 
 	private static String defaultValue(String className, String name) {
