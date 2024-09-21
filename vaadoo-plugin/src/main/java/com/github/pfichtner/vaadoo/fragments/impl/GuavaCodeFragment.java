@@ -88,12 +88,11 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 			checkArgument(validEmailDomainAddress, email.message());
 
 			// additional check
-			String regexp = email.regexp();
 			int flagValue = 0;
 			for (jakarta.validation.constraints.Pattern.Flag flag : email.flags()) {
 				flagValue |= flag.getValue();
 			}
-			checkArgument(compile(regexp, flagValue).matcher(charSequence).matches(), email.message());
+			checkArgument(compile(email.regexp(), flagValue).matcher(charSequence).matches(), email.message());
 		}
 	}
 
