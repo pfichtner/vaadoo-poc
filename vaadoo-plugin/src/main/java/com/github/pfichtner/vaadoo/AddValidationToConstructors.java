@@ -25,6 +25,7 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -107,6 +108,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				}
 			}, //
 			new FixedClassConfigEntry(Pattern.class, CharSequence.class), //
+			new FixedClassConfigEntry(Email.class, CharSequence.class), //
 			new ConfigEntry(AssertTrue.class), //
 			new ConfigEntry(AssertFalse.class), //
 			new ConfigEntry(Min.class), //
