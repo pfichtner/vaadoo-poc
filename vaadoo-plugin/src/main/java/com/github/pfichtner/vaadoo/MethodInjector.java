@@ -9,9 +9,11 @@ import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
+import static net.bytebuddy.jar.asm.Opcodes.AALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.AASTORE;
 import static net.bytebuddy.jar.asm.Opcodes.ANEWARRAY;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
+import static net.bytebuddy.jar.asm.Opcodes.ASTORE;
 import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.DUP;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
@@ -116,12 +118,18 @@ public class MethodInjector {
 					@Override
 					public void visitVarInsn(int opcode, int var) {
 						boolean opcodeIsLoad = isLoadOpcode(opcode);
-						if (opcodeIsLoad || isStoreOpcode(opcode)) {
+						boolean opcodeIsStore = isStoreOpcode(opcode);
+
+						if (opcodeIsLoad || opcodeIsStore) {
 							if (var >= sourceFirstLocalAt) {
 								super.visitVarInsn(opcode, remapLocal(var));
 							} else {
 								if (opcodeIsLoad && var == sourceFirstArgAt) {
 									firstParamLoadStart = true;
+								} else if (isArrayHandlingCase(opcode, var)) {
+									if (!opcodeIsStore) {
+										super.visitVarInsn(opcode, remapArg(var));
+									}
 								} else {
 									super.visitVarInsn(opcode, remapArg(var));
 								}
@@ -129,6 +137,10 @@ public class MethodInjector {
 						} else {
 							super.visitVarInsn(opcode, var);
 						}
+					}
+
+					private boolean isArrayHandlingCase(int opcode, int var) {
+						return opcode == AALOAD || opcode == ASTORE;
 					}
 
 					private int remapArg(int var) {
