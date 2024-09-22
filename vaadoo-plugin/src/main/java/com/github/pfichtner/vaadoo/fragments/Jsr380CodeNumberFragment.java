@@ -3,9 +3,11 @@ package com.github.pfichtner.vaadoo.fragments;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 
-public interface Jsr380CodeMinFragment {
+public interface Jsr380CodeNumberFragment {
 
 	void check(Min min, byte value);
 
@@ -27,4 +29,49 @@ public interface Jsr380CodeMinFragment {
 
 	void check(Min min, BigDecimal value);
 
+	// -------------------------------------
+
+	void check(Max max, byte value);
+
+	void check(Max max, short value);
+
+	void check(Max max, int value);
+
+	void check(Max max, long value);
+
+	void check(Max max, Byte value);
+
+	void check(Max max, Short value);
+
+	void check(Max max, Integer value);
+
+	void check(Max max, Long value);
+
+	void check(Max max, BigInteger value);
+
+	void check(Max max, BigDecimal value);
+
+	// -------------------------------------
+
+	void check(Positive positive, byte value);
+
+	void check(Positive positive, short value);
+
+	void check(Positive positive, int value);
+
+	void check(Positive positive, long value);
+
+	void check(Positive positive, Byte value);
+
+	void check(Positive positive, Short value);
+
+	void check(Positive positive, Integer value);
+
+	void check(Positive positive, Long value);
+
+	void check(Positive positive, BigInteger value);
+
+	void check(Positive positive, BigDecimal value);
+
+	// -------------------------------------
 }

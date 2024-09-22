@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Positive;
 
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
@@ -235,6 +236,58 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Max max, BigDecimal value) {
 		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(max.value())) <= 0, max.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Positive positive, byte value) {
+		checkArgument(value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, short value) {
+		checkArgument(value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, int value) {
+		checkArgument(value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, long value) {
+		checkArgument(value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, Byte value) {
+		checkArgument(value == null || value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, Short value) {
+		checkArgument(value == null || value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, Integer value) {
+		checkArgument(value == null || value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, Long value) {
+		checkArgument(value == null || value > 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, BigInteger value) {
+		checkArgument(value == null || value.signum() >= 0, positive.message());
+	}
+
+	@Override
+	public void check(Positive positive, BigDecimal value) {
+		checkArgument(value == null || value.signum() >= 0, positive.message());
 	}
 
 	// -----------------------------------------------------------------
