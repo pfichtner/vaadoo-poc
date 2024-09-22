@@ -1,0 +1,115 @@
+package com.example;
+
+import com.google.common.base.Preconditions;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern.Flag;
+import lombok.Generated;
+
+public final class Mandator {
+   private final int id;
+   private final String stringValue;
+
+   private Mandator(@Min(1L) @Max(9999L) int id) {
+      validate(id);
+      super();
+      this.id = id;
+      this.stringValue = String.format("%1$4s", id).replace(' ', '0');
+   }
+
+   private Mandator(@AssertTrue boolean foo, @NotEmpty @Pattern(regexp = "\\d+",message = "Mandator muss numerisch sein") String id, @AssertFalse boolean bar) {
+      validate$1(foo, id, bar);
+      this(Integer.parseInt(id));
+   }
+
+   public Mandator(String[] args) {
+      validate$2(args);
+      this(true, args[0], false);
+   }
+
+   public static void main(String[] args) {
+      System.out.println(new Mandator(args));
+   }
+
+   public String toString() {
+      return this.stringValue;
+   }
+
+   @Generated
+   public int getId() {
+      return this.id;
+   }
+
+   @Generated
+   public String getStringValue() {
+      return this.stringValue;
+   }
+
+   @Generated
+   public boolean equals(Object o) {
+      if (o == this) {
+         return true;
+      } else if (!(o instanceof Mandator)) {
+         return false;
+      } else {
+         Mandator other = (Mandator)o;
+         if (this.getId() != other.getId()) {
+            return false;
+         } else {
+            Object this$stringValue = this.getStringValue();
+            Object other$stringValue = other.getStringValue();
+            if (this$stringValue == null) {
+               if (other$stringValue != null) {
+                  return false;
+               }
+            } else if (!this$stringValue.equals(other$stringValue)) {
+               return false;
+            }
+
+            return true;
+         }
+      }
+   }
+
+   @Generated
+   public int hashCode() {
+      int PRIME = true;
+      int result = 1;
+      int result = result * 59 + this.getId();
+      Object $stringValue = this.getStringValue();
+      result = result * 59 + ($stringValue == null ? 43 : $stringValue.hashCode());
+      return result;
+   }
+
+   private static void validate(int var0) {
+      Preconditions.checkArgument((long)var0 >= 1L, "id must be greater than or equal to 1");
+      Preconditions.checkArgument((long)var0 <= 9999L, "id must be less than or equal to 9999");
+   }
+
+   private static void validate$1(boolean var0, String var1, boolean var2) {
+      Preconditions.checkArgument(var0, "foo must be true");
+      Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var1, "id must not be empty")).length() > 0, "id must not be empty");
+      if (var1 != null) {
+         int var3 = 0;
+         Flag[] var4 = new Flag[0];
+         int var5 = var4.length;
+
+         for(int var6 = 0; var6 < var5; ++var6) {
+            Flag var7 = var4[var6];
+            var3 |= var7.getValue();
+         }
+
+         Preconditions.checkArgument(java.util.regex.Pattern.compile("\\d+", var3).matcher(var1).matches(), "Mandator muss numerisch sein");
+      }
+
+      Preconditions.checkArgument(!var2, "bar must be false");
+   }
+
+   private static void validate$2(String[] var0) {
+      Preconditions.checkArgument(((Object[])Preconditions.checkNotNull(var0, "args must not be empty")).length > 0, "args must not be empty");
+   }
+}
