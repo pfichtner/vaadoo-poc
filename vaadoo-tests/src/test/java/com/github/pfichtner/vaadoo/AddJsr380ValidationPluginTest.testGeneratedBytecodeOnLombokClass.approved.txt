@@ -71,6 +71,7 @@ public class SomeLombokClass {
    @Generated
    SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @Pattern(regexp = "\\d{1,4}",flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}) String someFourDigits, @Email String anyMailAddress, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(41L) @Max(43L) Short someShortWrapperValueThatIsNotNullAndAbout42) {
       validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someFourDigits, anyMailAddress, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndAbout42);
+      super();
       this.someNullObject = someNullObject;
       this.someObject = someObject;
       this.valueWithoutAnnotation = valueWithoutAnnotation;

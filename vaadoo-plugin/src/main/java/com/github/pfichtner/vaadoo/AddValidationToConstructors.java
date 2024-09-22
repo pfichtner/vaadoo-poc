@@ -5,9 +5,9 @@ import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.ClassWriter.COMPUTE_FRAMES;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
+import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
-import static net.bytebuddy.jar.asm.Opcodes.INVOKESPECIAL;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 
@@ -247,6 +247,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 		private final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
 		private String methodAddedName;
 		private boolean visitParameterCalled;
+		private boolean validationAdded;
 
 		public ConstructorVisitor(int api, MethodVisitor methodVisitor, String className, String methodDescriptor,
 				List<String> methodNames) {
@@ -302,17 +303,13 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 		}
 
 		@Override
-		public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-			boolean superVisitCalled = false;
-			if (opcode == INVOKESPECIAL && "<init>".equals(name)) {
-				if ("java/lang/Object".equals(owner)) {
-					super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-					superVisitCalled = true;
-				}
+		public void visitVarInsn(int opcode, int varIndex) {
+			super.visitVarInsn(opcode, varIndex);
+			// This is not valid in source- but in bytecode (we call validate before the
+			// super call)
+			if (!validationAdded && opcode == ALOAD && varIndex == 0) {
 				addValidateMethodCall(Type.getArgumentTypes(methodDescriptor));
-			}
-			if (!superVisitCalled) {
-				super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+				validationAdded = true;
 			}
 		}
 
