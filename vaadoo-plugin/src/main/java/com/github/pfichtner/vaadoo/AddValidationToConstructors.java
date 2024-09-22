@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -304,9 +303,16 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 		@Override
 		public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-			super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-			if (opcode == INVOKESPECIAL && name.equals("<init>")) {
+			boolean superVisitCalled = false;
+			if (opcode == INVOKESPECIAL && "<init>".equals(name)) {
+				if ("java/lang/Object".equals(owner)) {
+					super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+					superVisitCalled = true;
+				}
 				addValidateMethodCall(Type.getArgumentTypes(methodDescriptor));
+			}
+			if (!superVisitCalled) {
+				super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
 			}
 		}
 
