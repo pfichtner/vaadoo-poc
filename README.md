@@ -76,11 +76,15 @@ void sendMail(@Email String value, @NotBlank @Max(256) String value, @Max(4 * 10
 
 This is not what vaadoo was thought for! 
 
+## Integration
+build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven-plugin so integration is documented here: https://github.com/raphw/byte-buddy/blob/master/byte-buddy-maven-plugin/README.md
+- integrates in javac (maven/gradle/...)
+- integrates in eclipse
+- integrates in intellij but seems to need some tweaks https://youtrack.jetbrains.com/issue/IDEA-199681/Detect-and-apply-byte-buddy-plugin
+
 ## Drawbacks
 - no runtime internationalization (i18n) since messages are copied during compile-time into the bytecode
 
 ## Other projects/approaches
 - https://github.com/opensanca/service-validator
-
-
 
