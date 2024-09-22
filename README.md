@@ -1,3 +1,7 @@
+<a href="[[https://bytebuddy.net]](https://github.com/pfichtner/vaadoo/)(https://github.com/pfichtner/vaadoo/)">
+<img src="https://pfichtner.github.io/vaadoo/vaadoo.png" alt="vaadoo logo" height="120px" align="right" />
+</a>
+
 [![Java CI with Maven](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml/badge.svg)](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml)
 
 # Vaadoo
