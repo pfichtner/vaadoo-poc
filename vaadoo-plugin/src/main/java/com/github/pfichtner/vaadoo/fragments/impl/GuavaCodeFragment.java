@@ -282,12 +282,12 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(Positive positive, BigInteger value) {
-		checkArgument(value == null || value.signum() >= 0, positive.message());
+		checkArgument(value == null || value.signum() > 0, positive.message());
 	}
 
 	@Override
 	public void check(Positive positive, BigDecimal value) {
-		checkArgument(value == null || value.signum() >= 0, positive.message());
+		checkArgument(value == null || value.signum() > 0, positive.message());
 	}
 
 	// -----------------------------------------------------------------
