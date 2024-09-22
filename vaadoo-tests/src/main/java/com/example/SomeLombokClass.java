@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +45,8 @@ public class SomeLombokClass {
 	String someNonBlankValueWithCustomMessage;
 	@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE })
 	String someFourDigits;
+	@Email
+	String anyMailAddress;
 	@AssertTrue
 	boolean someTrueValue;
 	@AssertFalse

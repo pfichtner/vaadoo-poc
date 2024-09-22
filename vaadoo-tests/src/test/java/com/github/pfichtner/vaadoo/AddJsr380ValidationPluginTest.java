@@ -47,7 +47,8 @@ class AddJsr380ValidationPluginTest {
 			var constructor = firstConstructor(transform(sut, SomeRecord.class));
 			assertThatExceptionOfType(InvocationTargetException.class)
 					.isThrownBy(() -> constructor.newInstance(null, sut, null, null, null, null, null, null, null, null,
-							"1234", false, false, null, null, 0, Long.valueOf(42), Short.valueOf((short) 42)))
+							"1234", "me@example.com", false, false, null, null, 0, Long.valueOf(42),
+							Short.valueOf((short) 42)))
 					.satisfies(e -> assertThat(e.getCause()).isInstanceOf(NullPointerException.class)
 							.hasMessageContaining("someNotEmptyCharSequence must not be empty"));
 		}

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +30,8 @@ public class SomeClass {
 	private final Integer[] someNotEmptyArray;
 	private final CharSequence someNonBlankValue;
 	private final String someNonBlankValueWithCustomMessage;
-	private final @Pattern(regexp = "\\d{1,4}") String someFourDigits;
+	private final String someFourDigits;
+	private final String anyMailAddress;
 	private final boolean someTrueValue;
 	private final boolean someFalseValue;
 	private final Boolean someTrueValueWrapper;
@@ -50,6 +52,7 @@ public class SomeClass {
 			@NotBlank CharSequence someNonBlankValue, //
 			@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
 			@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE }) String someFourDigits, //
+			@Email String anyMailAddress, //
 			@AssertTrue boolean someTrueValue, //
 			@AssertFalse boolean someFalseValue, //
 			@AssertTrue Boolean someTrueValueWrapper, //
@@ -69,6 +72,7 @@ public class SomeClass {
 		this.someNonBlankValue = someNonBlankValue;
 		this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
 		this.someFourDigits = someFourDigits;
+		this.anyMailAddress = anyMailAddress;
 		this.someTrueValue = someTrueValue;
 		this.someFalseValue = someFalseValue;
 		this.someTrueValueWrapper = someTrueValueWrapper;
@@ -80,7 +84,8 @@ public class SomeClass {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				"", "1234", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
+				"", "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
+				Short.valueOf((short) 42)));
 	}
 
 }
