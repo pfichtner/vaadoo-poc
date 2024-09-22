@@ -33,6 +33,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import net.bytebuddy.asm.AsmVisitorWrapper;
 import net.bytebuddy.description.field.FieldDescription.InDefinedShape;
 import net.bytebuddy.description.field.FieldList;
@@ -112,7 +113,9 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			new ConfigEntry(AssertTrue.class), //
 			new ConfigEntry(AssertFalse.class), //
 			new ConfigEntry(Min.class), //
-			new ConfigEntry(Max.class));
+			new ConfigEntry(Max.class), //
+			new ConfigEntry(Positive.class) //
+	);
 
 	private static Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {
 		return superTypes.stream().filter(t -> t.isAssignableFrom(classToCheck)).findFirst();
