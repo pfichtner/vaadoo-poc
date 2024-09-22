@@ -50,6 +50,7 @@ public class MethodInjector {
 
 	private static final class MethodInjectorClassVisitor extends ClassVisitor {
 
+		private final String sourceMethodOwner;
 		private final String sourceMethodName;
 		private final String searchDescriptor;
 		private final MethodVisitor targetMethodVisitor;
@@ -63,6 +64,7 @@ public class MethodInjector {
 		private MethodInjectorClassVisitor(int api, Method sourceMethod, MethodVisitor targetMethodVisitor,
 				String signatureOfTargetMethod, ParameterInfo parameter) {
 			super(api);
+			this.sourceMethodOwner = Type.getType(sourceMethod.getDeclaringClass()).getInternalName();
 			this.sourceMethodName = sourceMethod.getName();
 			this.searchDescriptor = getMethodDescriptor(sourceMethod);
 			this.targetMethodVisitor = targetMethodVisitor;
@@ -113,6 +115,15 @@ public class MethodInjector {
 					}
 
 					@Override
+					public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+						if (!owner.startsWith("java/lang")) {
+							throw new IllegalStateException(format(
+									"code that gets inserted must not access fields, found access to %s#%s in %s",
+									owner, name, sourceMethodOwner));
+						}
+					}
+
+					@Override
 					public void visitMaxs(int maxStack, int maxLocals) {
 						// ignore
 					}
@@ -160,6 +171,12 @@ public class MethodInjector {
 
 					public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
 							boolean isInterface) {
+						if (owner.equals(sourceMethodOwner)) {
+							throw new IllegalStateException(format(
+									"code that gets inserted must not access methods in the class inserted, found access to %s#%s in %s",
+									owner, name, sourceMethodOwner));
+						}
+
 						this.handledAnnotation = getObjectType(owner);
 						if (firstParamLoadStart) {
 							var returnType = getReturnType(descriptor);
