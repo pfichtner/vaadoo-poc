@@ -12,13 +12,13 @@ import lombok.Generated;
 
 public final class Mandator {
    private final int id;
-   private final String stringValue;
+   private final String cachedStringValue;
 
    private Mandator(@Min(1L) @Max(9999L) int id) {
       validate(id);
       super();
       this.id = id;
-      this.stringValue = String.format("%1$4s", id).replace(' ', '0');
+      this.cachedStringValue = String.format("%1$4s", id).replace(' ', '0');
    }
 
    private Mandator(@AssertTrue boolean foo, @NotEmpty @Pattern(regexp = "\\d+",message = "Mandator muss numerisch sein") String id, @AssertFalse boolean bar) {
@@ -36,17 +36,12 @@ public final class Mandator {
    }
 
    public String toString() {
-      return this.stringValue;
+      return this.cachedStringValue;
    }
 
    @Generated
    public int getId() {
       return this.id;
-   }
-
-   @Generated
-   public String getStringValue() {
-      return this.stringValue;
    }
 
    @Generated
@@ -60,13 +55,13 @@ public final class Mandator {
          if (this.getId() != other.getId()) {
             return false;
          } else {
-            Object this$stringValue = this.getStringValue();
-            Object other$stringValue = other.getStringValue();
-            if (this$stringValue == null) {
-               if (other$stringValue != null) {
+            Object this$cachedStringValue = this.getCachedStringValue();
+            Object other$cachedStringValue = other.getCachedStringValue();
+            if (this$cachedStringValue == null) {
+               if (other$cachedStringValue != null) {
                   return false;
                }
-            } else if (!this$stringValue.equals(other$stringValue)) {
+            } else if (!this$cachedStringValue.equals(other$cachedStringValue)) {
                return false;
             }
 
@@ -80,9 +75,14 @@ public final class Mandator {
       int PRIME = true;
       int result = 1;
       int result = result * 59 + this.getId();
-      Object $stringValue = this.getStringValue();
-      result = result * 59 + ($stringValue == null ? 43 : $stringValue.hashCode());
+      Object $cachedStringValue = this.getCachedStringValue();
+      result = result * 59 + ($cachedStringValue == null ? 43 : $cachedStringValue.hashCode());
       return result;
+   }
+
+   @Generated
+   private String getCachedStringValue() {
+      return this.cachedStringValue;
    }
 
    private static void validate(int var0) {
