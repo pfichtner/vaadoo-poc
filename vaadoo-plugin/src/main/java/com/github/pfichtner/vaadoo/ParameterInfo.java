@@ -3,9 +3,9 @@ package com.github.pfichtner.vaadoo;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.bytebuddy.jar.asm.Type;
@@ -15,10 +15,9 @@ class ParameterInfo {
 	private final int index;
 	private String name;
 	private Type type;
-	private final List<String> annotations = new ArrayList<>();
-	private final Map<Type, Map<String, Object>> annotationValues = new HashMap<>();
+	private final Map<Type, Map<String, Object>> annotationValues = new LinkedHashMap<>();
 
-	// TODO there values are per annotation s well!
+	// TODO there values are per annotation as well!
 	private final Map<String, Map<Type, String>> arrayValues = new HashMap<>();
 	private final Map<String, Map<Type, String>> arrayValues_ = unmodifiableMap(arrayValues);
 
@@ -68,12 +67,12 @@ class ParameterInfo {
 		return type.getClassName();
 	}
 
-	public void addAnnotation(String descriptor) {
-		annotations.add(descriptor);
+	public void addAnnotation(Type annotation) {
+		annotationValues.put(annotation, new HashMap<>());
 	}
 
-	public List<String> getAnnotations() {
-		return annotations;
+	public Collection<Type> getAnnotations() {
+		return annotationValues.keySet();
 	}
 
 	public void addAnnotationValue(Type descriptor, String key, Object value) {
@@ -100,8 +99,8 @@ class ParameterInfo {
 
 	@Override
 	public String toString() {
-		return "ParameterInfo [index=" + index + ", name=" + name + ", type=" + type + ", annotations=" + annotations
-				+ ", annotationValues=" + annotationValues + ", arrayValues=" + arrayValues + "]";
+		return "ParameterInfo [index=" + index + ", name=" + name + ", type=" + type + ", annotationValues="
+				+ annotationValues + ", arrayValues=" + arrayValues + "]";
 	}
 
 }

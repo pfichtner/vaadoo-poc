@@ -72,8 +72,8 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			return anno;
 		}
 
-		String descriptor() {
-			return Type.getDescriptor(anno());
+		Type type() {
+			return Type.getType(anno());
 		}
 
 		Class<?> resolveSuperType(Class<?> actual) {
@@ -192,7 +192,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				for (var parameter : parameters.values()) {
 					for (var annotation : parameter.getAnnotations()) {
 						for (var config : entries) {
-							if (annotation.equals(config.descriptor())) {
+							if (annotation.equals(config.type())) {
 								injector.inject(mv, parameter, checkMethod(config, parameter.classtype()));
 							}
 						}
@@ -266,7 +266,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 		@Override
 		public AnnotationVisitor visitParameterAnnotation(int parameter, String descriptor, boolean visible) {
 			ParameterInfo parameterInfo = parameterInfo(parameter);
-			parameterInfo.addAnnotation(descriptor);
+			parameterInfo.addAnnotation(Type.getType(descriptor));
 			return new AnnotationVisitor(ASM9) {
 
 				@Override
