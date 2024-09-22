@@ -8,7 +8,7 @@ import static com.github.pfichtner.vaadoo.AsmUtil.sizeOf;
 import static java.lang.String.format;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptyList;
 import static net.bytebuddy.jar.asm.Opcodes.AALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.AASTORE;
 import static net.bytebuddy.jar.asm.Opcodes.ANEWARRAY;
@@ -17,6 +17,7 @@ import static net.bytebuddy.jar.asm.Opcodes.ASTORE;
 import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.DUP;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
+import static net.bytebuddy.jar.asm.Opcodes.SIPUSH;
 import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getArgumentTypes;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
@@ -27,10 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.function.Function;
 
+import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import net.bytebuddy.jar.asm.ClassReader;
@@ -163,8 +164,11 @@ public class MethodInjector {
 						if (firstParamLoadStart) {
 							var returnType = getReturnType(descriptor);
 							if (isArray(returnType)) {
+								@SuppressWarnings("unchecked")
+								var annotationValues = (List<EnumEntry>) parameter.annotationValue(handledAnnotation,
+										name);
 								writeArray(returnType.getElementType(),
-										parameter.arrayValues().getOrDefault(name, emptyMap()).entrySet());
+										annotationValues == null ? emptyList() : annotationValues);
 							} else {
 								visitLdcInsn(annotationsLdcInsnValue(parameter, owner, name, returnType));
 							}
@@ -175,17 +179,17 @@ public class MethodInjector {
 						}
 					}
 
-					private void writeArray(Type arrayElementType, Collection<Entry<Type, String>> entries) {
-						mv.visitIntInsn(BIPUSH, entries.size());
+					private void writeArray(Type arrayElementType, List<EnumEntry> annotationValues) {
+						mv.visitIntInsn(annotationValues.size() <= 127 ? BIPUSH : SIPUSH, annotationValues.size());
 						// TODO this only works for objects but not primitive arrays
 						mv.visitTypeInsn(ANEWARRAY, arrayElementType.getInternalName());
 
 						int idx = 0;
-						for (Entry<Type, String> next : entries) {
+						for (EnumEntry entry : annotationValues) {
 							mv.visitInsn(DUP);
-							mv.visitIntInsn(BIPUSH, idx++);
-							mv.visitFieldInsn(GETSTATIC, next.getKey().getInternalName(), next.getValue(),
-									next.getKey().getDescriptor());
+							mv.visitIntInsn(annotationValues.size() <= 127 ? BIPUSH : SIPUSH, idx++);
+							mv.visitFieldInsn(GETSTATIC, entry.type().getInternalName(), entry.value(),
+									entry.type().getDescriptor());
 							mv.visitInsn(AASTORE);
 						}
 					}

@@ -16,11 +16,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
@@ -269,19 +271,30 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			parameterInfo.addAnnotation(Type.getType(descriptor));
 			return new AnnotationVisitor(ASM9) {
 
+				private Type annotationType = Type.getType(descriptor);
+
 				@Override
 				public void visit(String name, Object value) {
-					parameterInfo.addAnnotationValue(Type.getType(descriptor), name, value);
+					parameterInfo.addAnnotationValue(annotationType, name, value);
 					super.visit(name, value);
 				}
 
 				@Override
 				public AnnotationVisitor visitArray(String arrayName) {
 					return new AnnotationVisitor(ASM9) {
+
+						private final List<EnumEntry> values = new ArrayList<>();
+
 						@Override
 						public void visitEnum(String name, String descriptor, String value) {
-							parameterInfo.addAnnotationArrayElement(arrayName, Type.getType(descriptor), value);
+							values.add(new EnumEntry(Type.getType(descriptor), value));
 							super.visitEnum(name, descriptor, value);
+						}
+
+						@Override
+						public void visitEnd() {
+							parameterInfo.addAnnotationValue(annotationType, arrayName, values);
+							super.visitEnd();
 						}
 					};
 				}

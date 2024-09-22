@@ -77,7 +77,7 @@ public class SomeClass {
       Preconditions.checkArgument(((CharSequence)Preconditions.checkNotNull(var9, "my custom message")).toString().trim().length() > 0, "my custom message");
       if (var10 != null) {
          int var19 = 0;
-         Flag[] var20 = new Flag[]{Flag.MULTILINE};
+         Flag[] var20 = new Flag[]{Flag.CASE_INSENSITIVE, Flag.MULTILINE};
          int var21 = var20.length;
 
          for(int var22 = 0; var22 < var21; ++var22) {

@@ -1,7 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableMap;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,14 +11,28 @@ import net.bytebuddy.jar.asm.Type;
 
 class ParameterInfo {
 
+	static class EnumEntry {
+		Type type;
+		String value;
+
+		EnumEntry(Type type, String value) {
+			this.type = type;
+			this.value = value;
+		}
+
+		Type type() {
+			return type;
+		}
+
+		String value() {
+			return value;
+		}
+	}
+
 	private final int index;
 	private String name;
 	private Type type;
 	private final Map<Type, Map<String, Object>> annotationValues = new LinkedHashMap<>();
-
-	// TODO there values are per annotation as well!
-	private final Map<String, Map<Type, String>> arrayValues = new HashMap<>();
-	private final Map<String, Map<Type, String>> arrayValues_ = unmodifiableMap(arrayValues);
 
 	public ParameterInfo(int index) {
 		this.index = index;
@@ -83,24 +96,10 @@ class ParameterInfo {
 		return annotationValues.getOrDefault(descriptor, emptyMap()).get(name);
 	}
 
-	public Map<Type, String> addAnnotationArray(String name) {
-		Map<Type, String> elements;
-		this.arrayValues.put(name, elements = new HashMap<>());
-		return elements;
-	}
-
-	public void addAnnotationArrayElement(String array, Type type, String value) {
-		arrayValues.computeIfAbsent(array, k -> new HashMap<>()).put(type, value);
-	}
-
-	public Map<String, Map<Type, String>> arrayValues() {
-		return arrayValues_;
-	}
-
 	@Override
 	public String toString() {
 		return "ParameterInfo [index=" + index + ", name=" + name + ", type=" + type + ", annotationValues="
-				+ annotationValues + ", arrayValues=" + arrayValues + "]";
+				+ annotationValues + "]";
 	}
 
 }
