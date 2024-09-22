@@ -39,7 +39,7 @@ public record SomeRecord( //
 		@AssertFalse Boolean someFalseValueWrapper, //
 		@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 		@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-		@NotNull @Min(42) @Max(42) Short someShortWrapperValueThatIsNotNullAndMinimal42){
+		@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42){
 
 	public static void main(String[] args) {
 		System.out.println(new SomeRecord(null, "isNotNull", " ", " ", " ", List.of(" "), Map.of(0, " "),

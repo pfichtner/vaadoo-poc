@@ -1,13 +1,12 @@
 package com.github.pfichtner.vaadoo;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import net.bytebuddy.jar.asm.Type;
 
@@ -17,11 +16,11 @@ class ParameterInfo {
 	private String name;
 	private Type type;
 	private final List<String> annotations = new ArrayList<>();
-	private final Map<String, Object> annotationValues = new HashMap<String, Object>();
-	private final Map<String, Object> annotationValues_ = unmodifiableMap(annotationValues);
+	private final Map<Type, Map<String, Object>> annotationValues = new HashMap<>();
 
+	// TODO there values are per annotation s well!
 	private final Map<String, Map<Type, String>> arrayValues = new HashMap<>();
-	private final Map<String, Map<Type, String>> arrayValues_ = Collections.unmodifiableMap(arrayValues);
+	private final Map<String, Map<Type, String>> arrayValues_ = unmodifiableMap(arrayValues);
 
 	public ParameterInfo(int index) {
 		this.index = index;
@@ -77,22 +76,18 @@ class ParameterInfo {
 		return annotations;
 	}
 
-	public void addAnnotationValue(String key, Object value) {
-		annotationValues.put(key, value);
+	public void addAnnotationValue(Type descriptor, String key, Object value) {
+		annotationValues.computeIfAbsent(descriptor, k -> new HashMap<>()).put(key, value);
 	}
 
-	public Optional<Object> annotationValue(String key) {
-		return Optional.ofNullable(annotationValues.get(key));
+	public Object annotationValue(Type descriptor, String name) {
+		return annotationValues.getOrDefault(descriptor, emptyMap()).get(name);
 	}
 
 	public Map<Type, String> addAnnotationArray(String name) {
 		Map<Type, String> elements;
 		this.arrayValues.put(name, elements = new HashMap<>());
 		return elements;
-	}
-
-	public Map<String, Object> annotationValues() {
-		return annotationValues_;
 	}
 
 	public void addAnnotationArrayElement(String array, Type type, String value) {

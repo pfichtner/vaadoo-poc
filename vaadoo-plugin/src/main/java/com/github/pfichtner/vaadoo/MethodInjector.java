@@ -29,7 +29,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.function.Function;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
@@ -95,8 +94,10 @@ public class MethodInjector {
 					private final Function<String, String> rbResolver = Resources::message;
 					private final Function<String, String> paramNameResolver = k -> k.equals(NAME) ? parameter.name()
 							: k;
-					private final Function<String, Object> annotationValueResolver = k -> parameter.annotationValues()
-							.getOrDefault(k, k);
+					private final Function<String, Object> annotationValueResolver = k -> {
+						var annotationValue = parameter.annotationValue(handledAnnotation, k);
+						return annotationValue == null ? k : annotationValue;
+					};
 					private final Function<String, Object> resolver = rbResolver.andThen(paramNameResolver)
 							.andThen(annotationValueResolver);
 
@@ -191,19 +192,24 @@ public class MethodInjector {
 
 					private Object annotationsLdcInsnValue(ParameterInfo parameter, String owner, String name,
 							Type returnType) {
-						var valueFromClass = parameter.annotationValue(name).map(String::valueOf);
 						if (LONG_TYPE.equals(returnType)) {
-							return valueFromClass
-									.or(() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
-									.map(Long::valueOf).orElseThrow(() -> new IllegalStateException(
-											format("'%s' does not define attribute '%s'", owner, name)));
+							return Long.valueOf(String.valueOf(valueFromClass(parameter, owner, name)));
 						} else if (Type.getType(String.class).equals(returnType)) {
-							return valueFromClass
-									.or(() -> Optional.of(defaultValue(this.handledAnnotation.getClassName(), name)))
-									.orElseThrow(() -> new IllegalStateException(
-											format("'%s' does not define attribute '%s'", owner, name)));
+							return String.valueOf(valueFromClass(parameter, owner, name));
 						}
 						throw new IllegalStateException("Unsupported type " + returnType);
+					}
+
+					private Object valueFromClass(ParameterInfo parameter, String owner, String name) {
+						var valueFromClass = parameter.annotationValue(handledAnnotation, name);
+						if (valueFromClass != null) {
+							return valueFromClass;
+						}
+						var defaultValue = defaultValue(this.handledAnnotation.getClassName(), name);
+						if (defaultValue != null) {
+							return defaultValue;
+						}
+						throw new IllegalStateException(format("'%s' does not define attribute '%s'", owner, name));
 					};
 
 					@Override

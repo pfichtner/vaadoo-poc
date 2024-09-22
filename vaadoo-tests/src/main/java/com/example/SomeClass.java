@@ -38,7 +38,7 @@ public class SomeClass {
 	private final Boolean someFalseValueWrapper;
 	private final int someIntPrimitiveValueThatIsMinimal42;
 	private final Long someLongWrapperValueThatIsMinimal42;
-	private final Short someShortWrapperValueThatIsNotNullAndBetween42And42;
+	private final Short someShortWrapperValueThatIsNotNullAndAbout42;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
@@ -59,7 +59,7 @@ public class SomeClass {
 			@AssertFalse Boolean someFalseValueWrapper, //
 			@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-			@NotNull @Min(42) @Max(42) Short someShortWrapperValueThatIsNotNullAndMinimal42 //
+			@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42 //
 	) {
 		this.someNullObject = someNullObject;
 		this.someObject = someObject;
@@ -79,7 +79,7 @@ public class SomeClass {
 		this.someFalseValueWrapper = someFalseValueWrapper;
 		this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
 		this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
-		this.someShortWrapperValueThatIsNotNullAndBetween42And42 = someShortWrapperValueThatIsNotNullAndMinimal42;
+		this.someShortWrapperValueThatIsNotNullAndAbout42 = someShortWrapperValueThatIsNotNullAndAbout42;
 	}
 
 	public static void main(String[] args) {

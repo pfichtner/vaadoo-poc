@@ -271,7 +271,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 				@Override
 				public void visit(String name, Object value) {
-					parameterInfo.addAnnotationValue(name, value);
+					parameterInfo.addAnnotationValue(Type.getType(descriptor), name, value);
 					super.visit(name, value);
 				}
 
