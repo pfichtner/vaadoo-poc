@@ -18,6 +18,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Negative;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -291,5 +292,55 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	}
 
 	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Negative negative, byte value) {
+		checkArgument(value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, short value) {
+		checkArgument(value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, int value) {
+		checkArgument(value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, long value) {
+		checkArgument(value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, Byte value) {
+		checkArgument(value == null || value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, Short value) {
+		checkArgument(value == null || value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, Integer value) {
+		checkArgument(value == null || value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, Long value) {
+		checkArgument(value == null || value < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, BigInteger value) {
+		checkArgument(value == null || value.signum() < 0, negative.message());
+	}
+
+	@Override
+	public void check(Negative negative, BigDecimal value) {
+		checkArgument(value == null || value.signum() < 0, negative.message());
+	}
 
 }

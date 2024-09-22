@@ -28,6 +28,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Negative;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -114,7 +115,8 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			new ConfigEntry(AssertFalse.class), //
 			new ConfigEntry(Min.class), //
 			new ConfigEntry(Max.class), //
-			new ConfigEntry(Positive.class) //
+			new ConfigEntry(Positive.class), //
+			new ConfigEntry(Negative.class) //
 	);
 
 	private static Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {

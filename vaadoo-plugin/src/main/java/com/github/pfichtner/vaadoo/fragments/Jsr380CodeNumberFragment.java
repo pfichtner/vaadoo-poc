@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Negative;
 import jakarta.validation.constraints.Positive;
 
 public interface Jsr380CodeNumberFragment {
@@ -72,6 +73,28 @@ public interface Jsr380CodeNumberFragment {
 	void check(Positive positive, BigInteger value);
 
 	void check(Positive positive, BigDecimal value);
+
+	// -------------------------------------
+
+	void check(Negative negative, byte value);
+
+	void check(Negative negative, short value);
+
+	void check(Negative negative, int value);
+
+	void check(Negative negative, long value);
+
+	void check(Negative negative, Byte value);
+
+	void check(Negative negative, Short value);
+
+	void check(Negative negative, Integer value);
+
+	void check(Negative negative, Long value);
+
+	void check(Negative negative, BigInteger value);
+
+	void check(Negative negative, BigDecimal value);
 
 	// -------------------------------------
 }
