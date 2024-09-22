@@ -6,7 +6,9 @@ import java.math.BigInteger;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Negative;
+import jakarta.validation.constraints.NegativeOrZero;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public interface Jsr380CodeNumberFragment {
 
@@ -76,6 +78,28 @@ public interface Jsr380CodeNumberFragment {
 
 	// -------------------------------------
 
+	void check(PositiveOrZero positiveOrZero, byte value);
+
+	void check(PositiveOrZero positiveOrZero, short value);
+
+	void check(PositiveOrZero positiveOrZero, int value);
+
+	void check(PositiveOrZero positiveOrZero, long value);
+
+	void check(PositiveOrZero positiveOrZero, Byte value);
+
+	void check(PositiveOrZero positiveOrZero, Short value);
+
+	void check(PositiveOrZero positiveOrZero, Integer value);
+
+	void check(PositiveOrZero positiveOrZero, Long value);
+
+	void check(PositiveOrZero positiveOrZero, BigInteger value);
+
+	void check(PositiveOrZero positiveOrZero, BigDecimal value);
+
+	// -------------------------------------
+
 	void check(Negative negative, byte value);
 
 	void check(Negative negative, short value);
@@ -95,6 +119,28 @@ public interface Jsr380CodeNumberFragment {
 	void check(Negative negative, BigInteger value);
 
 	void check(Negative negative, BigDecimal value);
+
+	// -------------------------------------
+
+	void check(NegativeOrZero negativeOrZero, byte value);
+
+	void check(NegativeOrZero negativeOrZero, short value);
+
+	void check(NegativeOrZero negativeOrZero, int value);
+
+	void check(NegativeOrZero negativeOrZero, long value);
+
+	void check(NegativeOrZero negativeOrZero, Byte value);
+
+	void check(NegativeOrZero negativeOrZero, Short value);
+
+	void check(NegativeOrZero negativeOrZero, Integer value);
+
+	void check(NegativeOrZero negativeOrZero, Long value);
+
+	void check(NegativeOrZero negativeOrZero, BigInteger value);
+
+	void check(NegativeOrZero negativeOrZero, BigDecimal value);
 
 	// -------------------------------------
 }

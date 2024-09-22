@@ -19,11 +19,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Negative;
+import jakarta.validation.constraints.NegativeOrZero;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
@@ -292,6 +294,57 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	}
 
 	// -----------------------------------------------------------------
+	@Override
+	public void check(PositiveOrZero positiveOrZero, byte value) {
+		checkArgument(value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, short value) {
+		checkArgument(value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, int value) {
+		checkArgument(value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, long value) {
+		checkArgument(value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, Byte value) {
+		checkArgument(value == null || value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, Short value) {
+		checkArgument(value == null || value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, Integer value) {
+		checkArgument(value == null || value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, Long value) {
+		checkArgument(value == null || value >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, BigInteger value) {
+		checkArgument(value == null || value.signum() >= 0, positiveOrZero.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero positiveOrZero, BigDecimal value) {
+		checkArgument(value == null || value.signum() >= 0, positiveOrZero.message());
+	}
+
+	// -----------------------------------------------------------------
 
 	@Override
 	public void check(Negative negative, byte value) {
@@ -341,6 +394,57 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Negative negative, BigDecimal value) {
 		checkArgument(value == null || value.signum() < 0, negative.message());
+	}
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, byte value) {
+		checkArgument(value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, short value) {
+		checkArgument(value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, int value) {
+		checkArgument(value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, long value) {
+		checkArgument(value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, Byte value) {
+		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, Short value) {
+		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, Integer value) {
+		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, Long value) {
+		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, BigInteger value) {
+		checkArgument(value == null || value.signum() <= 0, negativeOrZero.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero negativeOrZero, BigDecimal value) {
+		checkArgument(value == null || value.signum() <= 0, negativeOrZero.message());
 	}
 
 }
