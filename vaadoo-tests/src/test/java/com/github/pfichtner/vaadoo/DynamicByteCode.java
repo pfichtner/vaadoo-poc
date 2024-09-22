@@ -209,17 +209,20 @@ public final class DynamicByteCode {
 						annoBuilder = annoBuilder.define(entry.getKey(), (Long) annoValue);
 					} else if (annoValue.getClass().isArray()) {
 						Class<?> componentType = annoValue.getClass().getComponentType();
-						if (componentType.isEnum()) {
-							Object[] enumArray = (Object[]) annoValue;
-							Enum<?>[] typedEnumArray = (Enum<?>[]) Array.newInstance(componentType, enumArray.length);
-							for (int i = 0; i < enumArray.length; i++) {
-								typedEnumArray[i] = (Enum<?>) enumArray[i];
-							}
-							@SuppressWarnings("unchecked")
-							Class<Enum<?>> enumComponentType = (Class<Enum<?>>) componentType;
-							annoBuilder = annoBuilder.defineEnumerationArray(entry.getKey(), enumComponentType,
-									typedEnumArray);
+						if (!componentType.isEnum()) {
+							throw new IllegalStateException(
+									format("Unsupported component type of %s for %s", componentType, annoValue));
+
 						}
+						Object[] enumArray = (Object[]) annoValue;
+						Enum<?>[] typedEnumArray = (Enum<?>[]) Array.newInstance(componentType, enumArray.length);
+						for (int i = 0; i < enumArray.length; i++) {
+							typedEnumArray[i] = (Enum<?>) enumArray[i];
+						}
+						@SuppressWarnings("unchecked")
+						Class<Enum<?>> enumComponentType = (Class<Enum<?>>) componentType;
+						annoBuilder = annoBuilder.defineEnumerationArray(entry.getKey(), enumComponentType,
+								typedEnumArray);
 					} else {
 						throw new IllegalStateException(
 								format("Unsupported type %s for %s", annoValue.getClass(), annoValue));
