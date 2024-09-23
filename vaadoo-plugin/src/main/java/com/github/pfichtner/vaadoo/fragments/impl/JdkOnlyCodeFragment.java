@@ -56,10 +56,8 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(jakarta.validation.constraints.Pattern anno, CharSequence charSequence) {
 		if (charSequence != null) {
-			Flag[] flags = anno.flags();
 			int flagValue = 0;
-			for (int i = 0; i < flags.length; i++) {
-				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
+			for (Flag flag : anno.flags()) {
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
@@ -108,10 +106,8 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 			}
 
 			// additional check
-			Flag[] flags = anno.flags();
 			int flagValue = 0;
-			for (int i = 0; i < flags.length; i++) {
-				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
+			for (Flag flag : anno.flags()) {
 				flagValue |= flag.getValue();
 			}
 			if (!compile(anno.regexp(), flagValue).matcher(charSequence).matches()) {
