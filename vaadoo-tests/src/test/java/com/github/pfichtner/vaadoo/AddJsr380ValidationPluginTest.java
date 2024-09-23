@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.stream.Stream;
 
@@ -50,13 +51,26 @@ class AddJsr380ValidationPluginTest {
 	void testGeneratedBytecodeOnRecord() throws Exception {
 		try (AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin()) {
 			var constructor = firstPublicConstructor(transform(sut, SomeRecord.class));
-			assertThatExceptionOfType(InvocationTargetException.class)
-					.isThrownBy(() -> constructor.newInstance(null, sut, null, null, null, null, null, null, null, null,
-							null, "1234", "me@example.com", false, false, null, null, 0, Long.valueOf(42),
-							Short.valueOf((short) 42)))
+			Object[] args = defaultArgs(constructor.getParameters());
+			args[0] = null;
+			assertThatExceptionOfType(InvocationTargetException.class).isThrownBy(() -> constructor.newInstance(args))
 					.havingCause().isInstanceOf(NullPointerException.class)
 					.withMessage("someNotEmptyCharSequence must not be empty");
 		}
+	}
+
+	private static Object[] defaultArgs(Parameter[] parameters) {
+		Object[] objects = new Object[parameters.length];
+		for (int i = 0; i < parameters.length; i++) {
+			if (parameters[i].getType() == Object.class) {
+				objects[i] = new Object();
+			} else if (parameters[i].getType() == boolean.class) {
+				objects[i] = false;
+			} else if (parameters[i].getType() == int.class) {
+				objects[i] = 0;
+			}
+		}
+		return objects;
 	}
 
 	@Test
