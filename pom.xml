@@ -73,12 +73,6 @@
 				<version>24.6.0</version>
 				<scope>test</scope>
 			</dependency>
-			<dependency>
-				<groupId>org.jboss.windup.decompiler</groupId>
-				<artifactId>decompiler-fernflower</artifactId>
-				<version>6.3.9.Final</version>
-				<scope>test</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
