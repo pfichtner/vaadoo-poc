@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -54,8 +55,10 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(jakarta.validation.constraints.Pattern pattern, CharSequence charSequence) {
 		if (charSequence != null) {
+			Flag[] flags = pattern.flags();
 			int flagValue = 0;
-			for (jakarta.validation.constraints.Pattern.Flag flag : pattern.flags()) {
+			for (int i = 0; i < flags.length; i++) {
+				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
@@ -103,12 +106,13 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 			}
 
 			// additional check
-			String regexp = email.regexp();
+			Flag[] flags = email.flags();
 			int flagValue = 0;
-			for (jakarta.validation.constraints.Pattern.Flag flag : email.flags()) {
+			for (int i = 0; i < flags.length; i++) {
+				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
-			if (!compile(regexp, flagValue).matcher(charSequence).matches()) {
+			if (!compile(email.regexp(), flagValue).matcher(charSequence).matches()) {
 				throw new IllegalArgumentException(email.message());
 			}
 		}

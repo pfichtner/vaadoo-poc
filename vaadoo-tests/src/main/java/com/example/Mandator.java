@@ -11,19 +11,22 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value
+@RequiredArgsConstructor(access = PRIVATE)
 public class Mandator {
 
+	@Min(1)
+	@Max(9999)
 	int id;
 
 	@Getter(value = PRIVATE)
 	String cachedStringValue;
 
-	private Mandator(@Min(1) @Max(9999) int id) {
-		this.id = id;
-		this.cachedStringValue = "Mandator " + format("%1$4s", id).replace(' ', '0');
+	private Mandator(int id) {
+		this(id, "Mandator " + format("%1$4s", id).replace(' ', '0'));
 	}
 
 	private Mandator(@AssertTrue boolean foo,

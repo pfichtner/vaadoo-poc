@@ -11,49 +11,54 @@ Validating automatically domain objects: It's magic
 
 ## Why? 
 When implementing an application using Spring it's very handy to use the JSR 380 annotations. But where to place them? 
-- If the code does not have exlicitly DTOs but mapping it's domain objects directly, the annotations have to been placed on the domain objects but then your domain won't be able to validate the classes until it has some dependency to any JSR 380 implementation
+- If the code does not have exlicitly DTOs but mapping it's domain objects directly, the annotations have to been placed on the domain objects but then your domain won't be able to validate the classes until it has some dependency to any JSR 380 implementation and Spring initiating the validation. 
 - If your code differs between DTOs and domain objects, you have to options: 
-  - Place the JSR 380 annotations on the DTO but then your internal valid state would rely on the checks done in a non-domain layer
-  - Again make your donain dependant on a JSR 380 implemenation
+  - Place the JSR 380 annotations on the DTO but then your internal valid state would rely on checks being done in a non-domain layer, so the domain is not able to valid its state itself. 
+  - Again make your domain dependant on a JSR 380 implemenation. But then: Who would then ensure that validation is performed? 
 
-So if you decide, that none of these possibilites is an option you cannot just declare things like this...
+So if you decide, that none of these possibilites is an option you ~cannot~ just declare things like this...
 
 ```java
 public class MyDomainObject {
-    private final String someStringValue;
-    public MyDomainObject(@NotEmpty String someStringValue) {
-        this.someStringValue = someStringValue;
+    private final String name;
+    private final int age;
+    public MyDomainObject(@NotEmpty String name, @Min(0) int age) {
+        this.name = name;
+        this.age = age;
     }
 }
 ```
 
-...but you would start implementing hand-written code into you domain objects to make them self-validating: 
+...but you would start implementing all those contraint checks using hand-written code into you domain objects to make them self-validating: 
 
 ```java
 public class MyDomainObject {
-    private final String someStringValue;
-    public MyDomainObject(String someStringValue) {
-        Preconditions.checkNotNull(someStringValue, "someStringValue must not be null");
-        Preconditions.checkArgument(someStringValue.length() > 0, "someStringValue must not be empty");
-        this.someStringValue = someStringValue;
+    private final String name;
+    private final int age;
+    public MyDomainObject(String name, int age) {
+        if (name == null { throw new NullPointerException("name must not be null"); }
+        if (name.isEmpty() { throw new InvalidArgumentException("name must not be empty"); }
+        if (age < 0 { throw new InvalidArgumentException("age must be greater than or equal to 0"); }
+        this.name = name;
+        this.age = age;
     }
 }
 ```
 
 Ough, what a mess and waste of time! 
 
-And this is where vaadoo comes into play. Vaadoo is a compiler plugin that generates this boilerplate code for you. Checks are added to the bytecode so you get rid of a JSR 380 validation library. The generated code does nor depend on JSR 380 API- nor on JSR 380 validation libaries anymore. Another advantage is that these checks don't depend on reflection: What and how to check will be decided during compile- not during runtime. So this could also be helpful if you can't use reflection in your system or if it's hard to use (like e.g. when compiling native images for GraalVM)
-
+And this is where vaadoo comes into play. Vaadoo is a compiler plugin that generates this boilerplate code for you. Checks are added to the bytecode so you get rid of a JSR 380 validation library. The generated code does nor depend on JSR 380 API- nor on JSR 380 validation libaries anymore. 
 
 PS: This is getting real fun with lombok ([with adjustments of lombok.config](https://github.com/pfichtner/vaadoo/blob/main/vaadoo-tests/lombok.config)) and records! 
 ```java
 @lombok.Value public class MyDomainObject {
-    @NotEmpty String someStringValue;
+    @NotEmpty String name;
+    @Min(0) int age;
 }
 ```
 
 ```java
-public record MyDomainObject(@NotEmpty String someStringValue) {}
+public record MyDomainObject(@NotEmpty String name, @Min(0) int age) {}
 ```
 
 ## Why are only constructors supported? Please add support for methods as well! 
@@ -88,6 +93,28 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
 
 ## Drawbacks
 - no runtime internationalization (i18n) since messages are copied during compile-time into the bytecode
+- increased class sizes since the code gets copied into each class instead of having a central point that contains the code
+
+## Pitfalls
+- if you switch from generated constructors, e.g. 
+  ```java
+  @lombok.RequiredArgsConstructor @lombok.Value class Foo {
+  	@Min(1) @Max(9999) int bar;
+  }
+  ```
+  to a handwritten one it's easy to get lost of the annotations copied to the constructor done by lombok
+  ```java
+  @lombok.Value class Foo {
+  	@Min(1) @Max(9999) int bar;
+  	Foo(int bar) { this.bar = bar; }
+  }
+  ```
+  When adding constructors via the IDE the IDE takes care of it: Foo(@Min(1) @Max(9999) int bar) { this.bar = bar; }
+
+## Advantages
+- No reflection, what and how to check will be decided during compile- not during runtime. 
+  - Faster
+  - Can be used in environments where reflection is hard or impossible (e.g. native images)
 
 ## Other projects/approaches
 - https://github.com/opensanca/service-validator
