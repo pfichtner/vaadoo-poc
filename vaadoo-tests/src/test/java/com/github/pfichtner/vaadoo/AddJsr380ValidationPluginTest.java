@@ -6,21 +6,23 @@ import static java.util.Collections.singletonMap;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.objectweb.asm.ClassReader.EXPAND_FRAMES;
+import static org.objectweb.asm.ClassReader.SKIP_DEBUG;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
+import java.net.URL;
 import java.util.stream.Stream;
 
+import org.approvaltests.core.Options;
+import org.approvaltests.scrubbers.RegExScrubber;
 import org.assertj.core.api.ThrowableAssertAlternative;
-import org.jetbrains.java.decompiler.main.decompiler.ConsoleDecompiler;
-import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import org.objectweb.asm.ClassReader;
 
 import com.example.Mandator;
 import com.example.SomeClass;
@@ -35,13 +37,13 @@ import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 class AddJsr380ValidationPluginTest {
 
 	@Test
-	void testGeneratedBytecode(@TempDir Path tempDir) throws Exception {
-		verify(decompile(tempDir, SomeClass.class));
+	void testGeneratedBytecode() throws Exception {
+		verify(toJasmin(SomeClass.class), options());
 	}
 
 	@Test
-	void testGeneratedBytecodeOnLombokClass(@TempDir Path tempDir) throws Exception {
-		verify(decompile(tempDir, SomeLombokClass.class));
+	void testGeneratedBytecodeOnLombokClass() throws Exception {
+		verify(toJasmin(SomeLombokClass.class), options());
 	}
 
 	@Test
@@ -58,7 +60,7 @@ class AddJsr380ValidationPluginTest {
 	}
 
 	@Test
-	void testMandatorShowcase(@TempDir Path tempDir) throws Exception {
+	void testMandatorShowcase() throws Exception {
 		try (AddJsr380ValidationPlugin sut = new AddJsr380ValidationPlugin()) {
 			var constructor = firstPublicConstructor(transform(sut, Mandator.class));
 			exception(constructor).havingCause().withMessage("args must not be empty");
@@ -69,7 +71,11 @@ class AddJsr380ValidationPluginTest {
 			assertThat(constructor.newInstance(args("9999"))).hasToString("Mandator 9999");
 
 		}
-		verify(decompile(tempDir, Mandator.class));
+		verify(toJasmin(Mandator.class), options());
+	}
+
+	private Options options() {
+		return new Options().withScrubber(new RegExScrubber("\\A\\.bytecode\\s+.*$\n", "[bytecodeversion]"));
 	}
 
 	private ThrowableAssertAlternative<InvocationTargetException> exception(Constructor<?> constructor,
@@ -84,12 +90,17 @@ class AddJsr380ValidationPluginTest {
 		return result;
 	}
 
-	private String decompile(Path tempDir, Class<?> clazz) throws URISyntaxException, IOException {
-		Path sourcePath = Path.of(getClass().getResource("/" + clazz.getName().replace('.', '/') + ".class").toURI());
-		Files.copy(sourcePath, tempDir.resolve(clazz.getSimpleName() + ".class"));
-		return decompileClass(tempDir, clazz);
-//		var transformedClass = transform(sut, SomeClass.class);
-//		firstConstructor(transformedClass).newInstance("", "", "", "", false);
+	private String toJasmin(Class<?> clazz) throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try (PrintWriter pw = new PrintWriter(os)) {
+			new ClassReader(urlOfClass(clazz).openStream().readAllBytes()).accept(new JasminifierClassAdapter(pw, null),
+					SKIP_DEBUG | EXPAND_FRAMES);
+		}
+		return os.toString();
+	}
+
+	private static URL urlOfClass(Class<?> clazz) {
+		return clazz.getResource("/" + (clazz.getName().replace('.', File.separatorChar) + ".class"));
 	}
 
 	private static Constructor<?> firstPublicConstructor(Class<?> clazz) {
@@ -103,21 +114,6 @@ class AddJsr380ValidationPluginTest {
 		var classLoader = new ByteArrayClassLoader(getSystemClassLoader(),
 				singletonMap(classname, transformed.getBytes()));
 		return classLoader.loadClass(classname);
-	}
-
-	private String decompileClass(Path destination, Class<?> clazz) throws IOException {
-		Map<String, Object> options = Map.of( //
-				IFernflowerPreferences.REMOVE_BRIDGE, "true", //
-				IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES, "true" //
-		);
-		ConsoleDecompiler decompiler = new ConsoleDecompiler(destination.toFile(), options);
-		decompiler.addSpace(destination.toFile(), true);
-		decompiler.decompileContext();
-
-		Path decompiledJavaFile = destination.resolve(clazz.getSimpleName() + ".java");
-		String decompiledSource = Files.readString(decompiledJavaFile);
-		Files.delete(decompiledJavaFile);
-		return decompiledSource;
 	}
 
 }

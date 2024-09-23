@@ -1,144 +1,455 @@
-package com.example;
+.bytecode 61.0
+.class public final synchronized com/example/Mandator
+.super java/lang/Object
+.inner class public static final Lookup inner java/lang/invoke/MethodHandles$Lookup outer java/lang/invoke/MethodHandles
 
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Pattern.Flag;
-import lombok.Generated;
+.field private final 'id' I
+.annotation visible Ljakarta/validation/constraints/Min;
+value J = 1
+.end annotation
+.annotation visible Ljakarta/validation/constraints/Max;
+value J = 9999
+.end annotation
+.end field
 
-public final class Mandator {
-   @Min(1L)
-   @Max(9999L)
-   private final int id;
-   private final String cachedStringValue;
+.field private final 'cachedStringValue' Ljava/lang/String;
 
-   private Mandator(int id) {
-      validate(id);
-      this(id, String.format("%1$4s", id).replace(' ', '0'));
-   }
+.method private <init>(I)V
+aload 0
+iload 1
+iload 1
+ldc "%1$4s"
+iconst_1
+anewarray java/lang/Object
+dup
+iconst_0
+iload 1
+aastore
+bipush 32
+bipush 48
+return
+.limit locals 2
+.limit stack 7
+.end method
+.provide com/example/Mandator;<init>
+.desc Ljava/lang/String;
+.desc I
 
-   private Mandator(@AssertTrue boolean foo, @NotEmpty @Pattern(regexp = "\\d+",message = "Mandator muss numerisch sein") String id, @AssertFalse boolean bar) {
-      validate$1(foo, id, bar);
-      this(Integer.parseInt(id));
-   }
+.method private <init>(ZLjava/lang/String;Z)V
+aload 0
+iload 1
+aload 2
+iload 3
+aload 2
+return
+.limit locals 4
+.limit stack 4
+.end method
+.provide com/example/Mandator;<init>
 
-   public Mandator(String[] args) {
-      validate$2(args);
-      this(true, args[0], false);
-   }
+.method public <init>([Ljava/lang/String;)V
+aload 0
+aload 1
+iconst_1
+aload 1
+iconst_0
+aaload
+iconst_0
+return
+.limit locals 2
+.limit stack 4
+.end method
+.provide com/example/Mandator;<init>
 
-   public static void main(String[] args) {
-      System.out.println(new Mandator(args));
-   }
+.method public static main([Ljava/lang/String;)V
+getstatic java/lang/System/out Ljava/io/PrintStream;
+new com/example/Mandator
+dup
+aload 0
+return
+.limit locals 1
+.limit stack 4
+.end method
+.dep java/lang/System;out
+.provide com/example/Mandator;main
+.desc Ljava/io/PrintStream;
 
-   public String toString() {
-      return this.cachedStringValue;
-   }
+.method public toString()Ljava/lang/String;
+aload 0
+getfield com/example/Mandator/cachedStringValue Ljava/lang/String;
+areturn
+.limit locals 1
+.limit stack 1
+.end method
+.dep com/example/Mandator;cachedStringValue
+.provide com/example/Mandator;toString
+.desc Ljava/lang/String;
 
-   @Min(1L)
-   @Max(9999L)
-   @Generated
-   public int getId() {
-      return this.id;
-   }
+.method public getId()I
+.annotation visible Ljakarta/validation/constraints/Min;
+value J = 1
+.end annotation
+.annotation visible Ljakarta/validation/constraints/Max;
+value J = 9999
+.end annotation
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 0
+getfield com/example/Mandator/id I
+ireturn
+.limit locals 1
+.limit stack 1
+.end method
+.dep com/example/Mandator;id
+.provide com/example/Mandator;getId
+.desc I
 
-   @Generated
-   public boolean equals(Object o) {
-      if (o == this) {
-         return true;
-      } else if (!(o instanceof Mandator)) {
-         return false;
-      } else {
-         Mandator other = (Mandator)o;
-         if (this.getId() != other.getId()) {
-            return false;
-         } else {
-            Object this$cachedStringValue = this.getCachedStringValue();
-            Object other$cachedStringValue = other.getCachedStringValue();
-            if (this$cachedStringValue == null) {
-               if (other$cachedStringValue != null) {
-                  return false;
-               }
-            } else if (!this$cachedStringValue.equals(other$cachedStringValue)) {
-               return false;
-            }
+.method public equals(Ljava/lang/Object;)Z
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 1
+aload 0
+if_acmpne L0
+iconst_1
+ireturn
+L0:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+.end stack
+aload 1
+instanceof com/example/Mandator
+ifne L1
+iconst_0
+ireturn
+L1:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+.end stack
+aload 1
+checkcast com/example/Mandator
+astore 2
+aload 0
+aload 2
+if_icmpeq L2
+iconst_0
+ireturn
+L2:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+locals Object com/example/Mandator
+.end stack
+aload 0
+astore 3
+aload 2
+astore 4
+aload 3
+ifnonnull L3
+aload 4
+ifnull L4
+goto L5
+L3:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+locals Object com/example/Mandator
+locals Object java/lang/String
+locals Object java/lang/String
+.end stack
+aload 3
+aload 4
+ifne L4
+L5:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+locals Object com/example/Mandator
+locals Object java/lang/String
+locals Object java/lang/String
+.end stack
+iconst_0
+ireturn
+L4:
+.stack
+locals Object com/example/Mandator
+locals Object java/lang/Object
+locals Object com/example/Mandator
+locals Object java/lang/String
+locals Object java/lang/String
+.end stack
+iconst_1
+ireturn
+.limit locals 5
+.limit stack 2
+.end method
+.provide com/example/Mandator;equals
 
-            return true;
-         }
-      }
-   }
+.method public hashCode()I
+.annotation invisible Llombok/Generated;
+.end annotation
+bipush 59
+istore 1
+iconst_1
+istore 2
+iload 2
+bipush 59
+imul
+aload 0
+iadd
+istore 2
+aload 0
+astore 3
+iload 2
+bipush 59
+imul
+aload 3
+ifnonnull L0
+bipush 43
+goto L1
+L0:
+.stack
+locals Object com/example/Mandator
+locals Integer
+locals Integer
+locals Object java/lang/String
+stack Integer
+.end stack
+aload 3
+L1:
+.stack
+locals Object com/example/Mandator
+locals Integer
+locals Integer
+locals Object java/lang/String
+stack Integer
+stack Integer
+.end stack
+iadd
+istore 2
+iload 2
+ireturn
+.limit locals 4
+.limit stack 2
+.end method
+.provide com/example/Mandator;hashCode
 
-   @Generated
-   public int hashCode() {
-      int PRIME = true;
-      int result = 1;
-      int result = result * 59 + this.getId();
-      Object $cachedStringValue = this.getCachedStringValue();
-      result = result * 59 + ($cachedStringValue == null ? 43 : $cachedStringValue.hashCode());
-      return result;
-   }
+.method private <init>(ILjava/lang/String;)V
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 0
+iload 1
+aload 2
+aload 0
+iload 1
+putfield com/example/Mandator/id I
+aload 0
+aload 2
+putfield com/example/Mandator/cachedStringValue Ljava/lang/String;
+return
+.limit locals 3
+.limit stack 3
+.end method
+.dep com/example/Mandator;cachedStringValue
+.dep com/example/Mandator;id
+.provide com/example/Mandator;<init>
+.desc Ljava/lang/String;
+.desc I
 
-   @Generated
-   private Mandator(@Min(1L) @Max(9999L) int id, String cachedStringValue) {
-      validate$3(id, cachedStringValue);
-      super();
-      this.id = id;
-      this.cachedStringValue = cachedStringValue;
-   }
+.method private getCachedStringValue()Ljava/lang/String;
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 0
+getfield com/example/Mandator/cachedStringValue Ljava/lang/String;
+areturn
+.limit locals 1
+.limit stack 1
+.end method
+.dep com/example/Mandator;cachedStringValue
+.provide com/example/Mandator;getCachedStringValue
+.desc Ljava/lang/String;
 
-   @Generated
-   private String getCachedStringValue() {
-      return this.cachedStringValue;
-   }
+.method private static validate(I)V
+return
+.limit locals 1
+.limit stack 0
+.end method
+.provide com/example/Mandator;validate
 
-   private static void validate(int var0) {
-   }
+.method private static validate$1(ZLjava/lang/String;Z)V
+iload 0
+ifne L0
+new java/lang/IllegalArgumentException
+dup
+ldc "foo must be true"
+athrow
+L0:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+.end stack
+aload 1
+ifnonnull L1
+new java/lang/NullPointerException
+dup
+ldc "id must not be empty"
+athrow
+L1:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+.end stack
+aload 1
+ifgt L2
+new java/lang/IllegalArgumentException
+dup
+ldc "id must not be empty"
+athrow
+L2:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+.end stack
+aload 1
+ifnull L3
+iconst_0
+istore 3
+bipush 0
+anewarray jakarta/validation/constraints/Pattern$Flag
+astore 4
+aload 4
+arraylength
+istore 5
+iconst_0
+istore 6
+L4:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+iload 6
+iload 5
+if_icmpge L5
+aload 4
+iload 6
+aaload
+astore 7
+iload 3
+aload 7
+ior
+istore 3
+iinc 6 1
+goto L4
+L5:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+ldc "\\d+"
+iload 3
+aload 1
+ifne L3
+new java/lang/IllegalArgumentException
+dup
+ldc "Mandator muss numerisch sein"
+athrow
+L3:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+.end stack
+iload 2
+ifeq L6
+new java/lang/IllegalArgumentException
+dup
+ldc "bar must be false"
+athrow
+L6:
+.stack
+locals Integer
+locals Object java/lang/String
+locals Integer
+.end stack
+return
+.limit locals 8
+.limit stack 3
+.end method
+.provide com/example/Mandator;validate$1
 
-   private static void validate$1(boolean var0, String var1, boolean var2) {
-      if (!var0) {
-         throw new IllegalArgumentException("foo must be true");
-      } else if (var1 == null) {
-         throw new NullPointerException("id must not be empty");
-      } else if (var1.length() <= 0) {
-         throw new IllegalArgumentException("id must not be empty");
-      } else {
-         if (var1 != null) {
-            int var3 = 0;
-            Flag[] var4 = new Flag[0];
-            int var5 = var4.length;
+.method private static validate$2([Ljava/lang/String;)V
+aload 0
+ifnonnull L0
+new java/lang/NullPointerException
+dup
+ldc "args must not be empty"
+athrow
+L0:
+.stack
+locals Object [Ljava/lang/String;
+.end stack
+aload 0
+arraylength
+ifgt L1
+new java/lang/IllegalArgumentException
+dup
+ldc "args must not be empty"
+athrow
+L1:
+.stack
+locals Object [Ljava/lang/String;
+.end stack
+return
+.limit locals 1
+.limit stack 3
+.end method
+.provide com/example/Mandator;validate$2
 
-            for(int var6 = 0; var6 < var5; ++var6) {
-               Flag var7 = var4[var6];
-               var3 |= var7.getValue();
-            }
-
-            if (!java.util.regex.Pattern.compile("\\d+", var3).matcher(var1).matches()) {
-               throw new IllegalArgumentException("Mandator muss numerisch sein");
-            }
-         }
-
-         if (var2) {
-            throw new IllegalArgumentException("bar must be false");
-         }
-      }
-   }
-
-   private static void validate$2(String[] var0) {
-      if (var0 == null) {
-         throw new NullPointerException("args must not be empty");
-      } else if (var0.length <= 0) {
-         throw new IllegalArgumentException("args must not be empty");
-      }
-   }
-
-   private static void validate$3(int var0, String var1) {
-      if ((long)var0 < 1L) {
-         throw new IllegalArgumentException("id must be greater than or equal to 1");
-      } else if ((long)var0 > 9999L) {
-         throw new IllegalArgumentException("id must be less than or equal to 9999");
-      }
-   }
-}
+.method private static validate$3(ILjava/lang/String;)V
+iload 0
+i2l
+ldc 1
+lcmp
+ifge L0
+new java/lang/IllegalArgumentException
+dup
+ldc "id must be greater than or equal to 1"
+athrow
+L0:
+.stack
+locals Integer
+locals Object java/lang/String
+.end stack
+iload 0
+i2l
+ldc 9999
+lcmp
+ifle L1
+new java/lang/IllegalArgumentException
+dup
+ldc "id must be less than or equal to 9999"
+athrow
+L1:
+.stack
+locals Integer
+locals Object java/lang/String
+.end stack
+return
+.limit locals 2
+.limit stack 4
+.end method
+.provide com/example/Mandator;validate$3

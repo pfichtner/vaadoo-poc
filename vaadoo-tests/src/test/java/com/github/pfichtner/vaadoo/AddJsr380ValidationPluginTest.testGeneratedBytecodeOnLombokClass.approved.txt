@@ -1,216 +1,1547 @@
-package com.example;
+.bytecode 61.0
+.class public synchronized com/example/SomeLombokClass
+.super java/lang/Object
+.inner class public static SomeLombokClassBuilder inner com/example/SomeLombokClass$SomeLombokClassBuilder outer com/example/SomeLombokClass
+.inner class public static final enum Flag inner jakarta/validation/constraints/Pattern$Flag outer jakarta/validation/constraints/Pattern
 
-import com.example.SomeLombokClass.SomeLombokClassBuilder;
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern.Flag;
-import java.net.IDN;
-import java.util.Collection;
-import java.util.Map;
-import lombok.Generated;
+.field private final 'someNullObject' Ljava/lang/Object;
+.annotation visible Ljakarta/validation/constraints/Null;
+.end annotation
+.end field
 
-public class SomeLombokClass {
-   @Null
-   private final Object someNullObject;
-   @NotNull
-   private final Object someObject;
-   private final String valueWithoutAnnotation;
-   @NotEmpty
-   private final CharSequence someNotEmptyCharSequence;
-   @NotEmpty
-   private final String someNotEmptyString;
-   @NotEmpty
-   private final Collection someNotEmptyCollection;
-   @NotEmpty
-   private final Map someNotEmptyMap;
-   @NotEmpty
-   private final Integer[] someNotEmptyArray;
-   @NotBlank
-   private final CharSequence someNonBlankValue;
-   @NotBlank(
-      message = "my custom message"
-   )
-   private final String someNonBlankValueWithCustomMessage;
-   @Size(
-      min = 10,
-      max = 20
-   )
-   private final String stringOfLenfthBetween10And20;
-   @Pattern(
-      regexp = "\\d{1,4}",
-      flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}
-   )
-   private final String someFourDigits;
-   @Email
-   private final String anyMailAddress;
-   @AssertTrue
-   private final boolean someTrueValue;
-   @AssertFalse
-   private final boolean someFalseValue;
-   @AssertTrue
-   private final Boolean someTrueValueWrapper;
-   @AssertFalse
-   private final Boolean someFalseValueWrapper;
-   @Min(42L)
-   private final int someIntPrimitiveValueThatIsMinimal42;
-   @Min(42L)
-   private final Long someLongWrapperValueThatIsMinimal42;
-   @NotNull
-   @Min(41L)
-   @Max(43L)
-   private final Short someShortWrapperValueThatIsNotNullAndAbout42;
+.field private final 'someObject' Ljava/lang/Object;
+.annotation visible Ljakarta/validation/constraints/NotNull;
+.end annotation
+.end field
 
-   public static void main(String[] args) {
-      System.out.println(builder().someObject("isNotNull").someNonBlankValue("").build());
-   }
+.field private final 'valueWithoutAnnotation' Ljava/lang/String;
 
-   @Generated
-   SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, String stringOfLenfthBetween10And20, @Pattern(regexp = "\\d{1,4}",flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}) String someFourDigits, @Email String anyMailAddress, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(41L) @Max(43L) Short someShortWrapperValueThatIsNotNullAndAbout42) {
-      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, stringOfLenfthBetween10And20, someFourDigits, anyMailAddress, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndAbout42);
-      super();
-      this.someNullObject = someNullObject;
-      this.someObject = someObject;
-      this.valueWithoutAnnotation = valueWithoutAnnotation;
-      this.someNotEmptyCharSequence = someNotEmptyCharSequence;
-      this.someNotEmptyString = someNotEmptyString;
-      this.someNotEmptyCollection = someNotEmptyCollection;
-      this.someNotEmptyMap = someNotEmptyMap;
-      this.someNotEmptyArray = someNotEmptyArray;
-      this.someNonBlankValue = someNonBlankValue;
-      this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
-      this.stringOfLenfthBetween10And20 = stringOfLenfthBetween10And20;
-      this.someFourDigits = someFourDigits;
-      this.anyMailAddress = anyMailAddress;
-      this.someTrueValue = someTrueValue;
-      this.someFalseValue = someFalseValue;
-      this.someTrueValueWrapper = someTrueValueWrapper;
-      this.someFalseValueWrapper = someFalseValueWrapper;
-      this.someIntPrimitiveValueThatIsMinimal42 = someIntPrimitiveValueThatIsMinimal42;
-      this.someLongWrapperValueThatIsMinimal42 = someLongWrapperValueThatIsMinimal42;
-      this.someShortWrapperValueThatIsNotNullAndAbout42 = someShortWrapperValueThatIsNotNullAndAbout42;
-   }
+.field private final 'someNotEmptyCharSequence' Ljava/lang/CharSequence;
+.annotation visible Ljakarta/validation/constraints/NotEmpty;
+.end annotation
+.end field
 
-   @Generated
-   public static SomeLombokClassBuilder builder() {
-      return new SomeLombokClassBuilder();
-   }
+.field private final 'someNotEmptyString' Ljava/lang/String;
+.annotation visible Ljakarta/validation/constraints/NotEmpty;
+.end annotation
+.end field
 
-   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, String var10, String var11, String var12, boolean var13, boolean var14, Boolean var15, Boolean var16, int var17, Long var18, Short var19) {
-      if (var0 != null) {
-         throw new IllegalArgumentException("someNullObject must be null");
-      } else if (var1 == null) {
-         throw new NullPointerException("someObject must not be null");
-      } else if (var3 == null) {
-         throw new NullPointerException("someNotEmptyCharSequence must not be empty");
-      } else if (var3.length() <= 0) {
-         throw new IllegalArgumentException("someNotEmptyCharSequence must not be empty");
-      } else if (var4 == null) {
-         throw new NullPointerException("someNotEmptyString must not be empty");
-      } else if (var4.length() <= 0) {
-         throw new IllegalArgumentException("someNotEmptyString must not be empty");
-      } else if (var5 == null) {
-         throw new NullPointerException("someNotEmptyCollection must not be empty");
-      } else if (var5.size() <= 0) {
-         throw new IllegalArgumentException("someNotEmptyCollection must not be empty");
-      } else if (var6 == null) {
-         throw new NullPointerException("someNotEmptyMap must not be empty");
-      } else if (var6.size() <= 0) {
-         throw new IllegalArgumentException("someNotEmptyMap must not be empty");
-      } else if (var7 == null) {
-         throw new NullPointerException("someNotEmptyArray must not be empty");
-      } else if (var7.length <= 0) {
-         throw new IllegalArgumentException("someNotEmptyArray must not be empty");
-      } else if (var8 == null) {
-         throw new NullPointerException("someNonBlankValue must not be blank");
-      } else if (var8.toString().trim().length() <= 0) {
-         throw new IllegalArgumentException("someNonBlankValue must not be blank");
-      } else if (var9 == null) {
-         throw new NullPointerException("my custom message");
-      } else if (var9.toString().trim().length() <= 0) {
-         throw new IllegalArgumentException("my custom message");
-      } else {
-         if (var11 != null) {
-            int var20 = 0;
-            Flag[] var21 = new Flag[]{Flag.CASE_INSENSITIVE, Flag.MULTILINE};
-            int var22 = var21.length;
+.field private final 'someNotEmptyCollection' Ljava/util/Collection;
+.signature "Ljava/util/Collection<Ljava/lang/String;>;"
+.annotation visible Ljakarta/validation/constraints/NotEmpty;
+.end annotation
+.end field
 
-            for(int var23 = 0; var23 < var22; ++var23) {
-               Flag var24 = var21[var23];
-               var20 |= var24.getValue();
-            }
+.field private final 'someNotEmptyMap' Ljava/util/Map;
+.signature "Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;"
+.annotation visible Ljakarta/validation/constraints/NotEmpty;
+.end annotation
+.end field
 
-            if (!java.util.regex.Pattern.compile("\\d{1,4}", var20).matcher(var11).matches()) {
-               throw new IllegalArgumentException("someFourDigits must match \"\\d{1,4}\"");
-            }
-         }
+.field private final 'someNotEmptyArray' [Ljava/lang/Integer;
+.annotation visible Ljakarta/validation/constraints/NotEmpty;
+.end annotation
+.end field
 
-         if (var12 != null && var12.length() != 0) {
-            String var31 = var12.toString();
-            int var32 = var31.lastIndexOf(64);
-            if (var32 < 0) {
-               throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
-            }
+.field private final 'someNonBlankValue' Ljava/lang/CharSequence;
+.annotation visible Ljakarta/validation/constraints/NotBlank;
+.end annotation
+.end field
 
-            String var33 = var31.substring(0, var32);
-            if (var33.length() > 64 || !java.util.regex.Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*", 2).matcher(var33).matches()) {
-               throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
-            }
+.field private final 'someNonBlankValueWithCustomMessage' Ljava/lang/String;
+.annotation visible Ljakarta/validation/constraints/NotBlank;
+message s = "my custom message"
+.end annotation
+.end field
 
-            String var34 = var31.substring(var32 + 1);
-            boolean var35 = false;
+.field private final 'stringOfLenfthBetween10And20' Ljava/lang/String;
+.annotation visible Ljakarta/validation/constraints/Size;
+min I = 10
+max I = 20
+.end annotation
+.end field
 
-            try {
-               var35 = !var34.endsWith(".") && IDN.toASCII(var34).length() <= 255 && java.util.regex.Pattern.compile("(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]", 2).matcher(var34).matches();
-            } catch (IllegalArgumentException var30) {
-               ;
-            }
+.field private final 'someFourDigits' Ljava/lang/String;
+.annotation visible Ljakarta/validation/constraints/Pattern;
+regexp s = "\\d{1,4}"
+flags [e Ljakarta/validation/constraints/Pattern$Flag; = "CASE_INSENSITIVE" "MULTILINE" 
+.end annotation
+.end field
 
-            if (!var35) {
-               throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
-            }
+.field private final 'anyMailAddress' Ljava/lang/String;
+.annotation visible Ljakarta/validation/constraints/Email;
+.end annotation
+.end field
 
-            int var25 = 0;
-            Flag[] var26 = new Flag[0];
-            int var27 = var26.length;
+.field private final 'someTrueValue' Z
+.annotation visible Ljakarta/validation/constraints/AssertTrue;
+.end annotation
+.end field
 
-            for(int var28 = 0; var28 < var27; ++var28) {
-               Flag var29 = var26[var28];
-               var25 |= var29.getValue();
-            }
+.field private final 'someFalseValue' Z
+.annotation visible Ljakarta/validation/constraints/AssertFalse;
+.end annotation
+.end field
 
-            if (!java.util.regex.Pattern.compile(".*", var25).matcher(var12).matches()) {
-               throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
-            }
-         }
+.field private final 'someTrueValueWrapper' Ljava/lang/Boolean;
+.annotation visible Ljakarta/validation/constraints/AssertTrue;
+.end annotation
+.end field
 
-         if (!var13) {
-            throw new IllegalArgumentException("someTrueValue must be true");
-         } else if (var14) {
-            throw new IllegalArgumentException("someFalseValue must be false");
-         } else if (var15 != null && !var15.booleanValue()) {
-            throw new IllegalArgumentException("someTrueValueWrapper must be true");
-         } else if (var16 != null && var16.booleanValue()) {
-            throw new IllegalArgumentException("someFalseValueWrapper must be false");
-         } else if ((long)var17 < 42L) {
-            throw new IllegalArgumentException("someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42");
-         } else if (var18 != null && var18.longValue() < 42L) {
-            throw new IllegalArgumentException("someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42");
-         } else if (var19 == null) {
-            throw new NullPointerException("someShortWrapperValueThatIsNotNullAndAbout42 must not be null");
-         } else if (var19 != null && (long)var19.shortValue() < 41L) {
-            throw new IllegalArgumentException("someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41");
-         } else if (var19 != null && (long)var19.shortValue() > 43L) {
-            throw new IllegalArgumentException("someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43");
-         }
-      }
-   }
-}
+.field private final 'someFalseValueWrapper' Ljava/lang/Boolean;
+.annotation visible Ljakarta/validation/constraints/AssertFalse;
+.end annotation
+.end field
+
+.field private final 'someIntPrimitiveValueThatIsMinimal42' I
+.annotation visible Ljakarta/validation/constraints/Min;
+value J = 42
+.end annotation
+.end field
+
+.field private final 'someLongWrapperValueThatIsMinimal42' Ljava/lang/Long;
+.annotation visible Ljakarta/validation/constraints/Min;
+value J = 42
+.end annotation
+.end field
+
+.field private final 'someShortWrapperValueThatIsNotNullAndAbout42' Ljava/lang/Short;
+.annotation visible Ljakarta/validation/constraints/NotNull;
+.end annotation
+.annotation visible Ljakarta/validation/constraints/Min;
+value J = 41
+.end annotation
+.annotation visible Ljakarta/validation/constraints/Max;
+value J = 43
+.end annotation
+.end field
+
+.method public static main([Ljava/lang/String;)V
+getstatic java/lang/System/out Ljava/io/PrintStream;
+ldc "isNotNull"
+ldc ""
+return
+.limit locals 1
+.limit stack 3
+.end method
+.dep java/lang/System;out
+.provide com/example/SomeLombokClass;main
+.desc Ljava/lang/String;
+.desc Ljava/lang/Object;
+.desc Ljava/lang/Boolean;
+.desc Ljava/lang/Short;
+.desc Ljava/util/Collection;
+.desc [Ljava/lang/Integer;
+.desc I
+.desc Ljava/lang/Long;
+.desc Z
+.desc Ljava/io/PrintStream;
+.desc Ljava/lang/CharSequence;
+.desc Ljava/util/Map;
+
+.method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
+.signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V"
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 0
+aload 1
+aload 2
+aload 3
+aload 4
+aload 5
+aload 6
+aload 7
+aload 8
+aload 9
+aload 10
+aload 11
+aload 12
+aload 13
+iload 14
+iload 15
+aload 16
+aload 17
+iload 18
+aload 19
+aload 20
+aload 0
+aload 1
+putfield com/example/SomeLombokClass/someNullObject Ljava/lang/Object;
+aload 0
+aload 2
+putfield com/example/SomeLombokClass/someObject Ljava/lang/Object;
+aload 0
+aload 3
+putfield com/example/SomeLombokClass/valueWithoutAnnotation Ljava/lang/String;
+aload 0
+aload 4
+putfield com/example/SomeLombokClass/someNotEmptyCharSequence Ljava/lang/CharSequence;
+aload 0
+aload 5
+putfield com/example/SomeLombokClass/someNotEmptyString Ljava/lang/String;
+aload 0
+aload 6
+putfield com/example/SomeLombokClass/someNotEmptyCollection Ljava/util/Collection;
+aload 0
+aload 7
+putfield com/example/SomeLombokClass/someNotEmptyMap Ljava/util/Map;
+aload 0
+aload 8
+putfield com/example/SomeLombokClass/someNotEmptyArray [Ljava/lang/Integer;
+aload 0
+aload 9
+putfield com/example/SomeLombokClass/someNonBlankValue Ljava/lang/CharSequence;
+aload 0
+aload 10
+putfield com/example/SomeLombokClass/someNonBlankValueWithCustomMessage Ljava/lang/String;
+aload 0
+aload 11
+putfield com/example/SomeLombokClass/stringOfLenfthBetween10And20 Ljava/lang/String;
+aload 0
+aload 12
+putfield com/example/SomeLombokClass/someFourDigits Ljava/lang/String;
+aload 0
+aload 13
+putfield com/example/SomeLombokClass/anyMailAddress Ljava/lang/String;
+aload 0
+iload 14
+putfield com/example/SomeLombokClass/someTrueValue Z
+aload 0
+iload 15
+putfield com/example/SomeLombokClass/someFalseValue Z
+aload 0
+aload 16
+putfield com/example/SomeLombokClass/someTrueValueWrapper Ljava/lang/Boolean;
+aload 0
+aload 17
+putfield com/example/SomeLombokClass/someFalseValueWrapper Ljava/lang/Boolean;
+aload 0
+iload 18
+putfield com/example/SomeLombokClass/someIntPrimitiveValueThatIsMinimal42 I
+aload 0
+aload 19
+putfield com/example/SomeLombokClass/someLongWrapperValueThatIsMinimal42 Ljava/lang/Long;
+aload 0
+aload 20
+putfield com/example/SomeLombokClass/someShortWrapperValueThatIsNotNullAndAbout42 Ljava/lang/Short;
+return
+.limit locals 21
+.limit stack 21
+.end method
+.dep com/example/SomeLombokClass;someFalseValue
+.dep com/example/SomeLombokClass;someNullObject
+.dep com/example/SomeLombokClass;someNotEmptyString
+.dep com/example/SomeLombokClass;stringOfLenfthBetween10And20
+.dep com/example/SomeLombokClass;anyMailAddress
+.dep com/example/SomeLombokClass;someIntPrimitiveValueThatIsMinimal42
+.dep com/example/SomeLombokClass;someLongWrapperValueThatIsMinimal42
+.dep com/example/SomeLombokClass;someNotEmptyArray
+.dep com/example/SomeLombokClass;someFalseValueWrapper
+.dep com/example/SomeLombokClass;someTrueValueWrapper
+.dep com/example/SomeLombokClass;someShortWrapperValueThatIsNotNullAndAbout42
+.dep com/example/SomeLombokClass;someNonBlankValue
+.dep com/example/SomeLombokClass;someTrueValue
+.dep com/example/SomeLombokClass;someNotEmptyCharSequence
+.dep com/example/SomeLombokClass;valueWithoutAnnotation
+.dep com/example/SomeLombokClass;someNotEmptyMap
+.dep com/example/SomeLombokClass;someObject
+.dep com/example/SomeLombokClass;someNotEmptyCollection
+.dep com/example/SomeLombokClass;someNonBlankValueWithCustomMessage
+.dep com/example/SomeLombokClass;someFourDigits
+.provide com/example/SomeLombokClass;<init>
+.desc Ljava/lang/String;
+.desc Ljava/lang/Object;
+.desc Ljava/lang/Boolean;
+.desc Ljava/lang/Short;
+.desc Ljava/util/Collection;
+.desc [Ljava/lang/Integer;
+.desc I
+.desc Ljava/lang/Long;
+.desc Z
+.desc Ljava/lang/CharSequence;
+.desc Ljava/util/Map;
+
+.method public static builder()Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
+.annotation invisible Llombok/Generated;
+.end annotation
+new com/example/SomeLombokClass$SomeLombokClassBuilder
+dup
+areturn
+.limit locals 0
+.limit stack 2
+.end method
+.provide com/example/SomeLombokClass;builder
+
+.method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
+.catch java/lang/IllegalArgumentException from L0 to L1 using L2
+aload 0
+ifnull L3
+new java/lang/IllegalArgumentException
+dup
+ldc "someNullObject must be null"
+athrow
+L3:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 1
+ifnonnull L4
+new java/lang/NullPointerException
+dup
+ldc "someObject must not be null"
+athrow
+L4:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 3
+ifnonnull L5
+new java/lang/NullPointerException
+dup
+ldc "someNotEmptyCharSequence must not be empty"
+athrow
+L5:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 3
+ifgt L6
+new java/lang/IllegalArgumentException
+dup
+ldc "someNotEmptyCharSequence must not be empty"
+athrow
+L6:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 4
+ifnonnull L7
+new java/lang/NullPointerException
+dup
+ldc "someNotEmptyString must not be empty"
+athrow
+L7:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 4
+ifgt L8
+new java/lang/IllegalArgumentException
+dup
+ldc "someNotEmptyString must not be empty"
+athrow
+L8:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 5
+ifnonnull L9
+new java/lang/NullPointerException
+dup
+ldc "someNotEmptyCollection must not be empty"
+athrow
+L9:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 5
+ifgt L10
+new java/lang/IllegalArgumentException
+dup
+ldc "someNotEmptyCollection must not be empty"
+athrow
+L10:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 6
+ifnonnull L11
+new java/lang/NullPointerException
+dup
+ldc "someNotEmptyMap must not be empty"
+athrow
+L11:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 6
+ifgt L12
+new java/lang/IllegalArgumentException
+dup
+ldc "someNotEmptyMap must not be empty"
+athrow
+L12:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 7
+ifnonnull L13
+new java/lang/NullPointerException
+dup
+ldc "someNotEmptyArray must not be empty"
+athrow
+L13:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 7
+arraylength
+ifgt L14
+new java/lang/IllegalArgumentException
+dup
+ldc "someNotEmptyArray must not be empty"
+athrow
+L14:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 8
+ifnonnull L15
+new java/lang/NullPointerException
+dup
+ldc "someNonBlankValue must not be blank"
+athrow
+L15:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 8
+ifgt L16
+new java/lang/IllegalArgumentException
+dup
+ldc "someNonBlankValue must not be blank"
+athrow
+L16:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 9
+ifnonnull L17
+new java/lang/NullPointerException
+dup
+ldc "my custom message"
+athrow
+L17:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 9
+ifgt L18
+new java/lang/IllegalArgumentException
+dup
+ldc "my custom message"
+athrow
+L18:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 11
+ifnull L19
+iconst_0
+istore 20
+bipush 2
+anewarray jakarta/validation/constraints/Pattern$Flag
+dup
+bipush 0
+getstatic jakarta/validation/constraints/Pattern$Flag/CASE_INSENSITIVE Ljakarta/validation/constraints/Pattern$Flag;
+aastore
+dup
+bipush 1
+getstatic jakarta/validation/constraints/Pattern$Flag/MULTILINE Ljakarta/validation/constraints/Pattern$Flag;
+aastore
+astore 21
+aload 21
+arraylength
+istore 22
+iconst_0
+istore 23
+L20:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+iload 23
+iload 22
+if_icmpge L21
+aload 21
+iload 23
+aaload
+astore 24
+iload 20
+aload 24
+ior
+istore 20
+iinc 23 1
+goto L20
+L21:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+ldc "\\d{1,4}"
+iload 20
+aload 11
+ifne L19
+new java/lang/IllegalArgumentException
+dup
+ldc "someFourDigits must match \"\\d{1,4}\""
+athrow
+L19:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 12
+ifnull L22
+aload 12
+ifeq L22
+aload 12
+astore 20
+aload 20
+bipush 64
+istore 21
+iload 21
+ifge L23
+new java/lang/IllegalArgumentException
+dup
+ldc "anyMailAddress must be a well-formed email address"
+athrow
+L23:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+.end stack
+aload 20
+iconst_0
+iload 21
+astore 22
+aload 22
+bipush 64
+if_icmpgt L24
+ldc "(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*"
+iconst_2
+aload 22
+ifne L25
+L24:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+.end stack
+new java/lang/IllegalArgumentException
+dup
+ldc "anyMailAddress must be a well-formed email address"
+athrow
+L25:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+.end stack
+aload 20
+iload 21
+iconst_1
+iadd
+astore 23
+iconst_0
+istore 24
+L0:
+aload 23
+ldc "."
+ifne L26
+aload 23
+sipush 255
+if_icmpgt L26
+ldc "(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]"
+iconst_2
+aload 23
+ifeq L26
+iconst_1
+goto L27
+L26:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+.end stack
+iconst_0
+L27:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+stack Integer
+.end stack
+istore 24
+L1:
+goto L28
+L2:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+stack Object java/lang/IllegalArgumentException
+.end stack
+astore 25
+L28:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+.end stack
+iload 24
+ifne L29
+new java/lang/IllegalArgumentException
+dup
+ldc "anyMailAddress must be a well-formed email address"
+athrow
+L29:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+.end stack
+iconst_0
+istore 25
+bipush 0
+anewarray jakarta/validation/constraints/Pattern$Flag
+astore 26
+aload 26
+arraylength
+istore 27
+iconst_0
+istore 28
+L30:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+iload 28
+iload 27
+if_icmpge L31
+aload 26
+iload 28
+aaload
+astore 29
+iload 25
+aload 29
+ior
+istore 25
+iinc 28 1
+goto L30
+L31:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object [Ljakarta/validation/constraints/Pattern$Flag;
+locals Integer
+locals Integer
+.end stack
+ldc ".*"
+iload 25
+aload 12
+ifne L22
+new java/lang/IllegalArgumentException
+dup
+ldc "anyMailAddress must be a well-formed email address"
+athrow
+L22:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+iload 13
+ifne L32
+new java/lang/IllegalArgumentException
+dup
+ldc "someTrueValue must be true"
+athrow
+L32:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+iload 14
+ifeq L33
+new java/lang/IllegalArgumentException
+dup
+ldc "someFalseValue must be false"
+athrow
+L33:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 15
+ifnull L34
+aload 15
+ifne L34
+new java/lang/IllegalArgumentException
+dup
+ldc "someTrueValueWrapper must be true"
+athrow
+L34:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 16
+ifnull L35
+aload 16
+ifeq L35
+new java/lang/IllegalArgumentException
+dup
+ldc "someFalseValueWrapper must be false"
+athrow
+L35:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+iload 17
+i2l
+ldc 42
+lcmp
+ifge L36
+new java/lang/IllegalArgumentException
+dup
+ldc "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42"
+athrow
+L36:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 18
+ifnull L37
+aload 18
+ldc 42
+lcmp
+ifge L37
+new java/lang/IllegalArgumentException
+dup
+ldc "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42"
+athrow
+L37:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 19
+ifnonnull L38
+new java/lang/NullPointerException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+athrow
+L38:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 19
+ifnull L39
+aload 19
+i2l
+ldc 41
+lcmp
+ifge L39
+new java/lang/IllegalArgumentException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+athrow
+L39:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 19
+ifnull L40
+aload 19
+i2l
+ldc 43
+lcmp
+ifle L40
+new java/lang/IllegalArgumentException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43"
+athrow
+L40:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+return
+.limit locals 30
+.limit stack 4
+.end method
+.dep jakarta/validation/constraints/Pattern$Flag;CASE_INSENSITIVE
+.dep jakarta/validation/constraints/Pattern$Flag;MULTILINE
+.provide com/example/SomeLombokClass;validate
+.desc Ljakarta/validation/constraints/Pattern$Flag;
