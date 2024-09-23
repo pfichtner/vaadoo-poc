@@ -99,6 +99,17 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 	}
 
+	// possible checks during compile time:
+	// errors
+	// - @Pattern: Is the pattern valid (compile it)
+	// - @Size: Is min >= 0
+	// - @Min: Is there a @Max that is < @Min's value
+	// - @Max: Is there a @Min that is < @Max's value
+	// - @NotNull: Is there also @Null
+	// - @Null: Is there also @NotNull
+	// warnings
+	// - @NotNull: Annotations that checks for null as well like @NotBlank @NotEmpty
+	// - @Null: most (all?) other annotations doesn't make sense
 	private static final List<ConfigEntry> entries = List.of( //
 			new FixedClassConfigEntry(Null.class, Object.class), //
 			new FixedClassConfigEntry(NotNull.class, Object.class), //
