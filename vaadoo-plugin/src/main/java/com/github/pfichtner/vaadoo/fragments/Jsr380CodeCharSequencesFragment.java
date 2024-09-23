@@ -7,12 +7,12 @@ import jakarta.validation.constraints.Pattern;
 
 public interface Jsr380CodeCharSequencesFragment {
 
-	void check(NotBlank notBlank, CharSequence charSequence);
+	void check(NotBlank anno, CharSequence charSequence);
 
-	void check(NotEmpty notEmpty, CharSequence charSequence);
+	void check(NotEmpty anno, CharSequence charSequence);
 
-	void check(Pattern pattern, CharSequence charSequence);
+	void check(Pattern anno, CharSequence charSequence);
 
-	void check(Email email, CharSequence charSequence);
+	void check(Email anno, CharSequence charSequence);
 
 }

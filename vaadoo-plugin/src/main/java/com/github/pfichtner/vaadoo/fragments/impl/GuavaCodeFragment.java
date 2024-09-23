@@ -32,49 +32,49 @@ import jakarta.validation.constraints.Size;
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
-	public void check(Null nullAnno, Object ref) {
-		checkArgument(ref == null, nullAnno.message());
+	public void check(Null anno, Object ref) {
+		checkArgument(ref == null, anno.message());
 	}
 
 	@Override
-	public void check(NotNull notNull, Object ref) {
-		checkNotNull(ref, notNull.message());
+	public void check(NotNull anno, Object ref) {
+		checkNotNull(ref, anno.message());
 	}
 
 	@Override
-	public void check(NotBlank notBlank, CharSequence charSequence) {
-		checkArgument(checkNotNull(charSequence, notBlank.message()).toString().trim().length() > 0,
-				notBlank.message());
+	public void check(NotBlank anno, CharSequence charSequence) {
+		checkArgument(checkNotNull(charSequence, anno.message()).toString().trim().length() > 0, anno.message());
 	}
 
 	@Override
-	public void check(jakarta.validation.constraints.Pattern pattern, CharSequence charSequence) {
+	public void check(jakarta.validation.constraints.Pattern anno, CharSequence charSequence) {
 		if (charSequence != null) {
-			Flag[] flags = pattern.flags();
+			Flag[] flags = anno.flags();
 			int flagValue = 0;
 			for (int i = 0; i < flags.length; i++) {
 				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
-			// field, beside to optimization it would be a fail fast for invalid regular expression
-			checkArgument(compile(pattern.regexp(), flagValue).matcher(charSequence).matches(), pattern.message());
+			// field, beside to optimization it would be a fail fast for invalid regular
+			// expression
+			checkArgument(compile(anno.regexp(), flagValue).matcher(charSequence).matches(), anno.message());
 		}
 	}
 
 	@Override
-	public void check(Email email, CharSequence charSequence) {
+	public void check(Email anno, CharSequence charSequence) {
 		if (charSequence != null && charSequence.length() != 0) {
 			String stringValue = charSequence.toString();
 			int splitPosition = stringValue.lastIndexOf('@');
-			checkArgument(splitPosition >= 0, email.message());
+			checkArgument(splitPosition >= 0, anno.message());
 
 			String localPart = stringValue.substring(0, splitPosition);
 			checkArgument(localPart.length() <= 64 && compile("(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]"
 					+ "+|\"" + "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")"
 					+ "+\")" + "(?:\\." + "(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
 					+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")" + "+\")" + ")*",
-					CASE_INSENSITIVE).matcher(localPart).matches(), email.message());
+					CASE_INSENSITIVE).matcher(localPart).matches(), anno.message());
 
 			String domainPart = stringValue.substring(splitPosition + 1);
 			boolean validEmailDomainAddress = false;
@@ -90,396 +90,396 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 			} catch (IllegalArgumentException e) {
 			}
-			checkArgument(validEmailDomainAddress, email.message());
+			checkArgument(validEmailDomainAddress, anno.message());
 
 			// additional check
-			Flag[] flags = email.flags();
+			Flag[] flags = anno.flags();
 			int flagValue = 0;
 			for (int i = 0; i < flags.length; i++) {
 				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
-			checkArgument(compile(email.regexp(), flagValue).matcher(charSequence).matches(), email.message());
+			checkArgument(compile(anno.regexp(), flagValue).matcher(charSequence).matches(), anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(NotEmpty notEmpty, CharSequence charSequence) {
-		checkArgument(checkNotNull(charSequence, notEmpty.message()).length() > 0, notEmpty.message());
+	public void check(NotEmpty anno, CharSequence charSequence) {
+		checkArgument(checkNotNull(charSequence, anno.message()).length() > 0, anno.message());
 	}
 
-	public void check(NotEmpty notEmpty, Collection<?> collection) {
-		checkArgument(checkNotNull(collection, notEmpty.message()).size() > 0, notEmpty.message());
-	}
-
-	@Override
-	public void check(NotEmpty notEmpty, Map<?, ?> map) {
-		checkArgument(checkNotNull(map, notEmpty.message()).size() > 0, notEmpty.message());
+	public void check(NotEmpty anno, Collection<?> collection) {
+		checkArgument(checkNotNull(collection, anno.message()).size() > 0, anno.message());
 	}
 
 	@Override
-	public void check(NotEmpty notEmpty, Object[] objects) {
-		checkArgument(checkNotNull(objects, notEmpty.message()).length > 0, notEmpty.message());
-	}
-
-	// -----------------------------------------------------------------
-
-	@Override
-	public void check(Size size, CharSequence charSequence) {
-		int length = checkNotNull(charSequence, size.message()).length();
-		checkArgument(length >= size.min() && length <= size.max(), size.message());
-	}
-
-	public void check(Size size, Collection<?> collection) {
-		int length = checkNotNull(collection, size.message()).size();
-		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	public void check(NotEmpty anno, Map<?, ?> map) {
+		checkArgument(checkNotNull(map, anno.message()).size() > 0, anno.message());
 	}
 
 	@Override
-	public void check(Size size, Map<?, ?> map) {
-		int length = checkNotNull(map, size.message()).size();
-		checkArgument(length >= size.min() && length <= size.max(), size.message());
-	}
-
-	@Override
-	public void check(Size size, Object[] objects) {
-		int length = checkNotNull(objects, size.message()).length;
-		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	public void check(NotEmpty anno, Object[] objects) {
+		checkArgument(checkNotNull(objects, anno.message()).length > 0, anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(AssertTrue assertTrue, boolean value) {
-		checkArgument(value, assertTrue.message());
+	public void check(Size anno, CharSequence charSequence) {
+		int length = checkNotNull(charSequence, anno.message()).length();
+		checkArgument(length >= anno.min() && length <= anno.max(), anno.message());
+	}
+
+	public void check(Size anno, Collection<?> collection) {
+		int length = checkNotNull(collection, anno.message()).size();
+		checkArgument(length >= anno.min() && length <= anno.max(), anno.message());
 	}
 
 	@Override
-	public void check(AssertTrue assertTrue, Boolean value) {
-		checkArgument(value == null || value, assertTrue.message());
+	public void check(Size anno, Map<?, ?> map) {
+		int length = checkNotNull(map, anno.message()).size();
+		checkArgument(length >= anno.min() && length <= anno.max(), anno.message());
 	}
 
 	@Override
-	public void check(AssertFalse assertFalse, boolean value) {
-		checkArgument(!value, assertFalse.message());
-	}
-
-	@Override
-	public void check(AssertFalse assertFalse, Boolean value) {
-		checkArgument(value == null || !value, assertFalse.message());
-	}
-
-	// -----------------------------------------------------------------
-
-	@Override
-	public void check(Min min, byte value) {
-		checkArgument(value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, short value) {
-		checkArgument(value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, int value) {
-		checkArgument(value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, long value) {
-		checkArgument(value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, Byte value) {
-		checkArgument(value == null || value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, Short value) {
-		checkArgument(value == null || value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, Integer value) {
-		checkArgument(value == null || value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, Long value) {
-		checkArgument(value == null || value >= min.value(), min.message());
-	}
-
-	@Override
-	public void check(Min min, BigInteger value) {
-		checkArgument(value == null || value.compareTo(BigInteger.valueOf(min.value())) >= 0, min.message());
-	}
-
-	@Override
-	public void check(Min min, BigDecimal value) {
-		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(min.value())) >= 0, min.message());
+	public void check(Size anno, Object[] objects) {
+		int length = checkNotNull(objects, anno.message()).length;
+		checkArgument(length >= anno.min() && length <= anno.max(), anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Max max, byte value) {
-		checkArgument(value <= max.value(), max.message());
+	public void check(AssertTrue anno, boolean value) {
+		checkArgument(value, anno.message());
 	}
 
 	@Override
-	public void check(Max max, short value) {
-		checkArgument(value <= max.value(), max.message());
+	public void check(AssertTrue anno, Boolean value) {
+		checkArgument(value == null || value, anno.message());
 	}
 
 	@Override
-	public void check(Max max, int value) {
-		checkArgument(value <= max.value(), max.message());
+	public void check(AssertFalse anno, boolean value) {
+		checkArgument(!value, anno.message());
 	}
 
 	@Override
-	public void check(Max max, long value) {
-		checkArgument(value <= max.value(), max.message());
-	}
-
-	@Override
-	public void check(Max max, Byte value) {
-		checkArgument(value == null || value <= max.value(), max.message());
-	}
-
-	@Override
-	public void check(Max max, Short value) {
-		checkArgument(value == null || value <= max.value(), max.message());
-	}
-
-	@Override
-	public void check(Max max, Integer value) {
-		checkArgument(value == null || value <= max.value(), max.message());
-	}
-
-	@Override
-	public void check(Max max, Long value) {
-		checkArgument(value == null || value <= max.value(), max.message());
-	}
-
-	@Override
-	public void check(Max max, BigInteger value) {
-		checkArgument(value == null || value.compareTo(BigInteger.valueOf(max.value())) <= 0, max.message());
-	}
-
-	@Override
-	public void check(Max max, BigDecimal value) {
-		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(max.value())) <= 0, max.message());
+	public void check(AssertFalse anno, Boolean value) {
+		checkArgument(value == null || !value, anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Positive positive, byte value) {
-		checkArgument(value > 0, positive.message());
+	public void check(Min anno, byte value) {
+		checkArgument(value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, short value) {
-		checkArgument(value > 0, positive.message());
+	public void check(Min anno, short value) {
+		checkArgument(value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, int value) {
-		checkArgument(value > 0, positive.message());
+	public void check(Min anno, int value) {
+		checkArgument(value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, long value) {
-		checkArgument(value > 0, positive.message());
+	public void check(Min anno, long value) {
+		checkArgument(value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, Byte value) {
-		checkArgument(value == null || value > 0, positive.message());
+	public void check(Min anno, Byte value) {
+		checkArgument(value == null || value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, Short value) {
-		checkArgument(value == null || value > 0, positive.message());
+	public void check(Min anno, Short value) {
+		checkArgument(value == null || value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, Integer value) {
-		checkArgument(value == null || value > 0, positive.message());
+	public void check(Min anno, Integer value) {
+		checkArgument(value == null || value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, Long value) {
-		checkArgument(value == null || value > 0, positive.message());
+	public void check(Min anno, Long value) {
+		checkArgument(value == null || value >= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, BigInteger value) {
-		checkArgument(value == null || value.signum() > 0, positive.message());
+	public void check(Min anno, BigInteger value) {
+		checkArgument(value == null || value.compareTo(BigInteger.valueOf(anno.value())) >= 0, anno.message());
 	}
 
 	@Override
-	public void check(Positive positive, BigDecimal value) {
-		checkArgument(value == null || value.signum() > 0, positive.message());
-	}
-
-	// -----------------------------------------------------------------
-	@Override
-	public void check(PositiveOrZero positiveOrZero, byte value) {
-		checkArgument(value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, short value) {
-		checkArgument(value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, int value) {
-		checkArgument(value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, long value) {
-		checkArgument(value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, Byte value) {
-		checkArgument(value == null || value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, Short value) {
-		checkArgument(value == null || value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, Integer value) {
-		checkArgument(value == null || value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, Long value) {
-		checkArgument(value == null || value >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, BigInteger value) {
-		checkArgument(value == null || value.signum() >= 0, positiveOrZero.message());
-	}
-
-	@Override
-	public void check(PositiveOrZero positiveOrZero, BigDecimal value) {
-		checkArgument(value == null || value.signum() >= 0, positiveOrZero.message());
+	public void check(Min anno, BigDecimal value) {
+		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(anno.value())) >= 0, anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Negative negative, byte value) {
-		checkArgument(value < 0, negative.message());
+	public void check(Max anno, byte value) {
+		checkArgument(value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, short value) {
-		checkArgument(value < 0, negative.message());
+	public void check(Max anno, short value) {
+		checkArgument(value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, int value) {
-		checkArgument(value < 0, negative.message());
+	public void check(Max anno, int value) {
+		checkArgument(value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, long value) {
-		checkArgument(value < 0, negative.message());
+	public void check(Max anno, long value) {
+		checkArgument(value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, Byte value) {
-		checkArgument(value == null || value < 0, negative.message());
+	public void check(Max anno, Byte value) {
+		checkArgument(value == null || value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, Short value) {
-		checkArgument(value == null || value < 0, negative.message());
+	public void check(Max anno, Short value) {
+		checkArgument(value == null || value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, Integer value) {
-		checkArgument(value == null || value < 0, negative.message());
+	public void check(Max anno, Integer value) {
+		checkArgument(value == null || value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, Long value) {
-		checkArgument(value == null || value < 0, negative.message());
+	public void check(Max anno, Long value) {
+		checkArgument(value == null || value <= anno.value(), anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, BigInteger value) {
-		checkArgument(value == null || value.signum() < 0, negative.message());
+	public void check(Max anno, BigInteger value) {
+		checkArgument(value == null || value.compareTo(BigInteger.valueOf(anno.value())) <= 0, anno.message());
 	}
 
 	@Override
-	public void check(Negative negative, BigDecimal value) {
-		checkArgument(value == null || value.signum() < 0, negative.message());
+	public void check(Max anno, BigDecimal value) {
+		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(anno.value())) <= 0, anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, byte value) {
-		checkArgument(value <= 0, negativeOrZero.message());
+	public void check(Positive anno, byte value) {
+		checkArgument(value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, short value) {
-		checkArgument(value <= 0, negativeOrZero.message());
+	public void check(Positive anno, short value) {
+		checkArgument(value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, int value) {
-		checkArgument(value <= 0, negativeOrZero.message());
+	public void check(Positive anno, int value) {
+		checkArgument(value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, long value) {
-		checkArgument(value <= 0, negativeOrZero.message());
+	public void check(Positive anno, long value) {
+		checkArgument(value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Byte value) {
-		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	public void check(Positive anno, Byte value) {
+		checkArgument(value == null || value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Short value) {
-		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	public void check(Positive anno, Short value) {
+		checkArgument(value == null || value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Integer value) {
-		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	public void check(Positive anno, Integer value) {
+		checkArgument(value == null || value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Long value) {
-		checkArgument(value == null || value <= 0, negativeOrZero.message());
+	public void check(Positive anno, Long value) {
+		checkArgument(value == null || value > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, BigInteger value) {
-		checkArgument(value == null || value.signum() <= 0, negativeOrZero.message());
+	public void check(Positive anno, BigInteger value) {
+		checkArgument(value == null || value.signum() > 0, anno.message());
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, BigDecimal value) {
-		checkArgument(value == null || value.signum() <= 0, negativeOrZero.message());
+	public void check(Positive anno, BigDecimal value) {
+		checkArgument(value == null || value.signum() > 0, anno.message());
+	}
+
+	// -----------------------------------------------------------------
+	@Override
+	public void check(PositiveOrZero anno, byte value) {
+		checkArgument(value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, short value) {
+		checkArgument(value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, int value) {
+		checkArgument(value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, long value) {
+		checkArgument(value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, Byte value) {
+		checkArgument(value == null || value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, Short value) {
+		checkArgument(value == null || value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, Integer value) {
+		checkArgument(value == null || value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, Long value) {
+		checkArgument(value == null || value >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, BigInteger value) {
+		checkArgument(value == null || value.signum() >= 0, anno.message());
+	}
+
+	@Override
+	public void check(PositiveOrZero anno, BigDecimal value) {
+		checkArgument(value == null || value.signum() >= 0, anno.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Negative anno, byte value) {
+		checkArgument(value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, short value) {
+		checkArgument(value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, int value) {
+		checkArgument(value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, long value) {
+		checkArgument(value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, Byte value) {
+		checkArgument(value == null || value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, Short value) {
+		checkArgument(value == null || value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, Integer value) {
+		checkArgument(value == null || value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, Long value) {
+		checkArgument(value == null || value < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, BigInteger value) {
+		checkArgument(value == null || value.signum() < 0, anno.message());
+	}
+
+	@Override
+	public void check(Negative anno, BigDecimal value) {
+		checkArgument(value == null || value.signum() < 0, anno.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(NegativeOrZero anno, byte value) {
+		checkArgument(value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, short value) {
+		checkArgument(value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, int value) {
+		checkArgument(value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, long value) {
+		checkArgument(value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, Byte value) {
+		checkArgument(value == null || value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, Short value) {
+		checkArgument(value == null || value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, Integer value) {
+		checkArgument(value == null || value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, Long value) {
+		checkArgument(value == null || value <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, BigInteger value) {
+		checkArgument(value == null || value.signum() <= 0, anno.message());
+	}
+
+	@Override
+	public void check(NegativeOrZero anno, BigDecimal value) {
+		checkArgument(value == null || value.signum() <= 0, anno.message());
 	}
 
 }

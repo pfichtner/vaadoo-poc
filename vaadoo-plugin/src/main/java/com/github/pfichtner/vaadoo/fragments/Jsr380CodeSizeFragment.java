@@ -7,10 +7,10 @@ import jakarta.validation.constraints.NotEmpty;
 
 public interface Jsr380CodeSizeFragment {
 
-	void check(NotEmpty notEmpty, Collection<?> collection);
+	void check(NotEmpty anno, Collection<?> collection);
 
-	void check(NotEmpty notEmpty, Map<?, ?> map);
+	void check(NotEmpty anno, Map<?, ?> map);
 
-	void check(NotEmpty notEmpty, Object[] objects);
+	void check(NotEmpty anno, Object[] objects);
 
 }

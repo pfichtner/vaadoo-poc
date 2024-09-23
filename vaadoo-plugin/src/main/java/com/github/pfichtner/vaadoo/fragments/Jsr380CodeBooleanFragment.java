@@ -5,12 +5,12 @@ import jakarta.validation.constraints.AssertTrue;
 
 public interface Jsr380CodeBooleanFragment {
 
-	void check(AssertTrue assertTrue, boolean value);
+	void check(AssertTrue anno, boolean value);
 
-	void check(AssertTrue assertTrue, Boolean value);
+	void check(AssertTrue anno, Boolean value);
 
-	void check(AssertFalse assertFalse, boolean value);
+	void check(AssertFalse anno, boolean value);
 
-	void check(AssertFalse assertFalse, Boolean value);
+	void check(AssertFalse anno, Boolean value);
 
 }

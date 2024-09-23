@@ -7,12 +7,12 @@ import jakarta.validation.constraints.Size;
 
 public interface Jsr380CodeEmptyFragment {
 
-	void check(Size size, CharSequence collection);
+	void check(Size anno, CharSequence collection);
 
-	void check(Size size, Collection<?> collection);
+	void check(Size anno, Collection<?> collection);
 
-	void check(Size size, Map<?, ?> map);
+	void check(Size anno, Map<?, ?> map);
 
-	void check(Size size, Object[] objects);
+	void check(Size anno, Object[] objects);
 
 }

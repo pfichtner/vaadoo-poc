@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Null;
 
 public interface Jsr380CodeObjectsFragment {
 
-	void check(Null nullAnno, Object ref);
+	void check(Null anno, Object ref);
 
-	void check(NotNull notNull, Object ref);
+	void check(NotNull anno, Object ref);
 
 }

@@ -30,53 +30,54 @@ import jakarta.validation.constraints.Size;
 public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 
 	@Override
-	public void check(Null nullAnno, Object ref) {
+	public void check(Null anno, Object ref) {
 		if (ref != null) {
-			throw new IllegalArgumentException(nullAnno.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NotNull notNull, Object ref) {
+	public void check(NotNull anno, Object ref) {
 		if (ref == null) {
-			throw new NullPointerException(notNull.message());
+			throw new NullPointerException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NotBlank notBlank, CharSequence charSequence) {
+	public void check(NotBlank anno, CharSequence charSequence) {
 		if (charSequence == null) {
-			throw new NullPointerException(notBlank.message());
+			throw new NullPointerException(anno.message());
 		}
 		if (charSequence.toString().trim().length() <= 0) {
-			throw new IllegalArgumentException(notBlank.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(jakarta.validation.constraints.Pattern pattern, CharSequence charSequence) {
+	public void check(jakarta.validation.constraints.Pattern anno, CharSequence charSequence) {
 		if (charSequence != null) {
-			Flag[] flags = pattern.flags();
+			Flag[] flags = anno.flags();
 			int flagValue = 0;
 			for (int i = 0; i < flags.length; i++) {
 				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
-			// field, beside to optimization it would be a fail fast for invalid regular expression
-			if (!compile(pattern.regexp(), flagValue).matcher(charSequence).matches()) {
-				throw new IllegalArgumentException(pattern.message());
+			// field, beside to optimization it would be a fail fast for invalid regular
+			// expression
+			if (!compile(anno.regexp(), flagValue).matcher(charSequence).matches()) {
+				throw new IllegalArgumentException(anno.message());
 			}
 		}
 	}
 
 	@Override
-	public void check(Email email, CharSequence charSequence) {
+	public void check(Email anno, CharSequence charSequence) {
 		if (charSequence != null && charSequence.length() != 0) {
 			String stringValue = charSequence.toString();
 			int splitPosition = stringValue.lastIndexOf('@');
 			if (splitPosition < 0) {
-				throw new IllegalArgumentException(email.message());
+				throw new IllegalArgumentException(anno.message());
 			}
 
 			String localPart = stringValue.substring(0, splitPosition);
@@ -85,7 +86,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 					+ "(?:\\." + "(?:" + "[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uFFFF-]" + "+|\""
 					+ "(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uFFFF-]|\\\\\\\\|\\\\\\\")" + "+\")" + ")*",
 					CASE_INSENSITIVE).matcher(localPart).matches()) {
-				throw new IllegalArgumentException(email.message());
+				throw new IllegalArgumentException(anno.message());
 			}
 
 			String domainPart = stringValue.substring(splitPosition + 1);
@@ -103,547 +104,547 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 			} catch (IllegalArgumentException e) {
 			}
 			if (!validEmailDomainAddress) {
-				throw new IllegalArgumentException(email.message());
+				throw new IllegalArgumentException(anno.message());
 			}
 
 			// additional check
-			Flag[] flags = email.flags();
+			Flag[] flags = anno.flags();
 			int flagValue = 0;
 			for (int i = 0; i < flags.length; i++) {
 				jakarta.validation.constraints.Pattern.Flag flag = flags[i];
 				flagValue |= flag.getValue();
 			}
-			if (!compile(email.regexp(), flagValue).matcher(charSequence).matches()) {
-				throw new IllegalArgumentException(email.message());
+			if (!compile(anno.regexp(), flagValue).matcher(charSequence).matches()) {
+				throw new IllegalArgumentException(anno.message());
 			}
 		}
 	}
 
 	@Override
-	public void check(NotEmpty notEmpty, CharSequence charSequence) {
+	public void check(NotEmpty anno, CharSequence charSequence) {
 		if (charSequence == null) {
-			throw new NullPointerException(notEmpty.message());
+			throw new NullPointerException(anno.message());
 		}
 		if (charSequence.length() <= 0) {
-			throw new IllegalArgumentException(notEmpty.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
-	public void check(NotEmpty notEmpty, Collection<?> collection) {
+	public void check(NotEmpty anno, Collection<?> collection) {
 		if (collection == null) {
-			throw new NullPointerException(notEmpty.message());
+			throw new NullPointerException(anno.message());
 		}
 		if (collection.size() <= 0) {
-			throw new IllegalArgumentException(notEmpty.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NotEmpty notEmpty, Map<?, ?> map) {
+	public void check(NotEmpty anno, Map<?, ?> map) {
 		if (map == null) {
-			throw new NullPointerException(notEmpty.message());
+			throw new NullPointerException(anno.message());
 		}
 		if (map.size() <= 0) {
-			throw new IllegalArgumentException(notEmpty.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NotEmpty notEmpty, Object[] objects) {
+	public void check(NotEmpty anno, Object[] objects) {
 		if (objects == null) {
-			throw new NullPointerException(notEmpty.message());
+			throw new NullPointerException(anno.message());
 		}
 		if (objects.length <= 0) {
-			throw new IllegalArgumentException(notEmpty.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Size size, CharSequence charSequence) {
-		if (charSequence != null && (charSequence.length() < size.min() || charSequence.length() > size.max())) {
-			throw new IllegalArgumentException(size.message());
+	public void check(Size anno, CharSequence charSequence) {
+		if (charSequence != null && (charSequence.length() < anno.min() || charSequence.length() > anno.max())) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
-	public void check(Size size, Collection<?> collection) {
-		if (collection != null && (collection.size() < size.min() || collection.size() > size.max())) {
-			throw new IllegalArgumentException(size.message());
-		}
-	}
-
-	@Override
-	public void check(Size size, Map<?, ?> map) {
-		if (map != null && (map.size() < size.min() || map.size() > size.max())) {
-			throw new IllegalArgumentException(size.message());
+	public void check(Size anno, Collection<?> collection) {
+		if (collection != null && (collection.size() < anno.min() || collection.size() > anno.max())) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Size size, Object[] objects) {
-		if (objects != null && (objects.length < size.min() || objects.length > size.max())) {
-			throw new IllegalArgumentException(size.message());
+	public void check(Size anno, Map<?, ?> map) {
+		if (map != null && (map.size() < anno.min() || map.size() > anno.max())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Size anno, Object[] objects) {
+		if (objects != null && (objects.length < anno.min() || objects.length > anno.max())) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(AssertTrue assertTrue, boolean value) {
+	public void check(AssertTrue anno, boolean value) {
 		if (!value) {
-			throw new IllegalArgumentException(assertTrue.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(AssertTrue assertTrue, Boolean value) {
+	public void check(AssertTrue anno, Boolean value) {
 		if (value != null && !value) {
-			throw new IllegalArgumentException(assertTrue.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(AssertFalse assertFalse, boolean value) {
+	public void check(AssertFalse anno, boolean value) {
 		if (value) {
-			throw new IllegalArgumentException(assertFalse.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(AssertFalse assertFalse, Boolean value) {
+	public void check(AssertFalse anno, Boolean value) {
 		if (value != null && value) {
-			throw new IllegalArgumentException(assertFalse.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Min min, byte value) {
-		if (value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, byte value) {
+		if (value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, short value) {
-		if (value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, short value) {
+		if (value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, int value) {
-		if (value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, int value) {
+		if (value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, long value) {
-		if (value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, long value) {
+		if (value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, Byte value) {
-		if (value != null && value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, Byte value) {
+		if (value != null && value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, Short value) {
-		if (value != null && value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, Short value) {
+		if (value != null && value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, Integer value) {
-		if (value != null && value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, Integer value) {
+		if (value != null && value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, Long value) {
-		if (value != null && value < min.value()) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, Long value) {
+		if (value != null && value < anno.value()) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, BigInteger value) {
-		if (value != null && value.compareTo(BigInteger.valueOf(min.value())) < 0) {
-			throw new IllegalArgumentException(min.message());
+	public void check(Min anno, BigInteger value) {
+		if (value != null && value.compareTo(BigInteger.valueOf(anno.value())) < 0) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Min min, BigDecimal value) {
-		if (value != null && value.compareTo(BigDecimal.valueOf(min.value())) < 0) {
-			throw new IllegalArgumentException(min.message());
-		}
-	}
-
-	// -----------------------------------------------------------------
-
-	@Override
-	public void check(Max max, byte value) {
-		if (value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, short value) {
-		if (value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, int value) {
-		if (value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, long value) {
-		if (value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, Byte value) {
-		if (value != null && value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, Short value) {
-		if (value != null && value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, Integer value) {
-		if (value != null && value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, Long value) {
-		if (value != null && value > max.value()) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, BigInteger value) {
-		if (value != null && value.compareTo(BigInteger.valueOf(max.value())) > 0) {
-			throw new IllegalArgumentException(max.message());
-		}
-	}
-
-	@Override
-	public void check(Max max, BigDecimal value) {
-		if (value != null && value.compareTo(BigDecimal.valueOf(max.value())) > 0) {
-			throw new IllegalArgumentException(max.message());
+	public void check(Min anno, BigDecimal value) {
+		if (value != null && value.compareTo(BigDecimal.valueOf(anno.value())) < 0) {
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Positive positive, byte value) {
+	public void check(Max anno, byte value) {
+		if (value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, short value) {
+		if (value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, int value) {
+		if (value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, long value) {
+		if (value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, Byte value) {
+		if (value != null && value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, Short value) {
+		if (value != null && value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, Integer value) {
+		if (value != null && value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, Long value) {
+		if (value != null && value > anno.value()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, BigInteger value) {
+		if (value != null && value.compareTo(BigInteger.valueOf(anno.value())) > 0) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Max anno, BigDecimal value) {
+		if (value != null && value.compareTo(BigDecimal.valueOf(anno.value())) > 0) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Positive anno, byte value) {
 		if (value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, short value) {
+	public void check(Positive anno, short value) {
 		if (value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, int value) {
+	public void check(Positive anno, int value) {
 		if (value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, long value) {
+	public void check(Positive anno, long value) {
 		if (value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, Byte value) {
+	public void check(Positive anno, Byte value) {
 		if (value != null && value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, Short value) {
+	public void check(Positive anno, Short value) {
 		if (value != null && value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, Integer value) {
+	public void check(Positive anno, Integer value) {
 		if (value != null && value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, Long value) {
+	public void check(Positive anno, Long value) {
 		if (value != null && value <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, BigInteger value) {
+	public void check(Positive anno, BigInteger value) {
 		if (value != null && value.signum() <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Positive positive, BigDecimal value) {
+	public void check(Positive anno, BigDecimal value) {
 		if (value != null && value.signum() <= 0) {
-			throw new IllegalArgumentException(positive.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 	@Override
-	public void check(PositiveOrZero positiveOrZero, byte value) {
+	public void check(PositiveOrZero anno, byte value) {
 		if (value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, short value) {
+	public void check(PositiveOrZero anno, short value) {
 		if (value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, int value) {
+	public void check(PositiveOrZero anno, int value) {
 		if (value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, long value) {
+	public void check(PositiveOrZero anno, long value) {
 		if (value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, Byte value) {
+	public void check(PositiveOrZero anno, Byte value) {
 		if (value != null && value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, Short value) {
+	public void check(PositiveOrZero anno, Short value) {
 		if (value != null && value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, Integer value) {
+	public void check(PositiveOrZero anno, Integer value) {
 		if (value != null && value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, Long value) {
+	public void check(PositiveOrZero anno, Long value) {
 		if (value != null && value < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, BigInteger value) {
+	public void check(PositiveOrZero anno, BigInteger value) {
 		if (value != null && value.signum() < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(PositiveOrZero positiveOrZero, BigDecimal value) {
+	public void check(PositiveOrZero anno, BigDecimal value) {
 		if (value != null && value.signum() < 0) {
-			throw new IllegalArgumentException(positiveOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(Negative negative, byte value) {
+	public void check(Negative anno, byte value) {
 		if (value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, short value) {
+	public void check(Negative anno, short value) {
 		if (value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, int value) {
+	public void check(Negative anno, int value) {
 		if (value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, long value) {
+	public void check(Negative anno, long value) {
 		if (value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, Byte value) {
+	public void check(Negative anno, Byte value) {
 		if (value != null && value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, Short value) {
+	public void check(Negative anno, Short value) {
 		if (value != null && value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, Integer value) {
+	public void check(Negative anno, Integer value) {
 		if (value != null && value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, Long value) {
+	public void check(Negative anno, Long value) {
 		if (value != null && value >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, BigInteger value) {
+	public void check(Negative anno, BigInteger value) {
 		if (value != null && value.signum() >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(Negative negative, BigDecimal value) {
+	public void check(Negative anno, BigDecimal value) {
 		if (value != null && value.signum() >= 0) {
-			throw new IllegalArgumentException(negative.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 	// -----------------------------------------------------------------
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, byte value) {
+	public void check(NegativeOrZero anno, byte value) {
 		if (value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, short value) {
+	public void check(NegativeOrZero anno, short value) {
 		if (value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, int value) {
+	public void check(NegativeOrZero anno, int value) {
 		if (value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, long value) {
+	public void check(NegativeOrZero anno, long value) {
 		if (value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Byte value) {
+	public void check(NegativeOrZero anno, Byte value) {
 		if (value != null && value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Short value) {
+	public void check(NegativeOrZero anno, Short value) {
 		if (value != null && value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Integer value) {
+	public void check(NegativeOrZero anno, Integer value) {
 		if (value != null && value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, Long value) {
+	public void check(NegativeOrZero anno, Long value) {
 		if (value != null && value > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, BigInteger value) {
+	public void check(NegativeOrZero anno, BigInteger value) {
 		if (value != null && value.signum() > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
-	public void check(NegativeOrZero negativeOrZero, BigDecimal value) {
+	public void check(NegativeOrZero anno, BigDecimal value) {
 		if (value != null && value.signum() > 0) {
-			throw new IllegalArgumentException(negativeOrZero.message());
+			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
