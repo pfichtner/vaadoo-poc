@@ -38,6 +38,7 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import net.bytebuddy.asm.AsmVisitorWrapper;
 import net.bytebuddy.description.field.FieldDescription.InDefinedShape;
 import net.bytebuddy.description.field.FieldList;
@@ -105,7 +106,17 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 			new ConfigEntry(NotEmpty.class) {
 				@Override
 				Class<?> resolveSuperType(Class<?> actual) {
-					var validTypes = List.of(Object[].class, CharSequence.class, Collection.class, Map.class);
+					var validTypes = List.of(CharSequence.class, Collection.class, Map.class, Object[].class);
+					return superType(actual, validTypes).orElseThrow(() -> {
+						return annotationOnTypeNotValid(anno(), actual,
+								validTypes.stream().map(Class::getName).collect(toList()));
+					});
+				}
+			}, //
+			new ConfigEntry(Size.class) {
+				@Override
+				Class<?> resolveSuperType(Class<?> actual) {
+					var validTypes = List.of(CharSequence.class, Collection.class, Map.class, Object[].class);
 					return superType(actual, validTypes).orElseThrow(() -> {
 						return annotationOnTypeNotValid(anno(), actual,
 								validTypes.stream().map(Class::getName).collect(toList()));

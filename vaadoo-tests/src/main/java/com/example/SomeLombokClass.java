@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 
@@ -43,6 +44,8 @@ public class SomeLombokClass {
 	CharSequence someNonBlankValue;
 	@NotBlank(message = "my custom message")
 	String someNonBlankValueWithCustomMessage;
+	@Size(min = 10, max = 20)
+	String stringOfLenfthBetween10And20;
 	@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE })
 	String someFourDigits;
 	@Email

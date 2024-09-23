@@ -82,16 +82,16 @@ public final class Mandator {
    }
 
    @Generated
-   private String getCachedStringValue() {
-      return this.cachedStringValue;
-   }
-
-   @Generated
    private Mandator(@Min(1L) @Max(9999L) int id, String cachedStringValue) {
       validate$3(id, cachedStringValue);
       super();
       this.id = id;
       this.cachedStringValue = cachedStringValue;
+   }
+
+   @Generated
+   private String getCachedStringValue() {
+      return this.cachedStringValue;
    }
 
    private static void validate(int var0) {

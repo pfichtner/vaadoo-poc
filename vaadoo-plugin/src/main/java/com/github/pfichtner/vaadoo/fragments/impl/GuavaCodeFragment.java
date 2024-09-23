@@ -27,6 +27,7 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 public class GuavaCodeFragment implements Jsr380CodeFragment {
 
@@ -56,7 +57,7 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
-			// field
+			// field, beside to optimization it would be a fail fast for invalid regular expression
 			checkArgument(compile(pattern.regexp(), flagValue).matcher(charSequence).matches(), pattern.message());
 		}
 	}
@@ -102,6 +103,8 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 		}
 	}
 
+	// -----------------------------------------------------------------
+
 	@Override
 	public void check(NotEmpty notEmpty, CharSequence charSequence) {
 		checkArgument(checkNotNull(charSequence, notEmpty.message()).length() > 0, notEmpty.message());
@@ -120,6 +123,33 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	public void check(NotEmpty notEmpty, Object[] objects) {
 		checkArgument(checkNotNull(objects, notEmpty.message()).length > 0, notEmpty.message());
 	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Size size, CharSequence charSequence) {
+		int length = checkNotNull(charSequence, size.message()).length();
+		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	}
+
+	public void check(Size size, Collection<?> collection) {
+		int length = checkNotNull(collection, size.message()).size();
+		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	}
+
+	@Override
+	public void check(Size size, Map<?, ?> map) {
+		int length = checkNotNull(map, size.message()).size();
+		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	}
+
+	@Override
+	public void check(Size size, Object[] objects) {
+		int length = checkNotNull(objects, size.message()).length;
+		checkArgument(length >= size.min() && length <= size.max(), size.message());
+	}
+
+	// -----------------------------------------------------------------
 
 	@Override
 	public void check(AssertTrue assertTrue, boolean value) {
@@ -399,6 +429,7 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	public void check(Negative negative, BigDecimal value) {
 		checkArgument(value == null || value.signum() < 0, negative.message());
 	}
+
 	// -----------------------------------------------------------------
 
 	@Override

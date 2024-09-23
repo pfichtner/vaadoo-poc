@@ -25,6 +25,7 @@ import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 
@@ -62,7 +63,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 				flagValue |= flag.getValue();
 			}
 			// TODO this should be optimized by converting this into private static final
-			// field
+			// field, beside to optimization it would be a fail fast for invalid regular expression
 			if (!compile(pattern.regexp(), flagValue).matcher(charSequence).matches()) {
 				throw new IllegalArgumentException(pattern.message());
 			}
@@ -156,6 +157,37 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 			throw new IllegalArgumentException(notEmpty.message());
 		}
 	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Size size, CharSequence charSequence) {
+		if (charSequence != null && (charSequence.length() < size.min() || charSequence.length() > size.max())) {
+			throw new IllegalArgumentException(size.message());
+		}
+	}
+
+	public void check(Size size, Collection<?> collection) {
+		if (collection != null && (collection.size() < size.min() || collection.size() > size.max())) {
+			throw new IllegalArgumentException(size.message());
+		}
+	}
+
+	@Override
+	public void check(Size size, Map<?, ?> map) {
+		if (map != null && (map.size() < size.min() || map.size() > size.max())) {
+			throw new IllegalArgumentException(size.message());
+		}
+	}
+
+	@Override
+	public void check(Size size, Object[] objects) {
+		if (objects != null && (objects.length < size.min() || objects.length > size.max())) {
+			throw new IllegalArgumentException(size.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
 
 	@Override
 	public void check(AssertTrue assertTrue, boolean value) {

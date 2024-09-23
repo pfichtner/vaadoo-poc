@@ -8,5 +8,5 @@ package com.github.pfichtner.vaadoo.fragments;
  * <li>field accesses</li>
  */
 public interface Jsr380CodeFragment extends Jsr380CodeObjectsFragment, Jsr380CodeCharSequencesFragment,
-		Jsr380CodeEmptyFragment, Jsr380CodeBooleanFragment, Jsr380CodeNumberFragment {
+		Jsr380CodeEmptyFragment, Jsr380CodeSizeFragment, Jsr380CodeBooleanFragment, Jsr380CodeNumberFragment {
 }

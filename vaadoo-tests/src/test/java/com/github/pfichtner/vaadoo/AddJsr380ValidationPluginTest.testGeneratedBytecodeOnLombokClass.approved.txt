@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern.Flag;
 import java.net.IDN;
 import java.util.Collection;
@@ -39,6 +40,11 @@ public class SomeLombokClass {
       message = "my custom message"
    )
    private final String someNonBlankValueWithCustomMessage;
+   @Size(
+      min = 10,
+      max = 20
+   )
+   private final String stringOfLenfthBetween10And20;
    @Pattern(
       regexp = "\\d{1,4}",
       flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}
@@ -68,8 +74,8 @@ public class SomeLombokClass {
    }
 
    @Generated
-   SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, @Pattern(regexp = "\\d{1,4}",flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}) String someFourDigits, @Email String anyMailAddress, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(41L) @Max(43L) Short someShortWrapperValueThatIsNotNullAndAbout42) {
-      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, someFourDigits, anyMailAddress, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndAbout42);
+   SomeLombokClass(@Null Object someNullObject, @NotNull Object someObject, String valueWithoutAnnotation, @NotEmpty CharSequence someNotEmptyCharSequence, @NotEmpty String someNotEmptyString, @NotEmpty Collection someNotEmptyCollection, @NotEmpty Map someNotEmptyMap, Integer[] someNotEmptyArray, @NotBlank CharSequence someNonBlankValue, @NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, String stringOfLenfthBetween10And20, @Pattern(regexp = "\\d{1,4}",flags = {Flag.CASE_INSENSITIVE, Flag.MULTILINE}) String someFourDigits, @Email String anyMailAddress, @AssertTrue boolean someTrueValue, @AssertFalse boolean someFalseValue, @AssertTrue Boolean someTrueValueWrapper, @AssertFalse Boolean someFalseValueWrapper, @Min(42L) int someIntPrimitiveValueThatIsMinimal42, @Min(42L) Long someLongWrapperValueThatIsMinimal42, @NotNull @Min(41L) @Max(43L) Short someShortWrapperValueThatIsNotNullAndAbout42) {
+      validate(someNullObject, someObject, valueWithoutAnnotation, someNotEmptyCharSequence, someNotEmptyString, someNotEmptyCollection, someNotEmptyMap, someNotEmptyArray, someNonBlankValue, someNonBlankValueWithCustomMessage, stringOfLenfthBetween10And20, someFourDigits, anyMailAddress, someTrueValue, someFalseValue, someTrueValueWrapper, someFalseValueWrapper, someIntPrimitiveValueThatIsMinimal42, someLongWrapperValueThatIsMinimal42, someShortWrapperValueThatIsNotNullAndAbout42);
       super();
       this.someNullObject = someNullObject;
       this.someObject = someObject;
@@ -81,6 +87,7 @@ public class SomeLombokClass {
       this.someNotEmptyArray = someNotEmptyArray;
       this.someNonBlankValue = someNonBlankValue;
       this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
+      this.stringOfLenfthBetween10And20 = stringOfLenfthBetween10And20;
       this.someFourDigits = someFourDigits;
       this.anyMailAddress = anyMailAddress;
       this.someTrueValue = someTrueValue;
@@ -97,7 +104,7 @@ public class SomeLombokClass {
       return new SomeLombokClassBuilder();
    }
 
-   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, String var10, String var11, boolean var12, boolean var13, Boolean var14, Boolean var15, int var16, Long var17, Short var18) {
+   private static void validate(Object var0, Object var1, String var2, CharSequence var3, String var4, Collection var5, Map var6, Integer[] var7, CharSequence var8, String var9, String var10, String var11, String var12, boolean var13, boolean var14, Boolean var15, Boolean var16, int var17, Long var18, Short var19) {
       if (var0 != null) {
          throw new IllegalArgumentException("someNullObject must be null");
       } else if (var1 == null) {
@@ -131,76 +138,76 @@ public class SomeLombokClass {
       } else if (var9.toString().trim().length() <= 0) {
          throw new IllegalArgumentException("my custom message");
       } else {
-         int var20;
-         if (var10 != null) {
-            Flag[] var19 = new Flag[]{Flag.CASE_INSENSITIVE, Flag.MULTILINE};
-            var20 = 0;
+         int var21;
+         if (var11 != null) {
+            Flag[] var20 = new Flag[]{Flag.CASE_INSENSITIVE, Flag.MULTILINE};
+            var21 = 0;
 
-            for(int var21 = 0; var21 < var19.length; ++var21) {
-               Flag var22 = var19[var21];
-               var20 |= var22.getValue();
+            for(int var22 = 0; var22 < var20.length; ++var22) {
+               Flag var23 = var20[var22];
+               var21 |= var23.getValue();
             }
 
-            if (!java.util.regex.Pattern.compile("\\d{1,4}", var20).matcher(var10).matches()) {
+            if (!java.util.regex.Pattern.compile("\\d{1,4}", var21).matcher(var11).matches()) {
                throw new IllegalArgumentException("someFourDigits must match \"\\d{1,4}\"");
             }
          }
 
-         if (var11 != null && var11.length() != 0) {
-            String var29 = var11.toString();
-            var20 = var29.lastIndexOf(64);
-            if (var20 < 0) {
+         if (var12 != null && var12.length() != 0) {
+            String var30 = var12.toString();
+            var21 = var30.lastIndexOf(64);
+            if (var21 < 0) {
                throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
             }
 
-            String var30 = var29.substring(0, var20);
-            if (var30.length() > 64 || !java.util.regex.Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*", 2).matcher(var30).matches()) {
+            String var31 = var30.substring(0, var21);
+            if (var31.length() > 64 || !java.util.regex.Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*", 2).matcher(var31).matches()) {
                throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
             }
 
-            String var31 = var29.substring(var20 + 1);
-            boolean var23 = false;
+            String var32 = var30.substring(var21 + 1);
+            boolean var24 = false;
 
             try {
-               var23 = !var31.endsWith(".") && IDN.toASCII(var31).length() <= 255 && java.util.regex.Pattern.compile("(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]", 2).matcher(var31).matches();
-            } catch (IllegalArgumentException var28) {
+               var24 = !var32.endsWith(".") && IDN.toASCII(var32).length() <= 255 && java.util.regex.Pattern.compile("(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]", 2).matcher(var32).matches();
+            } catch (IllegalArgumentException var29) {
                ;
             }
 
-            if (!var23) {
+            if (!var24) {
                throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
             }
 
-            Flag[] var24 = new Flag[0];
-            int var25 = 0;
+            Flag[] var25 = new Flag[0];
+            int var26 = 0;
 
-            for(int var26 = 0; var26 < var24.length; ++var26) {
-               Flag var27 = var24[var26];
-               var25 |= var27.getValue();
+            for(int var27 = 0; var27 < var25.length; ++var27) {
+               Flag var28 = var25[var27];
+               var26 |= var28.getValue();
             }
 
-            if (!java.util.regex.Pattern.compile(".*", var25).matcher(var11).matches()) {
+            if (!java.util.regex.Pattern.compile(".*", var26).matcher(var12).matches()) {
                throw new IllegalArgumentException("anyMailAddress must be a well-formed email address");
             }
          }
 
-         if (!var12) {
+         if (!var13) {
             throw new IllegalArgumentException("someTrueValue must be true");
-         } else if (var13) {
+         } else if (var14) {
             throw new IllegalArgumentException("someFalseValue must be false");
-         } else if (var14 != null && !var14.booleanValue()) {
+         } else if (var15 != null && !var15.booleanValue()) {
             throw new IllegalArgumentException("someTrueValueWrapper must be true");
-         } else if (var15 != null && var15.booleanValue()) {
+         } else if (var16 != null && var16.booleanValue()) {
             throw new IllegalArgumentException("someFalseValueWrapper must be false");
-         } else if ((long)var16 < 42L) {
+         } else if ((long)var17 < 42L) {
             throw new IllegalArgumentException("someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42");
-         } else if (var17 != null && var17.longValue() < 42L) {
+         } else if (var18 != null && var18.longValue() < 42L) {
             throw new IllegalArgumentException("someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42");
-         } else if (var18 == null) {
+         } else if (var19 == null) {
             throw new NullPointerException("someShortWrapperValueThatIsNotNullAndAbout42 must not be null");
-         } else if (var18 != null && (long)var18.shortValue() < 41L) {
+         } else if (var19 != null && (long)var19.shortValue() < 41L) {
             throw new IllegalArgumentException("someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41");
-         } else if (var18 != null && (long)var18.shortValue() > 43L) {
+         } else if (var19 != null && (long)var19.shortValue() > 43L) {
             throw new IllegalArgumentException("someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43");
          }
       }

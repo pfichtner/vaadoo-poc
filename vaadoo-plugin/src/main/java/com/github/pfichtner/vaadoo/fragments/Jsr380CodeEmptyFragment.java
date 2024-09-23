@@ -3,14 +3,16 @@ package com.github.pfichtner.vaadoo.fragments;
 import java.util.Collection;
 import java.util.Map;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 public interface Jsr380CodeEmptyFragment {
 
-	void check(NotEmpty notEmpty, Collection<?> collection);
+	void check(Size size, CharSequence collection);
 
-	void check(NotEmpty notEmpty, Map<?, ?> map);
+	void check(Size size, Collection<?> collection);
 
-	void check(NotEmpty notEmpty, Object[] objects);
+	void check(Size size, Map<?, ?> map);
+
+	void check(Size size, Object[] objects);
 
 }

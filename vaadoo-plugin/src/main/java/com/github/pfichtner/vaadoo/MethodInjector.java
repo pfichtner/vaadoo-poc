@@ -18,7 +18,7 @@ import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.DUP;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.SIPUSH;
-import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
+import static net.bytebuddy.jar.asm.Type.*;
 import static net.bytebuddy.jar.asm.Type.getArgumentTypes;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 import static net.bytebuddy.jar.asm.Type.getObjectType;
@@ -215,6 +215,8 @@ public class MethodInjector {
 							Type returnType) {
 						if (LONG_TYPE.equals(returnType)) {
 							return Long.valueOf(String.valueOf(valueFromClass(parameter, owner, name)));
+						} else if (INT_TYPE.equals(returnType)) {
+							return Integer.valueOf(String.valueOf(valueFromClass(parameter, owner, name)));
 						} else if (Type.getType(String.class).equals(returnType)) {
 							return String.valueOf(valueFromClass(parameter, owner, name));
 						}

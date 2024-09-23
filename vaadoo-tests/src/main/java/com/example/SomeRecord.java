@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record SomeRecord( //
 		@Null Object someNullObject, //
@@ -29,6 +30,7 @@ public record SomeRecord( //
 		@NotEmpty Integer[] someNotEmptyArray, //
 		@NotBlank CharSequence someNonBlankValue, //
 		@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
+		@Size(min = 10, max = 20) String stringOfLenfthBetween10And20, //
 		@Pattern(regexp = "\\d{1,4}", flags = {
 				CASE_INSENSITIVE, MULTILINE }) //
 		String someFourDigits, //
@@ -39,11 +41,12 @@ public record SomeRecord( //
 		@AssertFalse Boolean someFalseValueWrapper, //
 		@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 		@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-		@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42){
+		@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42 //
+	){
 
 	public static void main(String[] args) {
 		System.out.println(new SomeRecord(null, "isNotNull", " ", " ", " ", List.of(" "), Map.of(0, " "),
-				new Integer[] { 1 }, "", "", "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42,
+				new Integer[] { 1 }, "", "", "1234", "", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42,
 				Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 

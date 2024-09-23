@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class SomeClass {
 
@@ -29,6 +30,7 @@ public class SomeClass {
 	private final Map<Integer, String> someNotEmptyMap;
 	private final Integer[] someNotEmptyArray;
 	private final CharSequence someNonBlankValue;
+	private final String stringOfLenfthBetween10And20;
 	private final String someNonBlankValueWithCustomMessage;
 	private final String someFourDigits;
 	private final String anyMailAddress;
@@ -51,6 +53,7 @@ public class SomeClass {
 			@NotEmpty Integer[] someNotEmptyArray, //
 			@NotBlank CharSequence someNonBlankValue, //
 			@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
+			@Size(min = 10, max = 20) String stringOfLenfthBetween10And20,
 			@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE }) String someFourDigits, //
 			@Email String anyMailAddress, //
 			@AssertTrue boolean someTrueValue, //
@@ -59,7 +62,8 @@ public class SomeClass {
 			@AssertFalse Boolean someFalseValueWrapper, //
 			@Min(42) int someIntPrimitiveValueThatIsMinimal42, //
 			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
-			@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42 //
+			@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42
+	//
 	) {
 		this.someNullObject = someNullObject;
 		this.someObject = someObject;
@@ -70,6 +74,7 @@ public class SomeClass {
 		this.someNotEmptyMap = someNotEmptyMap;
 		this.someNotEmptyArray = someNotEmptyArray;
 		this.someNonBlankValue = someNonBlankValue;
+		this.stringOfLenfthBetween10And20 = stringOfLenfthBetween10And20;
 		this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
 		this.someFourDigits = someFourDigits;
 		this.anyMailAddress = anyMailAddress;
@@ -84,7 +89,7 @@ public class SomeClass {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				"", "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
+				"", "", "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
 				Short.valueOf((short) 42)));
 	}
 
