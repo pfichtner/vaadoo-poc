@@ -16,7 +16,7 @@ When implementing an application using Spring it's very handy to use the JSR 380
   - Place the JSR 380 annotations on the DTO but then your internal valid state would rely on checks being done in a non-domain layer, so the domain is not able to valid its state itself. 
   - Again make your domain dependant on a JSR 380 implemenation. But then: Who would then ensure that validation is performed? 
 
-So if you decide, that none of these possibilites is an option you ~cannot~ just declare things like this...
+So if you decide, that none of these possibilites is an option you **cannot** just declare things like this...
 
 ```java
 public class MyDomainObject {
@@ -93,6 +93,7 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
 
 ## Drawbacks
 - no runtime internationalization (i18n) since messages are copied during compile-time into the bytecode
+- no central point to change validation logic, e.g. if the regexp for mail address validation changes the classes have to been recompiled
 - increased class sizes since the code gets copied into each class instead of having a central point that contains the code
 
 ## Pitfalls
