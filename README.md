@@ -105,12 +105,20 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
   ```
   to a handwritten one it's easy to get lost of the annotations copied to the constructor done by lombok
   ```java
+  class Foo {
+  	@Min(1) @Max(9999) private final int bar;
+  	Foo(int bar) { this.bar = bar; }
+  }
+  ```
+  When adding constructors via the IDE the IDE takes care of it: Foo(@Min(1) @Max(9999) int bar) { this.bar = bar; }
+
+  Note: lombok copies the annotation of fields to existing constructors as well, so here is less danger
+  ```java
   @lombok.Value class Foo {
   	@Min(1) @Max(9999) int bar;
   	Foo(int bar) { this.bar = bar; }
   }
   ```
-  When adding constructors via the IDE the IDE takes care of it: Foo(@Min(1) @Max(9999) int bar) { this.bar = bar; }
 
 ## Advantages
 - No reflection, what and how to check will be decided during compile- not during runtime. 
