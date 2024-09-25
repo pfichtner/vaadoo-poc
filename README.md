@@ -124,6 +124,7 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
 - No reflection, what and how to check will be decided during compile- not during runtime. 
   - Faster (at least 3-4x and up to 10x faster than validation via reflection, depending on the validations included)
   - Can be used in environments where reflection is hard or impossible (e.g. native images)
+  - No dependencies to additional jars/libraries during runtime, everything is compiled into the classes
 
 ## Other projects/approaches
 - https://github.com/opensanca/service-validator

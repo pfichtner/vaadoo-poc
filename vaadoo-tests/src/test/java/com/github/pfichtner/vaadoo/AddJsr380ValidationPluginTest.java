@@ -80,8 +80,8 @@ class AddJsr380ValidationPluginTest {
 			exception(constructor).havingCause().withMessage("args must not be empty");
 			exception(constructor, "x").havingCause().withMessage("Mandator muss numerisch sein");
 			exception(constructor, "").havingCause().withMessage("id must not be empty");
-			exception(constructor, "0").havingCause().withMessage("id must be greater than or equal to 1");
-			exception(constructor, "10000").havingCause().withMessage("id must be less than or equal to 9999");
+			exception(constructor, "0").havingCause().withMessage("Mandator muss zwischen 1 und 9999 liegen");
+			exception(constructor, "10000").havingCause().withMessage("Mandator muss zwischen 1 und 9999 liegen");
 			assertThat(constructor.newInstance(args("9999"))).hasToString("Mandator 9999");
 
 		}

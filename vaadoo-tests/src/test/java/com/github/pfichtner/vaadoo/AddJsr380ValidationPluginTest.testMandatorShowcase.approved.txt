@@ -3,12 +3,18 @@
 .super java/lang/Object
 .inner class public static final Lookup inner java/lang/invoke/MethodHandles$Lookup outer java/lang/invoke/MethodHandles
 
+.field private static final 'RANGE_ERROR' Ljava/lang/String; = "Mandator muss zwischen 1 und 9999 liegen"
+
+.field private static final 'NOT_NUMERIC' Ljava/lang/String; = "Mandator muss numerisch sein"
+
 .field private final 'id' I
 .annotation visible Ljakarta/validation/constraints/Min;
 value J = 1
+message s = "Mandator muss zwischen 1 und 9999 liegen"
 .end annotation
 .annotation visible Ljakarta/validation/constraints/Max;
 value J = 9999
+message s = "Mandator muss zwischen 1 und 9999 liegen"
 .end annotation
 .end field
 
@@ -91,9 +97,11 @@ areturn
 .method public getId()I
 .annotation visible Ljakarta/validation/constraints/Min;
 value J = 1
+message s = "Mandator muss zwischen 1 und 9999 liegen"
 .end annotation
 .annotation visible Ljakarta/validation/constraints/Max;
 value J = 9999
+message s = "Mandator muss zwischen 1 und 9999 liegen"
 .end annotation
 .annotation invisible Llombok/Generated;
 .end annotation
@@ -430,7 +438,7 @@ lcmp
 ifge L0
 new java/lang/IllegalArgumentException
 dup
-ldc "id must be greater than or equal to 1"
+ldc "Mandator muss zwischen 1 und 9999 liegen"
 athrow
 L0:
 .stack
@@ -444,7 +452,7 @@ lcmp
 ifle L1
 new java/lang/IllegalArgumentException
 dup
-ldc "id must be less than or equal to 9999"
+ldc "Mandator muss zwischen 1 und 9999 liegen"
 athrow
 L1:
 .stack

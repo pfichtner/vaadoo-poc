@@ -18,8 +18,11 @@ import lombok.Value;
 @RequiredArgsConstructor(access = PRIVATE)
 public class Mandator {
 
-	@Min(1)
-	@Max(9999)
+	private static final String RANGE_ERROR = "Mandator muss zwischen 1 und 9999 liegen";
+	private static final String NOT_NUMERIC = "Mandator muss numerisch sein";
+
+	@Min(value = 1, message = RANGE_ERROR)
+	@Max(value = 9999, message = RANGE_ERROR)
 	int id;
 
 	@Getter(value = PRIVATE)
@@ -29,8 +32,7 @@ public class Mandator {
 		this(id, "Mandator " + format("%1$4s", id).replace(' ', '0'));
 	}
 
-	private Mandator(@AssertTrue boolean foo,
-			@NotEmpty @Pattern(regexp = "\\d+", message = "Mandator muss numerisch sein") String id,
+	private Mandator(@AssertTrue boolean foo, @NotEmpty @Pattern(regexp = "\\d+", message = NOT_NUMERIC) String id,
 			@AssertFalse boolean bar) {
 		this(parseInt(id));
 	}
