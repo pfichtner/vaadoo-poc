@@ -114,7 +114,7 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
 
 ## Advantages
 - No reflection, what and how to check will be decided during compile- not during runtime. 
-  - Faster (3-4 times faster than validation via reflection)
+  - Faster (at least 3-4x and up to 10x faster than validation via reflection, depending on the validations included)
   - Can be used in environments where reflection is hard or impossible (e.g. native images)
 
 ## Other projects/approaches
