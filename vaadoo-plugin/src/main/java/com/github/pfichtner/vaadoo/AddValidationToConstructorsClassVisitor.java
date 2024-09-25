@@ -2,7 +2,6 @@ package com.github.pfichtner.vaadoo;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
-import static net.bytebuddy.jar.asm.ClassWriter.COMPUTE_FRAMES;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
 import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
@@ -22,7 +21,6 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
-import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -39,29 +37,15 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import net.bytebuddy.asm.AsmVisitorWrapper;
-import net.bytebuddy.description.field.FieldDescription.InDefinedShape;
-import net.bytebuddy.description.field.FieldList;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodList;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.implementation.Implementation.Context;
 import net.bytebuddy.jar.asm.AnnotationVisitor;
 import net.bytebuddy.jar.asm.ClassVisitor;
 import net.bytebuddy.jar.asm.Label;
 import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Type;
-import net.bytebuddy.pool.TypePool;
 
-public class AddValidationToConstructors implements AsmVisitorWrapper {
-
-	private final Class<? extends Jsr380CodeFragment> codeFragment;
-	private final List<Method> codeFragmentMethods;
-
-	public AddValidationToConstructors(Class<? extends Jsr380CodeFragment> codeFragment) {
-		this.codeFragment = codeFragment;
-		this.codeFragmentMethods = Arrays.asList(codeFragment.getMethods());
-	}
+final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	private static class ConfigEntry {
 		private Class<? extends Annotation> anno;
@@ -110,7 +94,7 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 	// warnings
 	// - @NotNull: Annotations that checks for null as well like @NotBlank @NotEmpty
 	// - @Null: most (all?) other annotations doesn't make sense
-	private static final List<ConfigEntry> entries = List.of( //
+	private static final List<ConfigEntry> configs = List.of( //
 			new FixedClassConfigEntry(Null.class, Object.class), //
 			new FixedClassConfigEntry(NotNull.class, Object.class), //
 			new FixedClassConfigEntry(NotBlank.class, CharSequence.class), //
@@ -155,119 +139,13 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 				anno.getName(), type.getName(), valids));
 	}
 
-	@Override
-	public int mergeReader(int flags) {
-		return flags;
-	}
-
-	@Override
-	public int mergeWriter(int flags) {
-		return flags | COMPUTE_FRAMES;
-	}
-
-	@Override
-	public ClassVisitor wrap(TypeDescription instrumentedType, ClassVisitor classVisitor, Context implementationContext,
-			TypePool typePool, FieldList<InDefinedShape> fields, MethodList<?> methods, int writerFlags,
-			int readerFlags) {
-		return new ClassVisitor(ASM9, classVisitor) {
-
-			private String className;
-			private final List<ConstructorVisitor> constructorVisitors = new ArrayList<>();
-			private final List<String> methodNames = new ArrayList<>();
-
-			@Override
-			public void visit(int version, int access, String name, String signature, String superName,
-					String[] interfaces) {
-				this.className = name;
-				super.visit(version, access, name, signature, superName, interfaces);
-				methods.stream().map(MethodDescription::getName).forEach(methodNames::add);
-			}
-
-			@Override
-			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
-					String[] exceptions) {
-				MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-				if (!"<init>".equals(name)) {
-					return mv;
-				}
-
-				ConstructorVisitor constructorVisitor = new ConstructorVisitor(ASM9, mv, className, descriptor,
-						methodNames);
-				constructorVisitors.add(constructorVisitor);
-				return constructorVisitor;
-			}
-
-			@Override
-			public void visitEnd() {
-				super.visitEnd();
-				for (ConstructorVisitor visitor : constructorVisitors) {
-					if (visitor.methodAddedName != null) {
-						addValidateMethod(visitor.methodAddedName, visitor.methodDescriptor, visitor.parameterInfos);
-					}
-				}
-			}
-
-			private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
-				MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
-				mv.visitCode();
-
-				var injector = new MethodInjector(codeFragment, signature);
-				for (var parameter : parameters.values()) {
-					for (var annotation : parameter.getAnnotations()) {
-						for (var config : entries) {
-							if (annotation.equals(config.type())) {
-								injector.inject(mv, parameter, checkMethod(config, parameter.classtype()));
-							}
-						}
-					}
-				}
-
-				mv.visitInsn(RETURN);
-				mv.visitMaxs(parameters.entrySet().size(), parameters.entrySet().size());
-				mv.visitEnd();
-			}
-
-			private Method checkMethod(ConfigEntry config, Class<?> actual) {
-				Class<?>[] parameters = new Class[] { config.anno(), config.resolveSuperType(actual) };
-				return checkMethod(parameters).map(m -> {
-					var supportedType = m.getParameterTypes()[1];
-					if (supportedType.isAssignableFrom(actual)) {
-						return m;
-					}
-					throw annotationOnTypeNotValid(parameters[0], actual, List.of(supportedType.getName()));
-				}).orElseThrow(() -> unsupportedType(parameters));
-			}
-
-			private IllegalStateException unsupportedType(Class<?>... parameters) {
-				assert parameters.length >= 2 : "Expected to get 2 parameters, got " + Arrays.toString(parameters);
-				var supported = codeFragmentMethods.stream() //
-						.filter(this::isCheckMethod) //
-						.filter(m -> m.getParameterCount() > 1) //
-						.filter(m -> m.getParameterTypes()[0] == parameters[0]) //
-						.map(m -> m.getParameterTypes()[1].getName()) //
-						.collect(toList());
-				return annotationOnTypeNotValid(parameters[0], parameters[1], supported);
-			}
-
-			private Optional<Method> checkMethod(Class<?>... parameters) {
-				return codeFragmentMethods.stream().filter(this::isCheckMethod)
-						.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
-			}
-
-			private boolean isCheckMethod(Method m) {
-				return "check".equals(m.getName());
-			}
-
-		};
-	}
-
 	private static class ConstructorVisitor extends MethodVisitor {
 
 		private final String className;
-		private final String methodDescriptor;
+		final String methodDescriptor;
 		private final List<String> methodNames;
-		private final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
-		private String methodAddedName;
+		final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
+		String methodAddedName;
 		private boolean visitParameterCalled;
 		private boolean validationAdded;
 
@@ -375,4 +253,97 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 
 	}
 
+	private final AddValidationToConstructors addValidationToConstructors;
+	private final MethodList<?> methods;
+	private String className;
+	private final List<ConstructorVisitor> constructorVisitors = new ArrayList<>();
+	private final List<String> methodNames = new ArrayList<>();
+
+	AddValidationToConstructorsClassVisitor(AddValidationToConstructors addValidationToConstructors, int api,
+			ClassVisitor classVisitor, MethodList<?> methods) {
+		super(api, classVisitor);
+		this.addValidationToConstructors = addValidationToConstructors;
+		this.methods = methods;
+	}
+
+	@Override
+	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+		this.className = name;
+		super.visit(version, access, name, signature, superName, interfaces);
+		methods.stream().map(MethodDescription::getName).forEach(methodNames::add);
+	}
+
+	@Override
+	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
+			String[] exceptions) {
+		MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
+		if (!"<init>".equals(name)) {
+			return mv;
+		}
+
+		ConstructorVisitor constructorVisitor = new ConstructorVisitor(ASM9, mv, className, descriptor, methodNames);
+		constructorVisitors.add(constructorVisitor);
+		return constructorVisitor;
+	}
+
+	@Override
+	public void visitEnd() {
+		for (ConstructorVisitor visitor : constructorVisitors) {
+			if (visitor.methodAddedName != null) {
+				addValidateMethod(visitor.methodAddedName, visitor.methodDescriptor, visitor.parameterInfos);
+			}
+		}
+		super.visitEnd();
+	}
+
+	private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
+		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
+		mv.visitCode();
+
+		var injector = new MethodInjector(this.addValidationToConstructors.codeFragment, signature);
+		for (var parameter : parameters.values()) {
+			for (var annotation : parameter.getAnnotations()) {
+				for (var config : configs) {
+					if (annotation.equals(config.type())) {
+						injector.inject(mv, parameter, checkMethod(config, parameter.classtype()));
+					}
+				}
+			}
+		}
+
+		mv.visitInsn(RETURN);
+		mv.visitMaxs(parameters.entrySet().size(), parameters.entrySet().size());
+		mv.visitEnd();
+	}
+
+	private Method checkMethod(ConfigEntry config, Class<?> actual) {
+		Class<?>[] parameters = new Class[] { config.anno(), config.resolveSuperType(actual) };
+		return checkMethod(parameters).map(m -> {
+			var supportedType = m.getParameterTypes()[1];
+			if (supportedType.isAssignableFrom(actual)) {
+				return m;
+			}
+			throw annotationOnTypeNotValid(parameters[0], actual, List.of(supportedType.getName()));
+		}).orElseThrow(() -> unsupportedType(parameters));
+	}
+
+	private IllegalStateException unsupportedType(Class<?>... parameters) {
+		assert parameters.length >= 2 : "Expected to get 2 parameters, got " + Arrays.toString(parameters);
+		var supported = this.addValidationToConstructors.codeFragmentMethods.stream() //
+				.filter(this::isCheckMethod) //
+				.filter(m -> m.getParameterCount() > 1) //
+				.filter(m -> m.getParameterTypes()[0] == parameters[0]) //
+				.map(m -> m.getParameterTypes()[1].getName()) //
+				.collect(toList());
+		return annotationOnTypeNotValid(parameters[0], parameters[1], supported);
+	}
+
+	private Optional<Method> checkMethod(Class<?>... parameters) {
+		return this.addValidationToConstructors.codeFragmentMethods.stream().filter(this::isCheckMethod)
+				.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
+	}
+
+	private boolean isCheckMethod(Method m) {
+		return "check".equals(m.getName());
+	}
 }

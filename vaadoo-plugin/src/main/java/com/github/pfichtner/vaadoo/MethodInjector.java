@@ -1,5 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.AsmUtil.classReader;
 import static com.github.pfichtner.vaadoo.AsmUtil.isArray;
 import static com.github.pfichtner.vaadoo.AsmUtil.isLoadOpcode;
 import static com.github.pfichtner.vaadoo.AsmUtil.isReturnOpcode;
@@ -18,14 +19,13 @@ import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.DUP;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.SIPUSH;
-import static net.bytebuddy.jar.asm.Type.*;
+import static net.bytebuddy.jar.asm.Type.INT_TYPE;
+import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getArgumentTypes;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 import static net.bytebuddy.jar.asm.Type.getObjectType;
 import static net.bytebuddy.jar.asm.Type.getReturnType;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -270,21 +270,11 @@ public class MethodInjector {
 	private final ClassReader classReader;
 
 	private static final String NAME = "@@@NAME@@@";
-	private String signatureOfTargetMethod;
+	private final String signatureOfTargetMethod;
 
 	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz, String signatureOfTargetMethod) {
-		String className = clazz.getName().replace('.', '/') + ".class";
-
-		try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(className)) {
-			if (inputStream == null) {
-				throw new IllegalStateException("Class " + clazz.getName() + " not found on classpath.");
-			}
-
-			this.classReader = new ClassReader(inputStream);
-			this.signatureOfTargetMethod = signatureOfTargetMethod;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		this.classReader = classReader(clazz);
+		this.signatureOfTargetMethod = signatureOfTargetMethod;
 	}
 
 	public void inject(MethodVisitor targetMethodVisitor, ParameterInfo parameter, Method sourceMethod) {

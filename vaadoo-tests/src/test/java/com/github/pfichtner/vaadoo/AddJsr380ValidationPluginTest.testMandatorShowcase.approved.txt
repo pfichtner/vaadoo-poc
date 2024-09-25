@@ -14,6 +14,8 @@ value J = 9999
 
 .field private final 'cachedStringValue' Ljava/lang/String;
 
+.field private static final 'cachedRegexWithFlags' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
+
 .method private <init>(I)V
 aload 0
 iload 1
@@ -34,6 +36,7 @@ return
 .provide com/example/Mandator;<init>
 .desc Ljava/lang/String;
 .desc I
+.desc Ljava/util/Map;
 
 .method private <init>(ZLjava/lang/String;Z)V
 aload 0
@@ -453,3 +456,41 @@ return
 .limit stack 4
 .end method
 .provide com/example/Mandator;validate$3
+
+.method private static cachedRegex(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+getstatic com/example/Mandator/cachedRegexWithFlags Ljava/util/Map;
+new java/util/AbstractMap$SimpleEntry
+dup
+aload 0
+iload 1
+checkcast java/util/regex/Pattern
+areturn
+.limit locals 2
+.limit stack 5
+.end method
+.dep com/example/Mandator;cachedRegexWithFlags
+.provide com/example/Mandator;cachedRegex
+.desc Ljava/util/Map;
+
+.method private static synthetic lambda$cachedRegex$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
+aload 0
+checkcast java/lang/String
+aload 0
+checkcast java/lang/Integer
+areturn
+.limit locals 1
+.limit stack 2
+.end method
+.provide com/example/Mandator;lambda$cachedRegex$0
+
+.method static <clinit>()V
+new java/util/concurrent/ConcurrentHashMap
+dup
+putstatic com/example/Mandator/cachedRegexWithFlags Ljava/util/Map;
+return
+.limit locals 0
+.limit stack 2
+.end method
+.dep com/example/Mandator;cachedRegexWithFlags
+.provide com/example/Mandator;<clinit>
+.desc Ljava/util/Map;

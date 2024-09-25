@@ -19,6 +19,10 @@ import static net.bytebuddy.jar.asm.Opcodes.LSTORE;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 import static net.bytebuddy.jar.asm.Type.ARRAY;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import net.bytebuddy.jar.asm.ClassReader;
 import net.bytebuddy.jar.asm.Type;
 
 public final class AsmUtil {
@@ -86,6 +90,19 @@ public final class AsmUtil {
 			size += type.getSize();
 		}
 		return size;
+	}
+
+	public static ClassReader classReader(Class<?> clazz) {
+		String className = clazz.getName().replace('.', '/') + ".class";
+
+		try (InputStream inputStream = clazz.getClassLoader().getResourceAsStream(className)) {
+			if (inputStream == null) {
+				throw new IllegalStateException("Class " + clazz.getName() + " not found on classpath.");
+			}
+			return new ClassReader(inputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
