@@ -114,7 +114,7 @@ build on top of https://github.com/raphw/byte-buddy/tree/master/byte-buddy-maven
 
 ## Advantages
 - No reflection, what and how to check will be decided during compile- not during runtime. 
-  - Faster
+  - Faster (at least w/o the usage of regexp or if we start caching the compiled regexps)
   - Can be used in environments where reflection is hard or impossible (e.g. native images)
 
 ## Other projects/approaches
