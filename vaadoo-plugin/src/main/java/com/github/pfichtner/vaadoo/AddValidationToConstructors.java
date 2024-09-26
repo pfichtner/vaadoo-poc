@@ -1,7 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
 import static net.bytebuddy.jar.asm.ClassWriter.COMPUTE_FRAMES;
-import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -10,8 +9,10 @@ import java.util.List;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import net.bytebuddy.asm.AsmVisitorWrapper;
+import net.bytebuddy.description.field.FieldDescription;
 import net.bytebuddy.description.field.FieldDescription.InDefinedShape;
 import net.bytebuddy.description.field.FieldList;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodList;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.Implementation.Context;
@@ -42,10 +43,17 @@ public class AddValidationToConstructors implements AsmVisitorWrapper {
 	public ClassVisitor wrap(TypeDescription instrumentedType, ClassVisitor classVisitor, Context implementationContext,
 			TypePool typePool, FieldList<InDefinedShape> fields, MethodList<?> methods, int writerFlags,
 			int readerFlags) {
+		ClassMembers classMembers = new ClassMembers();
+		classMembers.addMethodNames(methods.stream().map(MethodDescription::getName));
+		classMembers.addFieldNames(fields.stream().map(FieldDescription::getName));
+
 		// TODO make configurable
 		boolean optimizeRegex = true;
-		ClassVisitor classVisitor2 = optimizeRegex ? new CacheRegexCompileCalls(ASM9, classVisitor) : classVisitor;
-		return new AddValidationToConstructorsClassVisitor(this, ASM9, classVisitor2, methods);
+		ClassVisitor classVisitor2 = optimizeRegex ? new CacheRegexCompileCalls(classVisitor, classMembers)
+				: classVisitor;
+
+		return new AddValidationToConstructorsClassVisitor(classVisitor2, codeFragment, codeFragmentMethods,
+				classMembers);
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
+import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -37,8 +38,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.description.method.MethodList;
 import net.bytebuddy.jar.asm.AnnotationVisitor;
 import net.bytebuddy.jar.asm.ClassVisitor;
 import net.bytebuddy.jar.asm.Label;
@@ -48,7 +47,8 @@ import net.bytebuddy.jar.asm.Type;
 final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	private static class ConfigEntry {
-		private Class<? extends Annotation> anno;
+		
+		private final Class<? extends Annotation> anno;
 
 		public ConfigEntry(Class<? extends Annotation> anno) {
 			this.anno = anno;
@@ -142,19 +142,19 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	private static class ConstructorVisitor extends MethodVisitor {
 
 		private final String className;
-		final String methodDescriptor;
-		private final List<String> methodNames;
-		final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
-		String methodAddedName;
+		private final String methodDescriptor;
+		private final ClassMembers classMembers;
+		private final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
+		private String methodAddedName;
 		private boolean visitParameterCalled;
 		private boolean validationAdded;
 
-		public ConstructorVisitor(int api, MethodVisitor methodVisitor, String className, String methodDescriptor,
-				List<String> methodNames) {
-			super(api, methodVisitor);
+		public ConstructorVisitor(MethodVisitor methodVisitor, String className, String methodDescriptor,
+				ClassMembers classMembers) {
+			super(ASM9, methodVisitor);
 			this.className = className;
 			this.methodDescriptor = methodDescriptor;
-			this.methodNames = methodNames;
+			this.classMembers = classMembers;
 		}
 
 		@Override
@@ -220,19 +220,10 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 					mv.visitVarInsn(argType.getOpcode(ILOAD), index);
 					index += argType.getSize();
 				}
-				methodAddedName = constructMethodName();
-				methodNames.add(methodAddedName);
+				methodAddedName = classMembers.newMethod("validate");
 				mv.visitMethodInsn(INVOKESTATIC, className, methodAddedName,
 						Type.getMethodDescriptor(Type.VOID_TYPE, methodAddedArgumentTypes), false);
 			}
-		}
-
-		private String constructMethodName() {
-			String methodName = "validate";
-			for (int i = 1; methodNames.contains(methodName); i++) {
-				methodName = "validate$" + i;
-			}
-			return methodName;
 		}
 
 		@Override
@@ -253,24 +244,24 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	}
 
-	private final AddValidationToConstructors addValidationToConstructors;
-	private final MethodList<?> methods;
 	private String className;
 	private final List<ConstructorVisitor> constructorVisitors = new ArrayList<>();
-	private final List<String> methodNames = new ArrayList<>();
+	private final ClassMembers classMembers;
+	private Class<? extends Jsr380CodeFragment> codeFragment;
+	private List<Method> codeFragmentMethods;
 
-	AddValidationToConstructorsClassVisitor(AddValidationToConstructors addValidationToConstructors, int api,
-			ClassVisitor classVisitor, MethodList<?> methods) {
-		super(api, classVisitor);
-		this.addValidationToConstructors = addValidationToConstructors;
-		this.methods = methods;
+	AddValidationToConstructorsClassVisitor(ClassVisitor classVisitor, Class<? extends Jsr380CodeFragment> codeFragment,
+			List<Method> codeFragmentMethods, ClassMembers classMembers) {
+		super(ASM9, classVisitor);
+		this.codeFragment = codeFragment;
+		this.codeFragmentMethods = codeFragmentMethods;
+		this.classMembers = classMembers;
 	}
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		this.className = name;
 		super.visit(version, access, name, signature, superName, interfaces);
-		methods.stream().map(MethodDescription::getName).forEach(methodNames::add);
 	}
 
 	@Override
@@ -281,7 +272,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			return mv;
 		}
 
-		ConstructorVisitor constructorVisitor = new ConstructorVisitor(ASM9, mv, className, descriptor, methodNames);
+		ConstructorVisitor constructorVisitor = new ConstructorVisitor(mv, className, descriptor, classMembers);
 		constructorVisitors.add(constructorVisitor);
 		return constructorVisitor;
 	}
@@ -300,7 +291,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 		mv.visitCode();
 
-		var injector = new MethodInjector(this.addValidationToConstructors.codeFragment, signature);
+		var injector = new MethodInjector(codeFragment, signature);
 		for (var parameter : parameters.values()) {
 			for (var annotation : parameter.getAnnotations()) {
 				for (var config : configs) {
@@ -329,7 +320,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	private IllegalStateException unsupportedType(Class<?>... parameters) {
 		assert parameters.length >= 2 : "Expected to get 2 parameters, got " + Arrays.toString(parameters);
-		var supported = this.addValidationToConstructors.codeFragmentMethods.stream() //
+		var supported = this.codeFragmentMethods.stream() //
 				.filter(this::isCheckMethod) //
 				.filter(m -> m.getParameterCount() > 1) //
 				.filter(m -> m.getParameterTypes()[0] == parameters[0]) //
@@ -339,7 +330,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	}
 
 	private Optional<Method> checkMethod(Class<?>... parameters) {
-		return this.addValidationToConstructors.codeFragmentMethods.stream().filter(this::isCheckMethod)
+		return codeFragmentMethods.stream().filter(this::isCheckMethod)
 				.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
 	}
 

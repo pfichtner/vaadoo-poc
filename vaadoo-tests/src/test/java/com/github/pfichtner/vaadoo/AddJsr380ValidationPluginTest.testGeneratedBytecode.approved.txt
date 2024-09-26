@@ -1531,7 +1531,7 @@ return
 .provide com/example/SomeClass;validate
 .desc Ljakarta/validation/constraints/Pattern$Flag;
 
-.method private static cachedRegex(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.method private static cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 getstatic com/example/SomeClass/cache Ljava/util/Map;
 new java/util/AbstractMap$SimpleEntry
 dup
@@ -1543,10 +1543,10 @@ areturn
 .limit stack 5
 .end method
 .dep com/example/SomeClass;cache
-.provide com/example/SomeClass;cachedRegex
+.provide com/example/SomeClass;cache
 .desc Ljava/util/Map;
 
-.method private static synthetic lambda$cachedRegex$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
+.method private static synthetic lambda$cache$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
 aload 0
 checkcast java/lang/String
 aload 0
@@ -1555,7 +1555,7 @@ areturn
 .limit locals 1
 .limit stack 2
 .end method
-.provide com/example/SomeClass;lambda$cachedRegex$0
+.provide com/example/SomeClass;lambda$cache$0
 
 .method static <clinit>()V
 new java/util/concurrent/ConcurrentHashMap

@@ -288,7 +288,7 @@ return
 .end method
 .provide com/example/Mandator;validate
 
-.method private static validate$1(ZLjava/lang/String;Z)V
+.method private static validate(ZLjava/lang/String;Z)V
 iload 0
 ifne L0
 new java/lang/IllegalArgumentException
@@ -400,9 +400,9 @@ return
 .limit locals 8
 .limit stack 3
 .end method
-.provide com/example/Mandator;validate$1
+.provide com/example/Mandator;validate
 
-.method private static validate$2([Ljava/lang/String;)V
+.method private static validate([Ljava/lang/String;)V
 aload 0
 ifnonnull L0
 new java/lang/NullPointerException
@@ -428,9 +428,9 @@ return
 .limit locals 1
 .limit stack 3
 .end method
-.provide com/example/Mandator;validate$2
+.provide com/example/Mandator;validate
 
-.method private static validate$3(ILjava/lang/String;)V
+.method private static validate(ILjava/lang/String;)V
 iload 0
 i2l
 ldc 1
@@ -463,9 +463,9 @@ return
 .limit locals 2
 .limit stack 4
 .end method
-.provide com/example/Mandator;validate$3
+.provide com/example/Mandator;validate
 
-.method private static cachedRegex(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.method private static cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 getstatic com/example/Mandator/cache Ljava/util/Map;
 new java/util/AbstractMap$SimpleEntry
 dup
@@ -477,10 +477,10 @@ areturn
 .limit stack 5
 .end method
 .dep com/example/Mandator;cache
-.provide com/example/Mandator;cachedRegex
+.provide com/example/Mandator;cache
 .desc Ljava/util/Map;
 
-.method private static synthetic lambda$cachedRegex$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
+.method private static synthetic lambda$cache$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
 aload 0
 checkcast java/lang/String
 aload 0
@@ -489,7 +489,7 @@ areturn
 .limit locals 1
 .limit stack 2
 .end method
-.provide com/example/Mandator;lambda$cachedRegex$0
+.provide com/example/Mandator;lambda$cache$0
 
 .method static <clinit>()V
 new java/util/concurrent/ConcurrentHashMap

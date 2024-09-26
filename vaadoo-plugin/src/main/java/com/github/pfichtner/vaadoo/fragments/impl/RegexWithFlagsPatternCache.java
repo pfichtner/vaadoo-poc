@@ -12,7 +12,7 @@ public final class RegexWithFlagsPatternCache {
 
 	private static final Map<SimpleEntry<String, Integer>, Pattern> cache = new ConcurrentHashMap<>();
 
-	private static Pattern cachedRegex(String regex, int flags) {
+	private static Pattern cache(String regex, int flags) {
 		return cache.computeIfAbsent(new SimpleEntry<>(regex, flags), e -> compile(e.getKey(), e.getValue()));
 	}
 

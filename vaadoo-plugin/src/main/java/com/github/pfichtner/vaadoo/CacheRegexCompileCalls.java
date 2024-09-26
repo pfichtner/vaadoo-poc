@@ -10,9 +10,9 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.github.pfichtner.vaadoo.fragments.impl.RegexPatternCache;
 import com.github.pfichtner.vaadoo.fragments.impl.RegexWithFlagsPatternCache;
@@ -27,12 +27,12 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 
 	private static class Fragment {
 
-		private final Class<?> fragment;
+		private final Class<?> clazz;
 		private final String onlyMethodsDescriptor;
 
-		public Fragment(Class<?> fragment) {
-			this.fragment = fragment;
-			this.onlyMethodsDescriptor = getMethodDescriptor(onlyMethod(fragment));
+		public Fragment(Class<?> fragmentClass) {
+			this.clazz = fragmentClass;
+			this.onlyMethodsDescriptor = getMethodDescriptor(onlyMethod(fragmentClass));
 		}
 
 		private static Method onlyMethod(Class<?> clazz) {
@@ -48,13 +48,13 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 			new Fragment(RegexWithFlagsPatternCache.class) //
 	);
 
-	private static final String CACHED_REGEX_METHODNAME = "cachedRegex";
-
+	private final ClassMembers classMembers;
 	private String classname;
-	private final Set<String> argTypeOfReplacedCallsToPatternCompile = new HashSet<>();
+	private final Map<String, String> cachedRegexMethodnames = new HashMap<>();
 
-	public CacheRegexCompileCalls(int api, ClassVisitor targetClassVisitor) {
-		super(api, targetClassVisitor);
+	public CacheRegexCompileCalls(ClassVisitor targetClassVisitor, ClassMembers classMembers) {
+		super(ASM9, targetClassVisitor);
+		this.classMembers = classMembers;
 	}
 
 	@Override
@@ -71,9 +71,9 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 			@Override
 			public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
 				if (opcode == INVOKESTATIC && "java/util/regex/Pattern".equals(owner) && "compile".equals(name)) {
-					argTypeOfReplacedCallsToPatternCompile.add(descriptor);
-					// TODO again: make method name unique
-					super.visitMethodInsn(INVOKESTATIC, classname, CACHED_REGEX_METHODNAME, descriptor, false);
+					super.visitMethodInsn(INVOKESTATIC, classname,
+							cachedRegexMethodnames.computeIfAbsent(descriptor, d -> classMembers.newMethod("cache")),
+							descriptor, false);
 				} else {
 					super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
 				}
@@ -85,8 +85,8 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 	@Override
 	public void visitEnd() {
 		for (Fragment fragment : fragements) {
-			if (argTypeOfReplacedCallsToPatternCompile.contains(fragment.onlyMethodsDescriptor)) {
-				classReader(fragment.fragment).accept(copyFieldsAndMethods(fragment.fragment), 0);
+			if (cachedRegexMethodnames.containsKey(fragment.onlyMethodsDescriptor)) {
+				classReader(fragment.clazz).accept(copyFieldsAndMethods(fragment.clazz), 0);
 			}
 		}
 		super.visitEnd();
@@ -105,7 +105,7 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 			@Override
 			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 					String[] exceptions) {
-				if (!"<clinit>".equals(name) && !name.equals(CACHED_REGEX_METHODNAME)
+				if (!"<clinit>".equals(name) && !cachedRegexMethodnames.containsValue(name)
 						&& (ACC_SYNTHETIC & access) == 0) {
 					return null;
 				}
@@ -114,8 +114,14 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 						CacheRegexCompileCalls.this.cv.visitMethod(access, name, descriptor, signature, exceptions)) {
 					@Override
 					public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-						// TODO prevent clashes on field names --> Don't forget to change the field
+
+						// TODO prevent clashes on field names --> Don't forget to remap the field
 						// accesses as well!
+//						if (classMembers.containsFieldName(name)) {
+//							throw new IllegalStateException(
+//									"Target class '" + classname + "' already defines a field named '" + name
+//											+ "' and fieldname rewrite not yet supported");
+//						}
 						super.visitFieldInsn(opcode, classname, name, descriptor);
 					}
 
