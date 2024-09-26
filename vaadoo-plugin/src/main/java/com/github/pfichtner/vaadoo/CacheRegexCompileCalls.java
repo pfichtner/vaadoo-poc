@@ -1,14 +1,18 @@
 package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.AsmUtil.classReader;
+import static java.util.function.Predicate.not;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_SYNTHETIC;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 import static net.bytebuddy.jar.asm.Opcodes.H_INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
+import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.github.pfichtner.vaadoo.fragments.impl.RegexPatternCache;
 import com.github.pfichtner.vaadoo.fragments.impl.RegexWithFlagsPatternCache;
@@ -21,11 +25,30 @@ import net.bytebuddy.jar.asm.Type;
 
 public class CacheRegexCompileCalls extends ClassVisitor {
 
+	private static class Fragment {
+
+		private final Class<?> fragment;
+		private final String onlyMethodsDescriptor;
+
+		public Fragment(Class<?> fragment) {
+			this.fragment = fragment;
+			this.onlyMethodsDescriptor = getMethodDescriptor(onlyMethod(fragment));
+		}
+
+		private static Method onlyMethod(Class<?> clazz) {
+			return Arrays.stream(clazz.getDeclaredMethods()).filter(not(Method::isSynthetic)).reduce((m0, m1) -> {
+				throw new IllegalStateException("Expected to find exactly one method in " + clazz.getName());
+			}).orElseThrow(
+					() -> new IllegalStateException("Expected to find exactly one method in " + clazz.getName()));
+		}
+	}
+
+	private static final List<Fragment> fragements = List.of( //
+			new Fragment(RegexPatternCache.class), //
+			new Fragment(RegexWithFlagsPatternCache.class) //
+	);
+
 	private static final String CACHED_REGEX_METHODNAME = "cachedRegex";
-	private static final String CACHED_REGEX_METHOD_DESCRIPTOR_STRING = Type
-			.getMethodDescriptor(Type.getType(Pattern.class), Type.getType(String.class));
-	private static final String CACHED_REGEX_METHOD_DESCRIPTOR_STRING_INT = Type
-			.getMethodDescriptor(Type.getType(Pattern.class), Type.getType(String.class), Type.INT_TYPE);
 
 	private String classname;
 	private final Set<String> argTypeOfReplacedCallsToPatternCompile = new HashSet<>();
@@ -61,12 +84,10 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 
 	@Override
 	public void visitEnd() {
-		var classReader = classReader(RegexWithFlagsPatternCache.class);
-		if (argTypeOfReplacedCallsToPatternCompile.contains(CACHED_REGEX_METHOD_DESCRIPTOR_STRING)) {
-			classReader.accept(copyFieldsAndMethods(RegexPatternCache.class), 0);
-		}
-		if (argTypeOfReplacedCallsToPatternCompile.contains(CACHED_REGEX_METHOD_DESCRIPTOR_STRING_INT)) {
-			classReader.accept(copyFieldsAndMethods(RegexWithFlagsPatternCache.class), 0);
+		for (Fragment fragment : fragements) {
+			if (argTypeOfReplacedCallsToPatternCompile.contains(fragment.onlyMethodsDescriptor)) {
+				classReader(fragment.fragment).accept(copyFieldsAndMethods(fragment.fragment), 0);
+			}
 		}
 		super.visitEnd();
 	}
