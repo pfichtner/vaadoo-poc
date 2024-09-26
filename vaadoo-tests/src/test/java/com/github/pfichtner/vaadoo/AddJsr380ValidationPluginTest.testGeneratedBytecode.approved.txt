@@ -43,7 +43,7 @@
 
 .field private final 'someShortWrapperValueThatIsNotNullAndAbout42' Ljava/lang/Short;
 
-.field private static final 'cachedRegexWithFlags' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
+.field private static final 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
 
 .method public <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
 .signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V"
@@ -1532,7 +1532,7 @@ return
 .desc Ljakarta/validation/constraints/Pattern$Flag;
 
 .method private static cachedRegex(Ljava/lang/String;I)Ljava/util/regex/Pattern;
-getstatic com/example/SomeClass/cachedRegexWithFlags Ljava/util/Map;
+getstatic com/example/SomeClass/cache Ljava/util/Map;
 new java/util/AbstractMap$SimpleEntry
 dup
 aload 0
@@ -1542,7 +1542,7 @@ areturn
 .limit locals 2
 .limit stack 5
 .end method
-.dep com/example/SomeClass;cachedRegexWithFlags
+.dep com/example/SomeClass;cache
 .provide com/example/SomeClass;cachedRegex
 .desc Ljava/util/Map;
 
@@ -1560,11 +1560,11 @@ areturn
 .method static <clinit>()V
 new java/util/concurrent/ConcurrentHashMap
 dup
-putstatic com/example/SomeClass/cachedRegexWithFlags Ljava/util/Map;
+putstatic com/example/SomeClass/cache Ljava/util/Map;
 return
 .limit locals 0
 .limit stack 2
 .end method
-.dep com/example/SomeClass;cachedRegexWithFlags
+.dep com/example/SomeClass;cache
 .provide com/example/SomeClass;<clinit>
 .desc Ljava/util/Map;

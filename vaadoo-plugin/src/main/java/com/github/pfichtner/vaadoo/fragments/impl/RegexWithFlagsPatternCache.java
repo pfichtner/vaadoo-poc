@@ -10,11 +10,10 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class RegexWithFlagsPatternCache {
 
-	private static final Map<SimpleEntry<String, Integer>, Pattern> cachedRegexWithFlags = new ConcurrentHashMap<>();
+	private static final Map<SimpleEntry<String, Integer>, Pattern> cache = new ConcurrentHashMap<>();
 
 	private static Pattern cachedRegex(String regex, int flags) {
-		return cachedRegexWithFlags.computeIfAbsent(new SimpleEntry<>(regex, flags),
-				e -> compile(e.getKey(), e.getValue()));
+		return cache.computeIfAbsent(new SimpleEntry<>(regex, flags), e -> compile(e.getKey(), e.getValue()));
 	}
 
 }

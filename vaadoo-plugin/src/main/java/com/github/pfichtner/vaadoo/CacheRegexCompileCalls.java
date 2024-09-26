@@ -1,6 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.AsmUtil.classReader;
+import static java.util.Arrays.stream;
 import static java.util.function.Predicate.not;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_SYNTHETIC;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
@@ -9,7 +10,6 @@ import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Type.getMethodDescriptor;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 		}
 
 		private static Method onlyMethod(Class<?> clazz) {
-			return Arrays.stream(clazz.getDeclaredMethods()).filter(not(Method::isSynthetic)).reduce((m0, m1) -> {
+			return stream(clazz.getDeclaredMethods()).filter(not(Method::isSynthetic)).reduce((m0, m1) -> {
 				throw new IllegalStateException("Expected to find exactly one method in " + clazz.getName());
 			}).orElseThrow(
 					() -> new IllegalStateException("Expected to find exactly one method in " + clazz.getName()));
