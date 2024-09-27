@@ -25,6 +25,8 @@ import net.bytebuddy.jar.asm.Type;
 
 public class CacheRegexCompileCalls extends ClassVisitor {
 
+	private static final String METHOD_NAME_IN_FRAGMENT = "cache";
+
 	private static class Fragment {
 
 		private final Class<?> clazz;
@@ -32,7 +34,15 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 
 		public Fragment(Class<?> fragmentClass) {
 			this.clazz = fragmentClass;
-			this.onlyMethodsDescriptor = getMethodDescriptor(onlyMethod(fragmentClass));
+			this.onlyMethodsDescriptor = getMethodDescriptor(checkMethodName(onlyMethod(fragmentClass)));
+		}
+
+		private Method checkMethodName(Method method) {
+			if (!METHOD_NAME_IN_FRAGMENT.equals(method.getName())) {
+				throw new IllegalStateException("Currently the name of the method in the fragment has to be "
+						+ METHOD_NAME_IN_FRAGMENT + " but was " + method.getName());
+			}
+			return method;
 		}
 
 		private static Method onlyMethod(Class<?> clazz) {
@@ -71,9 +81,8 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 			@Override
 			public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
 				if (opcode == INVOKESTATIC && "java/util/regex/Pattern".equals(owner) && "compile".equals(name)) {
-					super.visitMethodInsn(INVOKESTATIC, classname,
-							cachedRegexMethodnames.computeIfAbsent(descriptor, d -> classMembers.newMethod("cache")),
-							descriptor, false);
+					super.visitMethodInsn(INVOKESTATIC, classname, cachedRegexMethodnames.computeIfAbsent(descriptor,
+							d -> classMembers.newMethod(METHOD_NAME_IN_FRAGMENT)), descriptor, false);
 				} else {
 					super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
 				}
@@ -85,44 +94,51 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 	@Override
 	public void visitEnd() {
 		for (Fragment fragment : fragements) {
-			if (cachedRegexMethodnames.containsKey(fragment.onlyMethodsDescriptor)) {
-				classReader(fragment.clazz).accept(copyFieldsAndMethods(fragment.clazz), 0);
+			String methodNameUsed = cachedRegexMethodnames.get(fragment.onlyMethodsDescriptor);
+			if (methodNameUsed != null) {
+				classReader(fragment.clazz).accept(copyFieldsAndMethods(fragment.clazz, methodNameUsed), 0);
 			}
 		}
 		super.visitEnd();
 	}
 
-	private ClassVisitor copyFieldsAndMethods(Class<?> clazz) {
+	private ClassVisitor copyFieldsAndMethods(Class<?> clazz, String methodCalled) {
 		return new ClassVisitor(ASM9) {
 
 			private final String fragmentClassName = Type.getType(clazz).getInternalName();
+			private final Map<String, String> fieldNames = new HashMap<>();
 
 			@Override
 			public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-				return CacheRegexCompileCalls.this.cv.visitField(access, name, descriptor, signature, value);
+				String fieldName = classMembers.containsFieldName(name) ? classMembers.newField(name) : name;
+				this.fieldNames.put(name, fieldName);
+				return CacheRegexCompileCalls.this.cv.visitField(access, fieldName, descriptor, signature, value);
 			}
 
 			@Override
 			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 					String[] exceptions) {
-				if (!"<clinit>".equals(name) && !cachedRegexMethodnames.containsValue(name)
-						&& (ACC_SYNTHETIC & access) == 0) {
+
+				// TODO this fails if we add <clinit> but there is already a <clinit> present
+				// TODO Also the synthetic methods have to get renamed if they already exist
+				boolean isFragmentMethod = name.equals(METHOD_NAME_IN_FRAGMENT);
+				if (!"<clinit>".equals(name) && !isFragmentMethod && (ACC_SYNTHETIC & access) == 0) {
 					return null;
+				}
+
+				if (isFragmentMethod) {
+					// name could differ (we tried to add method "cache" to the class but because
+					// "cache" already was present the name got "cache$1" (we first insert the
+					// calls, then we add the method, which is done here)
+					name = methodCalled;
 				}
 
 				return new MethodVisitor(ASM9,
 						CacheRegexCompileCalls.this.cv.visitMethod(access, name, descriptor, signature, exceptions)) {
+
 					@Override
 					public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-
-						// TODO prevent clashes on field names --> Don't forget to remap the field
-						// accesses as well!
-//						if (classMembers.containsFieldName(name)) {
-//							throw new IllegalStateException(
-//									"Target class '" + classname + "' already defines a field named '" + name
-//											+ "' and fieldname rewrite not yet supported");
-//						}
-						super.visitFieldInsn(opcode, classname, name, descriptor);
+						super.visitFieldInsn(opcode, classname, fieldNames.get(name), descriptor);
 					}
 
 					@Override

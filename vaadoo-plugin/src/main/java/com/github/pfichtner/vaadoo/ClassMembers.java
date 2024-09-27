@@ -17,6 +17,14 @@ public class ClassMembers {
 		return fieldNames.contains(fieldName);
 	}
 
+	public String newField(String arg) {
+		String newFieldName = arg;
+		for (int i = 1; fieldNames.contains(newFieldName); i++) {
+			newFieldName = arg + "$" + i;
+		}
+		return newFieldName;
+	}
+
 	public void addMethodNames(Stream<String> toAdd) {
 		toAdd.forEach(methodNames::add);
 	}

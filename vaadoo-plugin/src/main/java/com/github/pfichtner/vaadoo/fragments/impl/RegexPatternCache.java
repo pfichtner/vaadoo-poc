@@ -9,7 +9,7 @@ public final class RegexPatternCache {
 
 	private static final Map<String, Pattern> cache = new ConcurrentHashMap<>();
 
-	private static Pattern cachedRegex(String regex) {
+	private static Pattern cache(String regex) {
 		return cache.computeIfAbsent(regex, Pattern::compile);
 	}
 
