@@ -2,6 +2,8 @@ package com.github.pfichtner.vaadoo.fragments.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.Math.abs;
+import static java.lang.Math.log10;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
@@ -276,83 +278,67 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(Digits anno, byte value) {
-		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
-		int integerPartLength = bigNum.precision() - bigNum.scale();
-		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+		checkArgument(length <= anno.integer(), anno.message());
 	}
 
 	@Override
 	public void check(Digits anno, short value) {
-		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
-		int integerPartLength = bigNum.precision() - bigNum.scale();
-		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+		checkArgument(length <= anno.integer(), anno.message());
 	}
 
 	@Override
 	public void check(Digits anno, int value) {
-		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
-		int integerPartLength = bigNum.precision() - bigNum.scale();
-		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+		checkArgument(length <= anno.integer(), anno.message());
 	}
 
 	@Override
 	public void check(Digits anno, long value) {
-		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
-		int integerPartLength = bigNum.precision() - bigNum.scale();
-		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		long absValue = (value == Long.MIN_VALUE) ? -(value + 1) : abs(value);
+		int length = (value == 0) ? 1 : (int) log10(absValue) + 1;
+		checkArgument(length <= anno.integer(), anno.message());
 	}
 
 	@Override
 	public void check(Digits anno, Byte value) {
 		if (value != null) {
-			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+			int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+			checkArgument(length <= anno.integer(), anno.message());
 		}
 	}
 
 	@Override
 	public void check(Digits anno, Short value) {
 		if (value != null) {
-			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+			int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+			checkArgument(length <= anno.integer(), anno.message());
 		}
 	}
 
 	@Override
 	public void check(Digits anno, Integer value) {
 		if (value != null) {
-			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+			int length = (value == 0) ? 1 : (int) log10(abs(value)) + 1;
+			checkArgument(length <= anno.integer(), anno.message());
 		}
 	}
 
 	@Override
 	public void check(Digits anno, Long value) {
 		if (value != null) {
-			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+			long absValue = (value == Long.MIN_VALUE) ? -(value + 1) : abs(value);
+			int length = (value == 0) ? 1 : (int) log10(absValue) + 1;
+			checkArgument(length <= anno.integer(), anno.message());
 		}
 	}
 
 	@Override
 	public void check(Digits anno, BigInteger value) {
 		if (value != null) {
-			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+			int length = value.toString().length();
+			checkArgument(length <= anno.integer(), anno.message());
 		}
 	}
 
