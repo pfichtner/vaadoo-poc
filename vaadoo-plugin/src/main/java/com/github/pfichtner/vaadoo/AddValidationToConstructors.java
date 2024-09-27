@@ -21,8 +21,8 @@ import net.bytebuddy.pool.TypePool;
 
 public class AddValidationToConstructors implements AsmVisitorWrapper {
 
-	final Class<? extends Jsr380CodeFragment> codeFragment;
-	final List<Method> codeFragmentMethods;
+	private final Class<? extends Jsr380CodeFragment> codeFragment;
+	private final List<Method> codeFragmentMethods;
 
 	public AddValidationToConstructors(Class<? extends Jsr380CodeFragment> codeFragment) {
 		this.codeFragment = codeFragment;
