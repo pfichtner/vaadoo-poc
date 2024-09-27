@@ -67,6 +67,10 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 		this.classMembers = classMembers;
 	}
 
+	private ClassVisitor outputVisitor() {
+		return cv;
+	}
+
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 		this.classname = name;
@@ -106,25 +110,40 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 		return new ClassVisitor(ASM9) {
 
 			private final String fragmentClassName = Type.getType(clazz).getInternalName();
-			private final Map<String, String> fieldNames = new HashMap<>();
+			private final Map<String, String> remappedFieldNames = new HashMap<>();
 
 			@Override
 			public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
 				String fieldName = classMembers.containsFieldName(name) ? classMembers.newField(name) : name;
-				this.fieldNames.put(name, fieldName);
-				return CacheRegexCompileCalls.this.cv.visitField(access, fieldName, descriptor, signature, value);
+				this.remappedFieldNames.put(name, fieldName);
+				return outputVisitor().visitField(access, fieldName, descriptor, signature, value);
 			}
 
 			@Override
 			public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 					String[] exceptions) {
-
 				// TODO this fails if we add <clinit> but there is already a <clinit> present
 				// TODO Also the synthetic methods have to get renamed if they already exist
 				boolean isFragmentMethod = name.equals(METHOD_NAME_IN_FRAGMENT);
 				if (!"<clinit>".equals(name) && !isFragmentMethod && (ACC_SYNTHETIC & access) == 0) {
 					return null;
 				}
+
+				// TODO if it comes to name clashes on the lambda (synthetic method) we would
+				// have to rewrite
+
+				// mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Function;", new
+				// Handle(Opcodes.H_INVOKESTATIC, "java/lang/invoke/LambdaMetafactory",
+				// "metafactory",
+				// "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+				// false), new Object[]{Type.getType("(Ljava/lang/Object;)Ljava/lang/Object;"),
+				// new Handle(Opcodes.H_INVOKESTATIC, "com/example/SomeClass", "lambda$cache$0",
+				// "(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;", false),
+				// Type.getType("(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;")});
+				// mv = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
+				// "lambda$cache$0",
+				// "(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;", null,
+				// null);
 
 				if (isFragmentMethod) {
 					// name could differ (we tried to add method "cache" to the class but because
@@ -133,12 +152,12 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 					name = methodCalled;
 				}
 
-				return new MethodVisitor(ASM9,
-						CacheRegexCompileCalls.this.cv.visitMethod(access, name, descriptor, signature, exceptions)) {
+				MethodVisitor mv = outputVisitor().visitMethod(access, name, descriptor, signature, exceptions);
+				return new MethodVisitor(ASM9, mv) {
 
 					@Override
 					public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-						super.visitFieldInsn(opcode, classname, fieldNames.get(name), descriptor);
+						super.visitFieldInsn(opcode, classname, remappedFieldNames.get(name), descriptor);
 					}
 
 					@Override

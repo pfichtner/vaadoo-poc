@@ -47,7 +47,7 @@ import net.bytebuddy.jar.asm.Type;
 final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	private static class ConfigEntry {
-		
+
 		private final Class<? extends Annotation> anno;
 
 		public ConfigEntry(Class<? extends Annotation> anno) {
@@ -250,9 +250,10 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	private Class<? extends Jsr380CodeFragment> codeFragment;
 	private List<Method> codeFragmentMethods;
 
-	AddValidationToConstructorsClassVisitor(ClassVisitor classVisitor, Class<? extends Jsr380CodeFragment> codeFragment,
-			List<Method> codeFragmentMethods, ClassMembers classMembers) {
-		super(ASM9, classVisitor);
+	AddValidationToConstructorsClassVisitor(ClassVisitor targetClassVisitor,
+			Class<? extends Jsr380CodeFragment> codeFragment, List<Method> codeFragmentMethods,
+			ClassMembers classMembers) {
+		super(ASM9, targetClassVisitor);
 		this.codeFragment = codeFragment;
 		this.codeFragmentMethods = codeFragmentMethods;
 		this.classMembers = classMembers;
@@ -334,7 +335,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 				.filter(m -> Arrays.equals(m.getParameterTypes(), parameters)).findFirst();
 	}
 
-	private boolean isCheckMethod(Method m) {
-		return "check".equals(m.getName());
+	private boolean isCheckMethod(Method method) {
+		return "check".equals(method.getName());
 	}
 }
