@@ -62,8 +62,8 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 	private String classname;
 	private final Map<String, String> cachedRegexMethodnames = new HashMap<>();
 
-	public CacheRegexCompileCalls(ClassVisitor targetClassVisitor, ClassMembers classMembers) {
-		super(ASM9, targetClassVisitor);
+	public CacheRegexCompileCalls(ClassVisitor outputVisitor, ClassMembers classMembers) {
+		super(ASM9, outputVisitor);
 		this.classMembers = classMembers;
 	}
 

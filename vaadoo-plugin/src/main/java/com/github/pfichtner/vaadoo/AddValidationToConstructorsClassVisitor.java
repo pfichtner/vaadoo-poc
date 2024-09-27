@@ -250,10 +250,10 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	private Class<? extends Jsr380CodeFragment> codeFragment;
 	private List<Method> codeFragmentMethods;
 
-	AddValidationToConstructorsClassVisitor(ClassVisitor targetClassVisitor,
+	AddValidationToConstructorsClassVisitor(ClassVisitor outputVisitor,
 			Class<? extends Jsr380CodeFragment> codeFragment, List<Method> codeFragmentMethods,
 			ClassMembers classMembers) {
-		super(ASM9, targetClassVisitor);
+		super(ASM9, outputVisitor);
 		this.codeFragment = codeFragment;
 		this.codeFragmentMethods = codeFragmentMethods;
 		this.classMembers = classMembers;
