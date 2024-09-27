@@ -3,6 +3,7 @@ package com.github.pfichtner.vaadoo.fragments;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Negative;
@@ -53,6 +54,30 @@ public interface Jsr380CodeNumberFragment {
 	void check(Max anno, BigInteger value);
 
 	void check(Max anno, BigDecimal value);
+
+	// -------------------------------------
+
+	void check(Digits anno, byte value);
+
+	void check(Digits anno, short value);
+
+	void check(Digits anno, int value);
+
+	void check(Digits anno, long value);
+
+	void check(Digits anno, Byte value);
+
+	void check(Digits anno, Short value);
+
+	void check(Digits anno, Integer value);
+
+	void check(Digits anno, Long value);
+
+	void check(Digits anno, BigInteger value);
+
+	void check(Digits anno, BigDecimal value);
+
+	void check(Digits anno, CharSequence value);
 
 	// -------------------------------------
 

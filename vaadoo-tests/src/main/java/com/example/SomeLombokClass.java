@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -46,6 +47,8 @@ public class SomeLombokClass {
 	String someNonBlankValueWithCustomMessage;
 	@Size(min = 10, max = 20)
 	String stringOfLenfthBetween10And20;
+	@Digits(integer = 4, fraction = 0)
+	int intWith4Digits;
 	@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE })
 	String someFourDigits;
 	@Email

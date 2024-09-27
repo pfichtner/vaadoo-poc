@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,6 +32,7 @@ public record SomeRecord( //
 		@NotBlank CharSequence someNonBlankValue, //
 		@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
 		@Size(min = 10, max = 20) String stringOfLenfthBetween10And20, //
+		@Digits(integer = 4, fraction = 0) int intWith4Digits, //
 		@Pattern(regexp = "\\d{1,4}", flags = {
 				CASE_INSENSITIVE, MULTILINE }) //
 		String someFourDigits, //
@@ -46,8 +48,8 @@ public record SomeRecord( //
 
 	public static void main(String[] args) {
 		System.out.println(new SomeRecord(null, "isNotNull", " ", " ", " ", List.of(" "), Map.of(0, " "),
-				new Integer[] { 1 }, "", "", "1234", "", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42,
-				Long.valueOf(42), Short.valueOf((short) 42)));
+				new Integer[] { 1 }, "", "", "1234", 1111, "", "me@example.com", true, false, Boolean.TRUE,
+				Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }

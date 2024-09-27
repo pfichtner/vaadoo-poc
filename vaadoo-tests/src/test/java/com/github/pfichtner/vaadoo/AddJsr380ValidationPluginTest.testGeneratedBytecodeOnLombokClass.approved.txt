@@ -61,6 +61,13 @@ max I = 20
 .end annotation
 .end field
 
+.field private final 'intWith4Digits' I
+.annotation visible Ljakarta/validation/constraints/Digits;
+integer I = 4
+fraction I = 0
+.end annotation
+.end field
+
 .field private final 'someFourDigits' Ljava/lang/String;
 .annotation visible Ljakarta/validation/constraints/Pattern;
 regexp s = "\\d{1,4}"
@@ -141,8 +148,8 @@ return
 .desc Ljava/lang/CharSequence;
 .desc Ljava/util/Map;
 
-.method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
-.signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V"
+.method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
+.signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V"
 .annotation invisible Llombok/Generated;
 .end annotation
 aload 0
@@ -157,15 +164,16 @@ aload 8
 aload 9
 aload 10
 aload 11
-aload 12
+iload 12
 aload 13
-iload 14
+aload 14
 iload 15
-aload 16
+iload 16
 aload 17
-iload 18
-aload 19
+aload 18
+iload 19
 aload 20
+aload 21
 aload 0
 aload 1
 putfield com/example/SomeLombokClass/someNullObject Ljava/lang/Object;
@@ -200,35 +208,38 @@ aload 0
 aload 11
 putfield com/example/SomeLombokClass/stringOfLenfthBetween10And20 Ljava/lang/String;
 aload 0
-aload 12
-putfield com/example/SomeLombokClass/someFourDigits Ljava/lang/String;
+iload 12
+putfield com/example/SomeLombokClass/intWith4Digits I
 aload 0
 aload 13
+putfield com/example/SomeLombokClass/someFourDigits Ljava/lang/String;
+aload 0
+aload 14
 putfield com/example/SomeLombokClass/anyMailAddress Ljava/lang/String;
 aload 0
-iload 14
+iload 15
 putfield com/example/SomeLombokClass/someTrueValue Z
 aload 0
-iload 15
+iload 16
 putfield com/example/SomeLombokClass/someFalseValue Z
 aload 0
-aload 16
+aload 17
 putfield com/example/SomeLombokClass/someTrueValueWrapper Ljava/lang/Boolean;
 aload 0
-aload 17
+aload 18
 putfield com/example/SomeLombokClass/someFalseValueWrapper Ljava/lang/Boolean;
 aload 0
-iload 18
+iload 19
 putfield com/example/SomeLombokClass/someIntPrimitiveValueThatIsMinimal42 I
 aload 0
-aload 19
+aload 20
 putfield com/example/SomeLombokClass/someLongWrapperValueThatIsMinimal42 Ljava/lang/Long;
 aload 0
-aload 20
+aload 21
 putfield com/example/SomeLombokClass/someShortWrapperValueThatIsNotNullAndAbout42 Ljava/lang/Short;
 return
-.limit locals 21
-.limit stack 21
+.limit locals 22
+.limit stack 22
 .end method
 .dep com/example/SomeLombokClass;someFalseValue
 .dep com/example/SomeLombokClass;someNullObject
@@ -249,6 +260,7 @@ return
 .dep com/example/SomeLombokClass;someObject
 .dep com/example/SomeLombokClass;someNotEmptyCollection
 .dep com/example/SomeLombokClass;someNonBlankValueWithCustomMessage
+.dep com/example/SomeLombokClass;intWith4Digits
 .dep com/example/SomeLombokClass;someFourDigits
 .provide com/example/SomeLombokClass;<init>
 .desc Ljava/lang/String;
@@ -274,7 +286,7 @@ areturn
 .end method
 .provide com/example/SomeLombokClass;builder
 
-.method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
+.method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
 .catch java/lang/IllegalArgumentException from L0 to L1 using L2
 aload 0
 ifnull L3
@@ -295,6 +307,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -324,6 +337,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -353,6 +367,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -382,6 +397,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -411,6 +427,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -440,6 +457,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -469,6 +487,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -498,6 +517,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -527,6 +547,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -556,6 +577,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -585,6 +607,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -615,6 +638,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -644,6 +668,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -673,6 +698,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -702,6 +728,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -731,6 +758,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -741,26 +769,45 @@ locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
-aload 11
-ifnull L19
-iconst_0
-istore 20
-bipush 2
-anewarray jakarta/validation/constraints/Pattern$Flag
+new java/math/BigDecimal
 dup
-bipush 0
-getstatic jakarta/validation/constraints/Pattern$Flag/CASE_INSENSITIVE Ljakarta/validation/constraints/Pattern$Flag;
-aastore
-dup
-bipush 1
-getstatic jakarta/validation/constraints/Pattern$Flag/MULTILINE Ljakarta/validation/constraints/Pattern$Flag;
-aastore
+iload 11
 astore 21
 aload 21
-arraylength
+aload 21
+isub
 istore 22
+aload 21
+ifge L19
 iconst_0
-istore 23
+goto L20
+L19:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/math/BigDecimal
+locals Integer
+.end stack
+aload 21
 L20:
 .stack
 locals Object java/lang/Object
@@ -774,6 +821,119 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/math/BigDecimal
+locals Integer
+stack Integer
+.end stack
+istore 23
+iload 22
+ldc 4
+if_icmpgt L21
+iload 23
+ldc 0
+if_icmple L22
+L21:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/math/BigDecimal
+locals Integer
+locals Integer
+.end stack
+new java/lang/IllegalArgumentException
+dup
+ldc "intWith4Digits numeric value out of bounds (<4 digits>.<0 digits> expected)"
+athrow
+L22:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/math/BigDecimal
+locals Integer
+locals Integer
+.end stack
+aload 12
+ifnull L23
+iconst_0
+istore 21
+bipush 2
+anewarray jakarta/validation/constraints/Pattern$Flag
+dup
+bipush 0
+getstatic jakarta/validation/constraints/Pattern$Flag/CASE_INSENSITIVE Ljakarta/validation/constraints/Pattern$Flag;
+aastore
+dup
+bipush 1
+getstatic jakarta/validation/constraints/Pattern$Flag/MULTILINE Ljakarta/validation/constraints/Pattern$Flag;
+aastore
+astore 22
+aload 22
+arraylength
+istore 23
+iconst_0
+istore 24
+L24:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -788,20 +948,20 @@ locals Object [Ljakarta/validation/constraints/Pattern$Flag;
 locals Integer
 locals Integer
 .end stack
+iload 24
 iload 23
-iload 22
-if_icmpge L21
-aload 21
-iload 23
+if_icmpge L25
+aload 22
+iload 24
 aaload
-astore 24
-iload 20
-aload 24
+astore 25
+iload 21
+aload 25
 ior
-istore 20
-iinc 23 1
-goto L20
-L21:
+istore 21
+iinc 24 1
+goto L24
+L25:
 .stack
 locals Object java/lang/Object
 locals Object java/lang/Object
@@ -814,6 +974,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -829,50 +990,12 @@ locals Integer
 locals Integer
 .end stack
 ldc "\\d{1,4}"
-iload 20
-aload 11
-ifne L19
+iload 21
+aload 12
+ifne L23
 new java/lang/IllegalArgumentException
 dup
 ldc "someFourDigits must match \"\\d{1,4}\""
-athrow
-L19:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-.end stack
-aload 12
-ifnull L22
-aload 12
-ifeq L22
-aload 12
-astore 20
-aload 20
-bipush 64
-istore 21
-iload 21
-ifge L23
-new java/lang/IllegalArgumentException
-dup
-ldc "anyMailAddress must be a well-formed email address"
 athrow
 L23:
 .stack
@@ -887,6 +1010,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -896,125 +1020,25 @@ locals Object java/lang/Boolean
 locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
-locals Object java/lang/String
+locals Top
+locals Top
 locals Integer
 .end stack
-aload 20
-iconst_0
-iload 21
-astore 22
-aload 22
+aload 13
+ifnull L26
+aload 13
+ifeq L26
+aload 13
+astore 21
+aload 21
 bipush 64
-if_icmpgt L24
-ldc "(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*"
-iconst_2
-aload 22
-ifne L25
-L24:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-locals Object java/lang/String
-locals Integer
-locals Object java/lang/String
-.end stack
+istore 22
+iload 22
+ifge L27
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
 athrow
-L25:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-locals Object java/lang/String
-locals Integer
-locals Object java/lang/String
-.end stack
-aload 20
-iload 21
-iconst_1
-iadd
-astore 23
-iconst_0
-istore 24
-L0:
-aload 23
-ldc "."
-ifne L26
-aload 23
-sipush 255
-if_icmpgt L26
-ldc "(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]"
-iconst_2
-aload 23
-ifeq L26
-iconst_1
-goto L27
-L26:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-locals Object java/lang/String
-locals Integer
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-.end stack
-iconst_0
 L27:
 .stack
 locals Object java/lang/Object
@@ -1028,38 +1052,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
 locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-locals Object java/lang/String
-locals Integer
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-stack Integer
-.end stack
-istore 24
-L1:
-goto L28
-L2:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1071,12 +1064,19 @@ locals Object java/lang/Long
 locals Object java/lang/Short
 locals Object java/lang/String
 locals Integer
-locals Object java/lang/String
-locals Object java/lang/String
 locals Integer
-stack Object java/lang/IllegalArgumentException
 .end stack
-astore 25
+aload 21
+iconst_0
+iload 22
+astore 23
+aload 23
+bipush 64
+if_icmpgt L28
+ldc "(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*"
+iconst_2
+aload 23
+ifne L29
 L28:
 .stack
 locals Object java/lang/Object
@@ -1090,6 +1090,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1102,11 +1103,7 @@ locals Object java/lang/Short
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
 .end stack
-iload 24
-ifne L29
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
@@ -1124,6 +1121,54 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+.end stack
+aload 21
+iload 22
+iconst_1
+iadd
+astore 24
+iconst_0
+istore 25
+L0:
+aload 24
+ldc "."
+ifne L30
+aload 24
+sipush 255
+if_icmpgt L30
+ldc "(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]"
+iconst_2
+aload 24
+ifeq L30
+iconst_1
+goto L31
+L30:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1140,16 +1185,7 @@ locals Object java/lang/String
 locals Integer
 .end stack
 iconst_0
-istore 25
-bipush 0
-anewarray jakarta/validation/constraints/Pattern$Flag
-astore 26
-aload 26
-arraylength
-istore 27
-iconst_0
-istore 28
-L30:
+L31:
 .stack
 locals Object java/lang/Object
 locals Object java/lang/Object
@@ -1162,6 +1198,145 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+stack Integer
+.end stack
+istore 25
+L1:
+goto L32
+L2:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+stack Object java/lang/IllegalArgumentException
+.end stack
+astore 26
+L32:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+.end stack
+iload 25
+ifne L33
+new java/lang/IllegalArgumentException
+dup
+ldc "anyMailAddress must be a well-formed email address"
+athrow
+L33:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+.end stack
+iconst_0
+istore 26
+bipush 0
+anewarray jakarta/validation/constraints/Pattern$Flag
+astore 27
+aload 27
+arraylength
+istore 28
+iconst_0
+istore 29
+L34:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1181,20 +1356,20 @@ locals Object [Ljakarta/validation/constraints/Pattern$Flag;
 locals Integer
 locals Integer
 .end stack
+iload 29
 iload 28
-iload 27
-if_icmpge L31
-aload 26
-iload 28
+if_icmpge L35
+aload 27
+iload 29
 aaload
-astore 29
-iload 25
-aload 29
+astore 30
+iload 26
+aload 30
 ior
-istore 25
-iinc 28 1
-goto L30
-L31:
+istore 26
+iinc 29 1
+goto L34
+L35:
 .stack
 locals Object java/lang/Object
 locals Object java/lang/Object
@@ -1207,6 +1382,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1227,14 +1403,14 @@ locals Integer
 locals Integer
 .end stack
 ldc ".*"
-iload 25
-aload 12
-ifne L22
+iload 26
+aload 13
+ifne L26
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
 athrow
-L22:
+L26:
 .stack
 locals Object java/lang/Object
 locals Object java/lang/Object
@@ -1247,35 +1423,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
 locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-.end stack
-iload 13
-ifne L32
-new java/lang/IllegalArgumentException
-dup
-ldc "someTrueValue must be true"
-athrow
-L32:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1287,104 +1435,10 @@ locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
 iload 14
-ifeq L33
+ifne L36
 new java/lang/IllegalArgumentException
 dup
-ldc "someFalseValue must be false"
-athrow
-L33:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-.end stack
-aload 15
-ifnull L34
-aload 15
-ifne L34
-new java/lang/IllegalArgumentException
-dup
-ldc "someTrueValueWrapper must be true"
-athrow
-L34:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-.end stack
-aload 16
-ifnull L35
-aload 16
-ifeq L35
-new java/lang/IllegalArgumentException
-dup
-ldc "someFalseValueWrapper must be false"
-athrow
-L35:
-.stack
-locals Object java/lang/Object
-locals Object java/lang/Object
-locals Object java/lang/String
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/util/Collection
-locals Object java/util/Map
-locals Object [Ljava/lang/Integer;
-locals Object java/lang/CharSequence
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Object java/lang/String
-locals Integer
-locals Integer
-locals Object java/lang/Boolean
-locals Object java/lang/Boolean
-locals Integer
-locals Object java/lang/Long
-locals Object java/lang/Short
-.end stack
-iload 17
-i2l
-ldc 42
-lcmp
-ifge L36
-new java/lang/IllegalArgumentException
-dup
-ldc "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42"
+ldc "someTrueValue must be true"
 athrow
 L36:
 .stack
@@ -1399,6 +1453,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1409,15 +1464,11 @@ locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
-aload 18
-ifnull L37
-aload 18
-ldc 42
-lcmp
-ifge L37
+iload 15
+ifeq L37
 new java/lang/IllegalArgumentException
 dup
-ldc "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42"
+ldc "someFalseValue must be false"
 athrow
 L37:
 .stack
@@ -1432,6 +1483,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1442,11 +1494,13 @@ locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
-aload 19
-ifnonnull L38
-new java/lang/NullPointerException
+aload 16
+ifnull L38
+aload 16
+ifne L38
+new java/lang/IllegalArgumentException
 dup
-ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+ldc "someTrueValueWrapper must be true"
 athrow
 L38:
 .stack
@@ -1461,6 +1515,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1471,16 +1526,13 @@ locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
-aload 19
+aload 17
 ifnull L39
-aload 19
-i2l
-ldc 41
-lcmp
-ifge L39
+aload 17
+ifeq L39
 new java/lang/IllegalArgumentException
 dup
-ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+ldc "someFalseValueWrapper must be false"
 athrow
 L39:
 .stack
@@ -1495,6 +1547,7 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1505,16 +1558,14 @@ locals Integer
 locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
-aload 19
-ifnull L40
-aload 19
+iload 18
 i2l
-ldc 43
+ldc 42
 lcmp
-ifle L40
+ifge L40
 new java/lang/IllegalArgumentException
 dup
-ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43"
+ldc "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42"
 athrow
 L40:
 .stack
@@ -1529,6 +1580,141 @@ locals Object [Ljava/lang/Integer;
 locals Object java/lang/CharSequence
 locals Object java/lang/String
 locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 19
+ifnull L41
+aload 19
+ldc 42
+lcmp
+ifge L41
+new java/lang/IllegalArgumentException
+dup
+ldc "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42"
+athrow
+L41:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 20
+ifnonnull L42
+new java/lang/NullPointerException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+athrow
+L42:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 20
+ifnull L43
+aload 20
+i2l
+ldc 41
+lcmp
+ifge L43
+new java/lang/IllegalArgumentException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+athrow
+L43:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Object java/lang/Short
+.end stack
+aload 20
+ifnull L44
+aload 20
+i2l
+ldc 43
+lcmp
+ifle L44
+new java/lang/IllegalArgumentException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43"
+athrow
+L44:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
@@ -1540,7 +1726,7 @@ locals Object java/lang/Long
 locals Object java/lang/Short
 .end stack
 return
-.limit locals 30
+.limit locals 31
 .limit stack 4
 .end method
 .dep jakarta/validation/constraints/Pattern$Flag;CASE_INSENSITIVE

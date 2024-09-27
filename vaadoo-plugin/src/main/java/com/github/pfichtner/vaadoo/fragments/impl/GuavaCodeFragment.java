@@ -15,6 +15,7 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -269,6 +270,114 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Max anno, BigDecimal value) {
 		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(anno.value())) <= 0, anno.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Digits anno, byte value) {
+		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
+		int integerPartLength = bigNum.precision() - bigNum.scale();
+		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+	}
+
+	@Override
+	public void check(Digits anno, short value) {
+		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
+		int integerPartLength = bigNum.precision() - bigNum.scale();
+		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+	}
+
+	@Override
+	public void check(Digits anno, int value) {
+		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
+		int integerPartLength = bigNum.precision() - bigNum.scale();
+		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+	}
+
+	@Override
+	public void check(Digits anno, long value) {
+		BigDecimal bigNum = new BigDecimal(String.valueOf(value)).stripTrailingZeros();
+		int integerPartLength = bigNum.precision() - bigNum.scale();
+		int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+		checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+	}
+
+	@Override
+	public void check(Digits anno, Byte value) {
+		if (value != null) {
+			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, Short value) {
+		if (value != null) {
+			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, Integer value) {
+		if (value != null) {
+			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, Long value) {
+		if (value != null) {
+			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, BigInteger value) {
+		if (value != null) {
+			BigDecimal bigNum = new BigDecimal(value.toString()).stripTrailingZeros();
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, BigDecimal value) {
+		if (value != null) {
+			int integerPartLength = value.precision() - value.scale();
+			int fractionPartLength = value.scale() < 0 ? 0 : value.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
+	}
+
+	@Override
+	public void check(Digits anno, CharSequence value) {
+		if (value != null) {
+			BigDecimal bigNum;
+			try {
+				bigNum = new BigDecimal(value.toString());
+			} catch (NumberFormatException e) {
+				return;
+			}
+			int integerPartLength = bigNum.precision() - bigNum.scale();
+			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
+		}
 	}
 
 	// -----------------------------------------------------------------

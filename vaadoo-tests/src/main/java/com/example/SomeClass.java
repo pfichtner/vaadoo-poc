@@ -9,6 +9,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -31,6 +32,7 @@ public class SomeClass {
 	private final Integer[] someNotEmptyArray;
 	private final CharSequence someNonBlankValue;
 	private final String stringOfLenfthBetween10And20;
+	private final int intWith4Digits;
 	private final String someNonBlankValueWithCustomMessage;
 	private final String someFourDigits;
 	private final String anyMailAddress;
@@ -54,6 +56,7 @@ public class SomeClass {
 			@NotBlank CharSequence someNonBlankValue, //
 			@NotBlank(message = "my custom message") String someNonBlankValueWithCustomMessage, //
 			@Size(min = 10, max = 20) String stringOfLenfthBetween10And20,
+			@Digits(integer = 4, fraction = 0) int intWith4Digits, //
 			@Pattern(regexp = "\\d{1,4}", flags = { CASE_INSENSITIVE, MULTILINE }) String someFourDigits, //
 			@Email String anyMailAddress, //
 			@AssertTrue boolean someTrueValue, //
@@ -75,6 +78,7 @@ public class SomeClass {
 		this.someNotEmptyArray = someNotEmptyArray;
 		this.someNonBlankValue = someNonBlankValue;
 		this.stringOfLenfthBetween10And20 = stringOfLenfthBetween10And20;
+		this.intWith4Digits = intWith4Digits;
 		this.someNonBlankValueWithCustomMessage = someNonBlankValueWithCustomMessage;
 		this.someFourDigits = someFourDigits;
 		this.anyMailAddress = anyMailAddress;
@@ -89,7 +93,7 @@ public class SomeClass {
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				"", "", "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
+				"", "", 1111, "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
 				Short.valueOf((short) 42)));
 	}
 

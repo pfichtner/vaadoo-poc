@@ -25,6 +25,7 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -124,6 +125,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			new ConfigEntry(AssertFalse.class), //
 			new ConfigEntry(Min.class), //
 			new ConfigEntry(Max.class), //
+			new ConfigEntry(Digits.class), //
 			new ConfigEntry(Positive.class), //
 			new ConfigEntry(PositiveOrZero.class), //
 			new ConfigEntry(Negative.class), //
