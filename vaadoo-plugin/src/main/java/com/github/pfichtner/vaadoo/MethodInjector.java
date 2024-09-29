@@ -197,14 +197,15 @@ public class MethodInjector {
 					}
 
 					private void writeArray(Type arrayElementType, List<EnumEntry> annotationValues) {
-						mv.visitIntInsn(annotationValues.size() <= 127 ? BIPUSH : SIPUSH, annotationValues.size());
+						var intInsn = annotationValues.size() <= 127 ? BIPUSH : SIPUSH;
+						mv.visitIntInsn(intInsn, annotationValues.size());
 						// TODO this only works for objects but not primitive arrays
 						mv.visitTypeInsn(ANEWARRAY, arrayElementType.getInternalName());
 
 						int idx = 0;
 						for (EnumEntry entry : annotationValues) {
 							mv.visitInsn(DUP);
-							mv.visitIntInsn(annotationValues.size() <= 127 ? BIPUSH : SIPUSH, idx++);
+							mv.visitIntInsn(intInsn, idx++);
 							mv.visitFieldInsn(GETSTATIC, entry.type().getInternalName(), entry.value(),
 									entry.type().getDescriptor());
 							mv.visitInsn(AASTORE);
