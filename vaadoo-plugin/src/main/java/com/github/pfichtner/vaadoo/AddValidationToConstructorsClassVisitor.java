@@ -25,8 +25,12 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Negative;
@@ -35,6 +39,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -50,9 +56,11 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	private static class ConfigEntry {
 
 		private final Class<? extends Annotation> anno;
+		private final Type type;
 
 		public ConfigEntry(Class<? extends Annotation> anno) {
 			this.anno = anno;
+			this.type = Type.getType(anno);
 		}
 
 		Class<?> anno() {
@@ -60,7 +68,7 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		}
 
 		Type type() {
-			return Type.getType(anno());
+			return type;
 		}
 
 		Class<?> resolveSuperType(Class<?> actual) {
@@ -129,7 +137,38 @@ final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			new ConfigEntry(Positive.class), //
 			new ConfigEntry(PositiveOrZero.class), //
 			new ConfigEntry(Negative.class), //
-			new ConfigEntry(NegativeOrZero.class) //
+			new ConfigEntry(NegativeOrZero.class), //
+			//
+			new ConfigEntry(DecimalMin.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			}, //
+			new ConfigEntry(DecimalMax.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			}, //
+			new ConfigEntry(Future.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			}, //
+			new ConfigEntry(FutureOrPresent.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			}, //
+			new ConfigEntry(Past.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			}, //
+			new ConfigEntry(PastOrPresent.class) {
+				Class<?> resolveSuperType(Class<?> actual) {
+					throw new IllegalStateException(anno() + " not yet supported");
+				}
+			} //
 	);
 
 	private static Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {
