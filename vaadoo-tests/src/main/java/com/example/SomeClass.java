@@ -92,9 +92,9 @@ public class SomeClass {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new SomeClass(null, "isNotNull", null, null, null, List.of(), Map.of(), new Integer[0], "",
-				"", "", 1111, "1234", "me@example.com", true, false, Boolean.TRUE, Boolean.FALSE, 42, Long.valueOf(42),
-				Short.valueOf((short) 42)));
+		System.out.println(new SomeClass(null, "notNull", null, " ", " ", List.of("1"), Map.of(1, "a"), new Integer[1],
+				"X", "custommessage", "123456789012", 1234, "9999", "me@foo.de", true, false, Boolean.TRUE,
+				Boolean.FALSE, 42, Long.valueOf(42), Short.valueOf((short) 42)));
 	}
 
 }

@@ -123,7 +123,7 @@ value J = 43
 .end annotation
 .end field
 
-.field private static final 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
+.field private static 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
 
 .method public static main([Ljava/lang/String;)V
 getstatic java/lang/System/out Ljava/io/PrintStream;
@@ -1691,7 +1691,17 @@ return
 .provide com/example/SomeLombokClass;validate
 .desc Ljakarta/validation/constraints/Pattern$Flag;
 
-.method private static cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.method private static synchronized cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+getstatic com/example/SomeLombokClass/cache Ljava/util/Map;
+ifnonnull L0
+new java/util/HashMap
+dup
+putstatic com/example/SomeLombokClass/cache Ljava/util/Map;
+L0:
+.stack
+locals Object java/lang/String
+locals Integer
+.end stack
 getstatic com/example/SomeLombokClass/cache Ljava/util/Map;
 new java/util/AbstractMap$SimpleEntry
 dup
@@ -1716,15 +1726,3 @@ areturn
 .limit stack 2
 .end method
 .provide com/example/SomeLombokClass;lambda$cache$0
-
-.method static <clinit>()V
-new java/util/concurrent/ConcurrentHashMap
-dup
-putstatic com/example/SomeLombokClass/cache Ljava/util/Map;
-return
-.limit locals 0
-.limit stack 2
-.end method
-.dep com/example/SomeLombokClass;cache
-.provide com/example/SomeLombokClass;<clinit>
-.desc Ljava/util/Map;

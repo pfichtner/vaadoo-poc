@@ -51,7 +51,7 @@ import net.bytebuddy.jar.asm.Label;
 import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Type;
 
-final class AddValidationToConstructorsClassVisitor extends ClassVisitor {
+public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	private static class ConfigEntry {
 

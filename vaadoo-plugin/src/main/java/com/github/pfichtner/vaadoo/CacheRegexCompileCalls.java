@@ -61,6 +61,7 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 	private final ClassMembers classMembers;
 	private String classname;
 	private final Map<String, String> cachedRegexMethodnames = new HashMap<>();
+	private boolean clinitFound;
 
 	public CacheRegexCompileCalls(ClassVisitor outputVisitor, ClassMembers classMembers) {
 		super(ASM9, outputVisitor);
@@ -80,6 +81,9 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
 			String[] exceptions) {
+		if ("<clinit>".equals(name)) {
+			this.clinitFound = true;
+		}
 		return new MethodVisitor(ASM9, super.visitMethod(access, name, descriptor, signature, exceptions)) {
 
 			@Override
@@ -124,8 +128,13 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 					String[] exceptions) {
 				// TODO this fails if we add <clinit> but there is already a <clinit> present
 				// TODO Also the synthetic methods have to get renamed if they already exist
+				if (!"<clinit>".equals(name) && clinitFound) {
+					throw new UnsupportedOperationException(
+							"fragment contains <clinit> and we don't yet support merging of clinits");
+				}
+
 				boolean isFragmentMethod = name.equals(METHOD_NAME_IN_FRAGMENT);
-				if (!"<clinit>".equals(name) && !isFragmentMethod && (ACC_SYNTHETIC & access) == 0) {
+				if (!isFragmentMethod && (ACC_SYNTHETIC & access) == 0) {
 					return null;
 				}
 

@@ -45,7 +45,7 @@
 
 .field private final 'someShortWrapperValueThatIsNotNullAndAbout42' Ljava/lang/Short;
 
-.field private static final 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
+.field private static 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
 
 .method public <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V
 .signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;Ljava/lang/Short;)V"
@@ -177,18 +177,21 @@ getstatic java/lang/System/out Ljava/io/PrintStream;
 new com/example/SomeClass
 dup
 aconst_null
-ldc "isNotNull"
+ldc "notNull"
 aconst_null
-aconst_null
-aconst_null
-iconst_0
+ldc " "
+ldc " "
+ldc "1"
+iconst_1
+ldc "a"
+iconst_1
 anewarray java/lang/Integer
-ldc ""
-ldc ""
-ldc ""
-sipush 1111
-ldc "1234"
-ldc "me@example.com"
+ldc "X"
+ldc "custommessage"
+ldc "123456789012"
+sipush 1234
+ldc "9999"
+ldc "me@foo.de"
 iconst_1
 iconst_0
 getstatic java/lang/Boolean/TRUE Ljava/lang/Boolean;
@@ -1672,7 +1675,17 @@ return
 .provide com/example/SomeClass;validate
 .desc Ljakarta/validation/constraints/Pattern$Flag;
 
-.method private static cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.method private static synchronized cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
+getstatic com/example/SomeClass/cache Ljava/util/Map;
+ifnonnull L0
+new java/util/HashMap
+dup
+putstatic com/example/SomeClass/cache Ljava/util/Map;
+L0:
+.stack
+locals Object java/lang/String
+locals Integer
+.end stack
 getstatic com/example/SomeClass/cache Ljava/util/Map;
 new java/util/AbstractMap$SimpleEntry
 dup
@@ -1697,15 +1710,3 @@ areturn
 .limit stack 2
 .end method
 .provide com/example/SomeClass;lambda$cache$0
-
-.method static <clinit>()V
-new java/util/concurrent/ConcurrentHashMap
-dup
-putstatic com/example/SomeClass/cache Ljava/util/Map;
-return
-.limit locals 0
-.limit stack 2
-.end method
-.dep com/example/SomeClass;cache
-.provide com/example/SomeClass;<clinit>
-.desc Ljava/util/Map;
