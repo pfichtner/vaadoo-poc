@@ -4,11 +4,13 @@ import static jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE;
 import static jakarta.validation.constraints.Pattern.Flag.MULTILINE;
 import static lombok.AccessLevel.PRIVATE;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -65,6 +67,10 @@ public class SomeLombokClass {
 	int someIntPrimitiveValueThatIsMinimal42;
 	@Min(42)
 	Long someLongWrapperValueThatIsMinimal42;
+	@DecimalMin(value = "9876543210")
+	long someLongPrimitiveValueWithDecimalMin;
+	@DecimalMin(value = "9876543210")
+	BigDecimal someBigDecimalPrimitiveValueWithDecimalMin;
 	@NotNull
 	@Min(41)
 	@Max(43)

@@ -157,7 +157,7 @@ public class MethodInjector {
 					}
 
 					private int remapArg(int var) {
-						return var + parameter.index() - argOffset - REMOVED_PARAMETERS;
+						return var + parameter.offset() - argOffset - REMOVED_PARAMETERS;
 					}
 
 					private int remapLocal(int varIndex) {

@@ -1,6 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
@@ -9,16 +10,17 @@ import static net.bytebuddy.jar.asm.Opcodes.ASM9;
 import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
+import static net.bytebuddy.jar.asm.Type.getType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
@@ -60,7 +62,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 		public ConfigEntry(Class<? extends Annotation> anno) {
 			this.anno = anno;
-			this.type = Type.getType(anno);
+			this.type = getType(anno);
 		}
 
 		Class<?> anno() {
@@ -138,17 +140,9 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			new ConfigEntry(PositiveOrZero.class), //
 			new ConfigEntry(Negative.class), //
 			new ConfigEntry(NegativeOrZero.class), //
+			new ConfigEntry(DecimalMin.class), //
+			new ConfigEntry(DecimalMax.class), //
 			//
-			new ConfigEntry(DecimalMin.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			}, //
-			new ConfigEntry(DecimalMax.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			}, //
 			new ConfigEntry(Future.class) {
 				Class<?> resolveSuperType(Class<?> actual) {
 					throw new IllegalStateException(anno() + " not yet supported");
@@ -180,12 +174,69 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 				anno.getName(), type.getName(), valids));
 	}
 
+	private static class Parameters implements Iterable<ParameterInfo> {
+
+		@Deprecated // use Type[] argumentTypes;
+		private final String methodDescriptor;
+		private final ParameterInfo[] infos;
+		private final Type[] argumentTypes;
+
+		public Parameters(String methodDescriptor, Type[] argumentTypes) {
+			this.methodDescriptor = methodDescriptor;
+			this.argumentTypes = argumentTypes;
+			this.infos = new ParameterInfo[argumentTypes.length];
+			int offset = 0;
+			for (int i = 0; i < argumentTypes.length; i++) {
+				var type = argumentTypes[i];
+				infos[i] = new ParameterInfo(i).offset(offset).type(type);
+				offset += type.getSize();
+			}
+		}
+
+		private static Parameters fromDescriptor(String methodDescriptor) {
+			return new Parameters(methodDescriptor, Type.getArgumentTypes(methodDescriptor));
+		}
+
+		private ParameterInfo firstUnamed() {
+			for (int i = 0; i < infos.length; i++) {
+				var parameterInfo = infos[i];
+				if (parameterInfo.name() == null) {
+					return parameterInfo;
+				}
+			}
+			throw new IllegalStateException("all elements are named");
+		}
+
+		public ParameterInfo byOffset(int offset) {
+			for (int i = 0; i < infos.length; i++) {
+				var parameterInfo = infos[i];
+				if (parameterInfo.offset() >= offset) {
+					return parameterInfo;
+				}
+			}
+			throw new IllegalStateException("offset exceeds max");
+		}
+
+		public ParameterInfo byIndex(int parameterIdx) {
+			return infos[parameterIdx];
+		}
+
+		@Override
+		public Iterator<ParameterInfo> iterator() {
+			return asList(this.infos).iterator();
+		}
+
+		public int size() {
+			return this.infos.length;
+		}
+
+	}
+
 	private static class ConstructorVisitor extends MethodVisitor {
 
 		private final String className;
-		private final String methodDescriptor;
 		private final ClassMembers classMembers;
-		private final Map<Integer, ParameterInfo> parameterInfos = new TreeMap<>();
+		private Parameters parameters;
 		private String methodAddedName;
 		private boolean visitParameterCalled;
 		private boolean validationAdded;
@@ -194,25 +245,24 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 				ClassMembers classMembers) {
 			super(ASM9, methodVisitor);
 			this.className = className;
-			this.methodDescriptor = methodDescriptor;
+			this.parameters = Parameters.fromDescriptor(methodDescriptor);
 			this.classMembers = classMembers;
 		}
 
 		@Override
 		public void visitParameter(String name, int access) {
 			visitParameterCalled = true;
-			int index = parameterInfos.size();
-			parameterInfo(index).name(name).type(Type.getMethodType(methodDescriptor).getArgumentTypes()[index]);
+			parameters.firstUnamed().name(name);
 			super.visitParameter(name, access);
 		}
 
 		@Override
 		public AnnotationVisitor visitParameterAnnotation(int parameter, String descriptor, boolean visible) {
-			ParameterInfo parameterInfo = parameterInfo(parameter);
-			parameterInfo.addAnnotation(Type.getType(descriptor));
+			var parameterInfo = parameters.byIndex(parameter);
+			parameterInfo.addAnnotation(getType(descriptor));
 			return new AnnotationVisitor(ASM9) {
 
-				private Type annotationType = Type.getType(descriptor);
+				private Type annotationType = getType(descriptor);
 
 				@Override
 				public void visit(String name, Object value) {
@@ -228,7 +278,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 						@Override
 						public void visitEnum(String name, String descriptor, String value) {
-							values.add(new EnumEntry(Type.getType(descriptor), value));
+							values.add(new EnumEntry(getType(descriptor), value));
 							super.visitEnum(name, descriptor, value);
 						}
 
@@ -249,7 +299,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			// This is not valid in source- but in bytecode (we call validate before the
 			// super call)
 			if (!validationAdded && opcode == ALOAD && varIndex == 0) {
-				addValidateMethodCall(Type.getArgumentTypes(methodDescriptor));
+				addValidateMethodCall(parameters.argumentTypes);
 				validationAdded = true;
 			}
 		}
@@ -270,17 +320,11 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		@Override
 		public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end,
 				int index) {
-			if (!visitParameterCalled) {
-				int parameter = index - 1;
-				if (parameter >= 0) {
-					parameterInfo(parameter).name(name).type(Type.getType(descriptor));
-				}
+			int offset = index - 1; // 0 is this on non-statics
+			if (!visitParameterCalled && offset >= 0) {
+				parameters.byOffset(offset).name(name);
 			}
 			super.visitLocalVariable(name, descriptor, signature, start, end, index);
-		}
-
-		private ParameterInfo parameterInfo(int parameter) {
-			return parameterInfos.computeIfAbsent(parameter, idx -> new ParameterInfo(idx.intValue()));
 		}
 
 	}
@@ -321,20 +365,21 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 
 	@Override
 	public void visitEnd() {
-		for (ConstructorVisitor visitor : constructorVisitors) {
+		for (var visitor : constructorVisitors) {
 			if (visitor.methodAddedName != null) {
-				addValidateMethod(visitor.methodAddedName, visitor.methodDescriptor, visitor.parameterInfos);
+				addValidateMethod(visitor.methodAddedName, visitor.parameters);
 			}
 		}
 		super.visitEnd();
 	}
 
-	private void addValidateMethod(String name, String signature, Map<Integer, ParameterInfo> parameters) {
+	private void addValidateMethod(String name, Parameters parameters) {
+		var signature = parameters.methodDescriptor;
 		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 		mv.visitCode();
 
 		var injector = new MethodInjector(codeFragment, signature);
-		for (var parameter : parameters.values()) {
+		for (var parameter : parameters) {
 			for (var annotation : parameter.getAnnotations()) {
 				for (var config : configs) {
 					if (annotation.equals(config.type())) {
@@ -345,7 +390,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		}
 
 		mv.visitInsn(RETURN);
-		mv.visitMaxs(parameters.entrySet().size(), parameters.entrySet().size());
+		mv.visitMaxs(parameters.size(), parameters.size());
 		mv.visitEnd();
 	}
 

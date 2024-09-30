@@ -17,6 +17,8 @@ import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -272,6 +274,140 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Max anno, BigDecimal value) {
 		checkArgument(value == null || value.compareTo(BigDecimal.valueOf(anno.value())) <= 0, anno.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(DecimalMin anno, byte value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, short value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, int value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, long value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, Byte value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, Short value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, Integer value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, Long value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, BigInteger value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) >= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, BigDecimal value) {
+		checkArgument(value == null || value.compareTo(new BigDecimal(anno.value())) >= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMin anno, CharSequence value) {
+		try {
+			checkArgument(
+					value == null || new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) >= 0,
+					anno.message());
+		} catch (NumberFormatException nfe) {
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(DecimalMax anno, byte value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, short value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, int value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, long value) {
+		checkArgument(new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, Byte value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, Short value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, Integer value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, Long value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, BigInteger value) {
+		checkArgument(value == null || new BigDecimal(value).compareTo(new BigDecimal(anno.value())) <= 0,
+				anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, BigDecimal value) {
+		checkArgument(value == null || value.compareTo(new BigDecimal(anno.value())) <= 0, anno.message());
+	}
+
+	@Override
+	public void check(DecimalMax anno, CharSequence value) {
+		try {
+			checkArgument(
+					value == null || new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) <= 0,
+					anno.message());
+		} catch (NumberFormatException nfe) {
+		}
 	}
 
 	// -----------------------------------------------------------------

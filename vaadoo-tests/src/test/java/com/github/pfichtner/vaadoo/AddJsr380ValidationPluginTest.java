@@ -68,6 +68,8 @@ class AddJsr380ValidationPluginTest {
 				objects[i] = false;
 			} else if (parameters[i].getType() == int.class) {
 				objects[i] = 0;
+			} else if (parameters[i].getType() == long.class) {
+				objects[i] = 0L;
 			}
 		}
 		return objects;

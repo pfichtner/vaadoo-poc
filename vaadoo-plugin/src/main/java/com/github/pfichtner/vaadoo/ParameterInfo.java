@@ -31,6 +31,7 @@ class ParameterInfo {
 
 	private final int index;
 	private String name;
+	private int offset;
 	private Type type;
 	private final Map<Type, Map<String, Object>> annotationValues = new LinkedHashMap<>();
 
@@ -43,6 +44,11 @@ class ParameterInfo {
 		return this;
 	}
 
+	public ParameterInfo offset(int offset) {
+		this.offset = offset;
+		return this;
+	}
+
 	public int index() {
 		return index;
 	}
@@ -51,12 +57,19 @@ class ParameterInfo {
 		return name;
 	}
 
+	public int offset() {
+		return offset;
+	}
+
 	public ParameterInfo type(Type type) {
 		this.type = type;
 		return this;
 	}
 
 	public Type type() {
+		if (type == null) {
+			throw new IllegalStateException("no type set for " + this);
+		}
 		return type;
 	}
 
@@ -69,15 +82,15 @@ class ParameterInfo {
 	}
 
 	public Class<?> classtype() {
-		return AsmUtil.classtype(type);
+		return AsmUtil.classtype(type());
 	}
 
 	public boolean isArray() {
-		return AsmUtil.isArray(type);
+		return AsmUtil.isArray(type());
 	}
 
 	public String classname() {
-		return type.getClassName();
+		return type().getClassName();
 	}
 
 	public void addAnnotation(Type annotation) {
@@ -98,8 +111,8 @@ class ParameterInfo {
 
 	@Override
 	public String toString() {
-		return "ParameterInfo [index=" + index + ", name=" + name + ", type=" + type + ", annotationValues="
-				+ annotationValues + "]";
+		return "ParameterInfo [index=" + index + ", name=" + name + ", type=" + type + ", offset=" + offset
+				+ ", annotationValues=" + annotationValues + "]";
 	}
 
 }

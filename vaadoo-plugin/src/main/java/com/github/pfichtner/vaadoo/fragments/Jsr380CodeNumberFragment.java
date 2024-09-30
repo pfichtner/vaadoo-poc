@@ -3,6 +3,8 @@ package com.github.pfichtner.vaadoo.fragments;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -54,6 +56,54 @@ public interface Jsr380CodeNumberFragment {
 	void check(Max anno, BigInteger value);
 
 	void check(Max anno, BigDecimal value);
+
+	// -------------------------------------
+
+	void check(DecimalMin anno, byte value);
+
+	void check(DecimalMin anno, short value);
+
+	void check(DecimalMin anno, int value);
+
+	void check(DecimalMin anno, long value);
+
+	void check(DecimalMin anno, Byte value);
+
+	void check(DecimalMin anno, Short value);
+
+	void check(DecimalMin anno, Integer value);
+
+	void check(DecimalMin anno, Long value);
+
+	void check(DecimalMin anno, BigInteger value);
+
+	void check(DecimalMin anno, BigDecimal value);
+
+	void check(DecimalMin anno, CharSequence value);
+
+	// -------------------------------------
+
+	void check(DecimalMax anno, byte value);
+
+	void check(DecimalMax anno, short value);
+
+	void check(DecimalMax anno, int value);
+
+	void check(DecimalMax anno, long value);
+
+	void check(DecimalMax anno, Byte value);
+
+	void check(DecimalMax anno, Short value);
+
+	void check(DecimalMax anno, Integer value);
+
+	void check(DecimalMax anno, Long value);
+
+	void check(DecimalMax anno, BigInteger value);
+
+	void check(DecimalMax anno, BigDecimal value);
+
+	void check(DecimalMax anno, CharSequence value);
 
 	// -------------------------------------
 
