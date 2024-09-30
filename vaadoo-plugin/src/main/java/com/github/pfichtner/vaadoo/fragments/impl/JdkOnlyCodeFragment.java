@@ -444,6 +444,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 				throw new IllegalArgumentException(anno.message());
 			}
 		} catch (NumberFormatException nfe) {
+			// ignore
 		}
 	}
 
@@ -526,7 +527,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 				throw new IllegalArgumentException(anno.message());
 			}
 		} catch (NumberFormatException nfe) {
-			return;
+			// ignore
 		}
 	}
 
@@ -630,16 +631,15 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Digits anno, CharSequence value) {
 		if (value != null) {
-			BigDecimal bigNum;
 			try {
-				bigNum = new BigDecimal(value.toString());
+				BigDecimal bigNum = new BigDecimal(value.toString());
+				int integerPartLength = bigNum.precision() - bigNum.scale();
+				int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+				if (integerPartLength > anno.integer() || fractionPartLength > anno.fraction()) {
+					throw new IllegalArgumentException(anno.message());
+				}
 			} catch (NumberFormatException e) {
-				return;
-			}
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			if (integerPartLength > anno.integer() || fractionPartLength > anno.fraction()) {
-				throw new IllegalArgumentException(anno.message());
+				// ignore
 			}
 		}
 	}

@@ -340,6 +340,7 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 					value == null || new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) >= 0,
 					anno.message());
 		} catch (NumberFormatException nfe) {
+			// ignore
 		}
 	}
 
@@ -407,6 +408,7 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 					value == null || new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) <= 0,
 					anno.message());
 		} catch (NumberFormatException nfe) {
+			// ignore
 		}
 	}
 
@@ -490,15 +492,15 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(Digits anno, CharSequence value) {
 		if (value != null) {
-			BigDecimal bigNum;
 			try {
-				bigNum = new BigDecimal(value.toString());
+				BigDecimal bigNum = new BigDecimal(value.toString());
+				int integerPartLength = bigNum.precision() - bigNum.scale();
+				int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
+				checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(),
+						anno.message());
 			} catch (NumberFormatException e) {
-				return;
+				// ignore
 			}
-			int integerPartLength = bigNum.precision() - bigNum.scale();
-			int fractionPartLength = bigNum.scale() < 0 ? 0 : bigNum.scale();
-			checkArgument(integerPartLength <= anno.integer() && fractionPartLength <= anno.fraction(), anno.message());
 		}
 	}
 
