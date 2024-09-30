@@ -1,5 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.AsmUtil.STRING_TYPE;
 import static com.github.pfichtner.vaadoo.AsmUtil.classReader;
 import static com.github.pfichtner.vaadoo.AsmUtil.isArray;
 import static com.github.pfichtner.vaadoo.AsmUtil.isLoadOpcode;
@@ -19,6 +20,7 @@ import static net.bytebuddy.jar.asm.Opcodes.BIPUSH;
 import static net.bytebuddy.jar.asm.Opcodes.DUP;
 import static net.bytebuddy.jar.asm.Opcodes.GETSTATIC;
 import static net.bytebuddy.jar.asm.Opcodes.SIPUSH;
+import static net.bytebuddy.jar.asm.Type.BOOLEAN_TYPE;
 import static net.bytebuddy.jar.asm.Type.INT_TYPE;
 import static net.bytebuddy.jar.asm.Type.LONG_TYPE;
 import static net.bytebuddy.jar.asm.Type.getArgumentTypes;
@@ -214,12 +216,15 @@ public class MethodInjector {
 
 					private Object annotationsLdcInsnValue(ParameterInfo parameter, String owner, String name,
 							Type returnType) {
-						if (LONG_TYPE.equals(returnType)) {
-							return Long.valueOf(String.valueOf(valueFromClass(parameter, owner, name)));
+						var stringValue = String.valueOf(valueFromClass(parameter, owner, name));
+						if (STRING_TYPE.equals(returnType)) {
+							return stringValue;
+						} else if (LONG_TYPE.equals(returnType)) {
+							return Long.valueOf(stringValue);
 						} else if (INT_TYPE.equals(returnType)) {
-							return Integer.valueOf(String.valueOf(valueFromClass(parameter, owner, name)));
-						} else if (Type.getType(String.class).equals(returnType)) {
-							return String.valueOf(valueFromClass(parameter, owner, name));
+							return Integer.valueOf(stringValue);
+						} else if (BOOLEAN_TYPE.equals(returnType)) {
+							return Boolean.valueOf(stringValue);
 						}
 						throw new IllegalStateException("Unsupported type " + returnType);
 					}

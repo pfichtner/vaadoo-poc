@@ -27,6 +27,8 @@ import net.bytebuddy.jar.asm.Type;
 
 public final class AsmUtil {
 
+	public static final Type STRING_TYPE = Type.getType(String.class);
+
 	private AsmUtil() {
 		super();
 	}

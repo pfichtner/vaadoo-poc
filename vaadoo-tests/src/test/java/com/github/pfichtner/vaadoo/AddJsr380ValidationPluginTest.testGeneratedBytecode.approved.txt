@@ -1672,11 +1672,10 @@ lload 20
 new java/math/BigDecimal
 dup
 ldc "9876543210"
-ifge L43
-new java/lang/IllegalArgumentException
-dup
-ldc "someLongPrimitiveValueWithDecimalMin must be greater than ${inclusive == true ? 'or equal to ' : ''}9876543210"
-athrow
+ldc 1
+ifeq L43
+iconst_0
+goto L44
 L43:
 .stack
 locals Object java/lang/Object
@@ -1702,18 +1701,9 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+stack Integer
 .end stack
-aload 22
-ifnull L44
-aload 22
-new java/math/BigDecimal
-dup
-ldc "9876543210"
-ifge L44
-new java/lang/IllegalArgumentException
-dup
-ldc "someBigDecimalPrimitiveValueWithDecimalMin must be greater than ${inclusive == true ? 'or equal to ' : ''}9876543210"
-athrow
+iconst_1
 L44:
 .stack
 locals Object java/lang/Object
@@ -1739,12 +1729,13 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+stack Integer
+stack Integer
 .end stack
-aload 23
-ifnonnull L45
-new java/lang/NullPointerException
+if_icmpge L45
+new java/lang/IllegalArgumentException
 dup
-ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+ldc "someLongPrimitiveValueWithDecimalMin must be greater than ${inclusive == true ? 'or equal to ' : ''}9876543210"
 athrow
 L45:
 .stack
@@ -1772,16 +1763,76 @@ locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
 .end stack
-aload 23
+aload 22
 ifnull L46
-aload 23
-i2l
-ldc 41
-lcmp
-ifge L46
+aload 22
+new java/math/BigDecimal
+dup
+ldc "9876543210"
+ldc 1
+ifeq L47
+iconst_0
+goto L48
+L47:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+stack Integer
+.end stack
+iconst_1
+L48:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+stack Integer
+stack Integer
+.end stack
+if_icmpge L46
 new java/lang/IllegalArgumentException
 dup
-ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+ldc "someBigDecimalPrimitiveValueWithDecimalMin must be greater than ${inclusive == true ? 'or equal to ' : ''}9876543210"
 athrow
 L46:
 .stack
@@ -1810,17 +1861,86 @@ locals Object java/math/BigDecimal
 locals Object java/lang/Short
 .end stack
 aload 23
-ifnull L47
+ifnonnull L49
+new java/lang/NullPointerException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+athrow
+L49:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+.end stack
+aload 23
+ifnull L50
+aload 23
+i2l
+ldc 41
+lcmp
+ifge L50
+new java/lang/IllegalArgumentException
+dup
+ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+athrow
+L50:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+.end stack
+aload 23
+ifnull L51
 aload 23
 i2l
 ldc 43
 lcmp
-ifle L47
+ifle L51
 new java/lang/IllegalArgumentException
 dup
 ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43"
 athrow
-L47:
+L51:
 .stack
 locals Object java/lang/Object
 locals Object java/lang/Object

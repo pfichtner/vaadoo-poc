@@ -367,28 +367,28 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(DecimalMin anno, byte value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, short value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, int value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, long value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
@@ -396,7 +396,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(DecimalMin anno, Byte value) {
 		if (value != null) {
-			if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+			if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 				throw new IllegalArgumentException(anno.message());
 			}
 		}
@@ -404,35 +404,39 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(DecimalMin anno, Short value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, Integer value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, Long value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, BigInteger value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMin anno, BigDecimal value) {
-		if (value != null && value.compareTo(new BigDecimal(anno.value())) < 0) {
+		if (value != null && value.compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
@@ -440,7 +444,8 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(DecimalMin anno, CharSequence value) {
 		try {
-			if (value != null && new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) < 0) {
+			if (value != null && new BigDecimal(String.valueOf(value))
+					.compareTo(new BigDecimal(anno.value())) < (anno.inclusive() ? 0 : 1)) {
 				throw new IllegalArgumentException(anno.message());
 			}
 		} catch (NumberFormatException nfe) {
@@ -452,70 +457,75 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(DecimalMax anno, byte value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, short value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, int value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, long value) {
-		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, Byte value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, Short value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, Integer value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, Long value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, BigInteger value) {
-		if (value != null && new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null
+				&& new BigDecimal(value).compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
 
 	@Override
 	public void check(DecimalMax anno, BigDecimal value) {
-		if (value != null && value.compareTo(new BigDecimal(anno.value())) > 0) {
+		if (value != null && value.compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
@@ -523,7 +533,8 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(DecimalMax anno, CharSequence value) {
 		try {
-			if (value != null && new BigDecimal(String.valueOf(value)).compareTo(new BigDecimal(anno.value())) > 0) {
+			if (value != null && new BigDecimal(String.valueOf(value))
+					.compareTo(new BigDecimal(anno.value())) > (anno.inclusive() ? 0 : -1)) {
 				throw new IllegalArgumentException(anno.message());
 			}
 		} catch (NumberFormatException nfe) {
