@@ -146,14 +146,26 @@ value J = 43
 
 .method public static main([Ljava/lang/String;)V
 getstatic java/lang/System/out Ljava/io/PrintStream;
+invokestatic com/example/SomeLombokClass/builder()Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
 ldc "isNotNull"
+invokevirtual com/example/SomeLombokClass$SomeLombokClassBuilder/someObject(Ljava/lang/Object;)Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
 ldc ""
+invokevirtual com/example/SomeLombokClass$SomeLombokClassBuilder/someNonBlankValue(Ljava/lang/CharSequence;)Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
+invokevirtual com/example/SomeLombokClass$SomeLombokClassBuilder/build()Lcom/example/SomeLombokClass;
+invokevirtual java/io/PrintStream/println(Ljava/lang/Object;)V
 return
 .limit locals 1
 .limit stack 3
 .end method
+.dep com/example/SomeLombokClass$SomeLombokClassBuilder;someNonBlankValue
+.dep java/io/PrintStream;println
+.dep com/example/SomeLombokClass$SomeLombokClassBuilder;someObject
+.dep com/example/SomeLombokClass;builder
 .dep java/lang/System;out
+.dep com/example/SomeLombokClass$SomeLombokClassBuilder;build
 .provide com/example/SomeLombokClass;main
+.desc ()Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
+.desc (Ljava/lang/Object;)V
 .desc Ljava/lang/Object;
 .desc Ljava/lang/Boolean;
 .desc Ljava/lang/Short;
@@ -163,12 +175,15 @@ return
 .desc J
 .desc Ljava/util/Map;
 .desc Ljava/lang/String;
+.desc (Ljava/lang/Object;)Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
 .desc Ljava/time/Instant;
+.desc (Ljava/lang/CharSequence;)Lcom/example/SomeLombokClass$SomeLombokClassBuilder;
 .desc Ljava/lang/Long;
 .desc Z
 .desc Ljava/math/BigDecimal;
 .desc Ljava/io/PrintStream;
 .desc Ljava/lang/CharSequence;
+.desc ()Lcom/example/SomeLombokClass;
 
 .method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
 .signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V"
@@ -199,6 +214,8 @@ lload 21
 aload 23
 aload 24
 aload 25
+invokestatic com/example/SomeLombokClass/validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
+invokespecial java/lang/Object/<init>()V
 aload 0
 aload 1
 putfield com/example/SomeLombokClass/someNullObject Ljava/lang/Object;
@@ -276,28 +293,30 @@ return
 .limit stack 26
 .end method
 .dep com/example/SomeLombokClass;someFalseValue
-.dep com/example/SomeLombokClass;someNullObject
-.dep com/example/SomeLombokClass;someNotEmptyString
 .dep com/example/SomeLombokClass;stringOfLenfthBetween10And20
 .dep com/example/SomeLombokClass;anyMailAddress
-.dep com/example/SomeLombokClass;someIntPrimitiveValueThatIsMinimal42
 .dep com/example/SomeLombokClass;someLongWrapperValueThatIsMinimal42
-.dep com/example/SomeLombokClass;somePastOrPresentInstant
-.dep com/example/SomeLombokClass;someNotEmptyArray
-.dep com/example/SomeLombokClass;someFalseValueWrapper
-.dep com/example/SomeLombokClass;someTrueValueWrapper
+.dep com/example/SomeLombokClass;validate
 .dep com/example/SomeLombokClass;someShortWrapperValueThatIsNotNullAndAbout42
-.dep com/example/SomeLombokClass;someNonBlankValue
 .dep com/example/SomeLombokClass;someTrueValue
 .dep com/example/SomeLombokClass;someBigDecimalPrimitiveValueWithDecimalMin
 .dep com/example/SomeLombokClass;someNotEmptyCharSequence
 .dep com/example/SomeLombokClass;valueWithoutAnnotation
 .dep com/example/SomeLombokClass;someNotEmptyMap
-.dep com/example/SomeLombokClass;someObject
 .dep com/example/SomeLombokClass;someNotEmptyCollection
+.dep com/example/SomeLombokClass;someFourDigits
+.dep com/example/SomeLombokClass;someNullObject
+.dep com/example/SomeLombokClass;someNotEmptyString
+.dep com/example/SomeLombokClass;someIntPrimitiveValueThatIsMinimal42
+.dep com/example/SomeLombokClass;somePastOrPresentInstant
+.dep com/example/SomeLombokClass;someNotEmptyArray
+.dep com/example/SomeLombokClass;someFalseValueWrapper
+.dep com/example/SomeLombokClass;someTrueValueWrapper
+.dep com/example/SomeLombokClass;someNonBlankValue
+.dep java/lang/Object;<init>
+.dep com/example/SomeLombokClass;someObject
 .dep com/example/SomeLombokClass;someNonBlankValueWithCustomMessage
 .dep com/example/SomeLombokClass;intWith4Digits
-.dep com/example/SomeLombokClass;someFourDigits
 .dep com/example/SomeLombokClass;someLongPrimitiveValueWithDecimalMin
 .provide com/example/SomeLombokClass;<init>
 .desc Ljava/lang/Object;
@@ -310,6 +329,8 @@ return
 .desc Ljava/util/Map;
 .desc Ljava/lang/String;
 .desc Ljava/time/Instant;
+.desc ()V
+.desc (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
 .desc Ljava/lang/Long;
 .desc Z
 .desc Ljava/math/BigDecimal;
@@ -320,11 +341,14 @@ return
 .end annotation
 new com/example/SomeLombokClass$SomeLombokClassBuilder
 dup
+invokespecial com/example/SomeLombokClass$SomeLombokClassBuilder/<init>()V
 areturn
 .limit locals 0
 .limit stack 2
 .end method
+.dep com/example/SomeLombokClass$SomeLombokClassBuilder;<init>
 .provide com/example/SomeLombokClass;builder
+.desc ()V
 
 .method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
 .catch java/lang/IllegalArgumentException from L0 to L1 using L2
@@ -333,6 +357,7 @@ ifnull L3
 new java/lang/IllegalArgumentException
 dup
 ldc "someNullObject must be null"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L3:
 .stack
@@ -366,6 +391,7 @@ ifnonnull L4
 new java/lang/NullPointerException
 dup
 ldc "someObject must not be null"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L4:
 .stack
@@ -399,6 +425,7 @@ ifnonnull L5
 new java/lang/NullPointerException
 dup
 ldc "someNotEmptyCharSequence must not be empty"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L5:
 .stack
@@ -428,10 +455,12 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 3
+invokeinterface java/lang/CharSequence/length()I 0
 ifgt L6
 new java/lang/IllegalArgumentException
 dup
 ldc "someNotEmptyCharSequence must not be empty"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L6:
 .stack
@@ -465,6 +494,7 @@ ifnonnull L7
 new java/lang/NullPointerException
 dup
 ldc "someNotEmptyString must not be empty"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L7:
 .stack
@@ -494,10 +524,12 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 4
+invokeinterface java/lang/CharSequence/length()I 0
 ifgt L8
 new java/lang/IllegalArgumentException
 dup
 ldc "someNotEmptyString must not be empty"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L8:
 .stack
@@ -531,6 +563,7 @@ ifnonnull L9
 new java/lang/NullPointerException
 dup
 ldc "someNotEmptyCollection must not be empty"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L9:
 .stack
@@ -560,10 +593,12 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 5
+invokeinterface java/util/Collection/size()I 0
 ifgt L10
 new java/lang/IllegalArgumentException
 dup
 ldc "someNotEmptyCollection must not be empty"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L10:
 .stack
@@ -597,6 +632,7 @@ ifnonnull L11
 new java/lang/NullPointerException
 dup
 ldc "someNotEmptyMap must not be empty"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L11:
 .stack
@@ -626,10 +662,12 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 6
+invokeinterface java/util/Map/size()I 0
 ifgt L12
 new java/lang/IllegalArgumentException
 dup
 ldc "someNotEmptyMap must not be empty"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L12:
 .stack
@@ -663,6 +701,7 @@ ifnonnull L13
 new java/lang/NullPointerException
 dup
 ldc "someNotEmptyArray must not be empty"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L13:
 .stack
@@ -697,6 +736,7 @@ ifgt L14
 new java/lang/IllegalArgumentException
 dup
 ldc "someNotEmptyArray must not be empty"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L14:
 .stack
@@ -730,6 +770,7 @@ ifnonnull L15
 new java/lang/NullPointerException
 dup
 ldc "someNonBlankValue must not be blank"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L15:
 .stack
@@ -759,10 +800,14 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 8
+invokeinterface java/lang/CharSequence/toString()Ljava/lang/String; 0
+invokevirtual java/lang/String/trim()Ljava/lang/String;
+invokevirtual java/lang/String/length()I
 ifgt L16
 new java/lang/IllegalArgumentException
 dup
 ldc "someNonBlankValue must not be blank"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L16:
 .stack
@@ -796,6 +841,7 @@ ifnonnull L17
 new java/lang/NullPointerException
 dup
 ldc "my custom message"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L17:
 .stack
@@ -825,10 +871,14 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 aload 9
+invokeinterface java/lang/CharSequence/toString()Ljava/lang/String; 0
+invokevirtual java/lang/String/trim()Ljava/lang/String;
+invokevirtual java/lang/String/length()I
 ifgt L18
 new java/lang/IllegalArgumentException
 dup
 ldc "my custom message"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L18:
 .stack
@@ -889,7 +939,9 @@ locals Object java/lang/Short
 locals Object java/time/Instant
 .end stack
 iload 11
+invokestatic java/lang/Math/abs(I)I
 i2d
+invokestatic java/lang/Math/log10(D)D
 d2i
 iconst_1
 iadd
@@ -928,6 +980,7 @@ if_icmple L21
 new java/lang/IllegalArgumentException
 dup
 ldc "intWith4Digits numeric value out of bounds (<4 digits>.<0 digits> expected)"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L21:
 .stack
@@ -1017,6 +1070,7 @@ aaload
 astore 29
 iload 25
 aload 29
+invokevirtual jakarta/validation/constraints/Pattern$Flag/getValue()I
 ior
 istore 25
 iinc 28 1
@@ -1054,11 +1108,15 @@ locals Integer
 .end stack
 ldc "\\d{1,4}"
 iload 25
+invokestatic com/example/SomeLombokClass/cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 aload 12
+invokevirtual java/util/regex/Pattern/matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+invokevirtual java/util/regex/Matcher/matches()Z
 ifne L22
 new java/lang/IllegalArgumentException
 dup
 ldc "someFourDigits must match \"\\d{1,4}\""
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L22:
 .stack
@@ -1091,17 +1149,21 @@ locals Integer
 aload 13
 ifnull L25
 aload 13
+invokeinterface java/lang/CharSequence/length()I 0
 ifeq L25
 aload 13
+invokeinterface java/lang/CharSequence/toString()Ljava/lang/String; 0
 astore 25
 aload 25
 bipush 64
+invokevirtual java/lang/String/lastIndexOf(I)I
 istore 26
 iload 26
 ifge L26
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L26:
 .stack
@@ -1135,13 +1197,18 @@ locals Integer
 aload 25
 iconst_0
 iload 26
+invokevirtual java/lang/String/substring(II)Ljava/lang/String;
 astore 27
 aload 27
+invokevirtual java/lang/String/length()I
 bipush 64
 if_icmpgt L27
 ldc "(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*"
 iconst_2
+invokestatic com/example/SomeLombokClass/cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 aload 27
+invokevirtual java/util/regex/Pattern/matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+invokevirtual java/util/regex/Matcher/matches()Z
 ifne L28
 L27:
 .stack
@@ -1176,6 +1243,7 @@ locals Object java/lang/String
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L28:
 .stack
@@ -1211,19 +1279,26 @@ aload 25
 iload 26
 iconst_1
 iadd
+invokevirtual java/lang/String/substring(I)Ljava/lang/String;
 astore 28
 iconst_0
 istore 29
 L0:
 aload 28
 ldc "."
+invokevirtual java/lang/String/endsWith(Ljava/lang/String;)Z
 ifne L29
 aload 28
+invokestatic java/net/IDN/toASCII(Ljava/lang/String;)Ljava/lang/String;
+invokevirtual java/lang/String/length()I
 sipush 255
 if_icmpgt L29
 ldc "(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]"
 iconst_2
+invokestatic com/example/SomeLombokClass/cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 aload 28
+invokevirtual java/util/regex/Pattern/matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+invokevirtual java/util/regex/Matcher/matches()Z
 ifeq L29
 iconst_1
 goto L30
@@ -1367,6 +1442,7 @@ ifne L32
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L32:
 .stack
@@ -1455,6 +1531,7 @@ aaload
 astore 34
 iload 30
 aload 34
+invokevirtual jakarta/validation/constraints/Pattern$Flag/getValue()I
 ior
 istore 30
 iinc 33 1
@@ -1497,11 +1574,15 @@ locals Integer
 .end stack
 ldc ".*"
 iload 30
+invokestatic com/example/SomeLombokClass/cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 aload 13
+invokevirtual java/util/regex/Pattern/matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+invokevirtual java/util/regex/Matcher/matches()Z
 ifne L25
 new java/lang/IllegalArgumentException
 dup
 ldc "anyMailAddress must be a well-formed email address"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L25:
 .stack
@@ -1535,6 +1616,7 @@ ifne L35
 new java/lang/IllegalArgumentException
 dup
 ldc "someTrueValue must be true"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L35:
 .stack
@@ -1568,6 +1650,7 @@ ifeq L36
 new java/lang/IllegalArgumentException
 dup
 ldc "someFalseValue must be false"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L36:
 .stack
@@ -1599,10 +1682,12 @@ locals Object java/time/Instant
 aload 16
 ifnull L37
 aload 16
+invokevirtual java/lang/Boolean/booleanValue()Z
 ifne L37
 new java/lang/IllegalArgumentException
 dup
 ldc "someTrueValueWrapper must be true"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L37:
 .stack
@@ -1634,10 +1719,12 @@ locals Object java/time/Instant
 aload 17
 ifnull L38
 aload 17
+invokevirtual java/lang/Boolean/booleanValue()Z
 ifeq L38
 new java/lang/IllegalArgumentException
 dup
 ldc "someFalseValueWrapper must be false"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L38:
 .stack
@@ -1674,6 +1761,7 @@ ifge L39
 new java/lang/IllegalArgumentException
 dup
 ldc "someIntPrimitiveValueThatIsMinimal42 must be greater than or equal to 42"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L39:
 .stack
@@ -1705,12 +1793,14 @@ locals Object java/time/Instant
 aload 19
 ifnull L40
 aload 19
+invokevirtual java/lang/Long/longValue()J
 ldc 42
 lcmp
 ifge L40
 new java/lang/IllegalArgumentException
 dup
 ldc "someLongWrapperValueThatIsMinimal42 must be greater than or equal to 42"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L40:
 .stack
@@ -1742,9 +1832,12 @@ locals Object java/time/Instant
 new java/math/BigDecimal
 dup
 lload 20
+invokespecial java/math/BigDecimal/<init>(J)V
 new java/math/BigDecimal
 dup
 ldc "9876543210"
+invokespecial java/math/BigDecimal/<init>(Ljava/lang/String;)V
+invokevirtual java/math/BigDecimal/compareTo(Ljava/math/BigDecimal;)I
 ldc 1
 ifeq L41
 iconst_0
@@ -1811,6 +1904,7 @@ if_icmpge L43
 new java/lang/IllegalArgumentException
 dup
 ldc "someLongPrimitiveValueWithDecimalMin must be greater than 9876543210"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L43:
 .stack
@@ -1845,6 +1939,8 @@ aload 22
 new java/math/BigDecimal
 dup
 ldc "9876543210"
+invokespecial java/math/BigDecimal/<init>(Ljava/lang/String;)V
+invokevirtual java/math/BigDecimal/compareTo(Ljava/math/BigDecimal;)I
 ldc 1
 ifeq L45
 iconst_0
@@ -1911,6 +2007,7 @@ if_icmpge L44
 new java/lang/IllegalArgumentException
 dup
 ldc "someBigDecimalPrimitiveValueWithDecimalMin must be greater than 9876543210"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L44:
 .stack
@@ -1944,6 +2041,7 @@ ifnonnull L47
 new java/lang/NullPointerException
 dup
 ldc "someShortWrapperValueThatIsNotNullAndAbout42 must not be null"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L47:
 .stack
@@ -1975,6 +2073,7 @@ locals Object java/time/Instant
 aload 23
 ifnull L48
 aload 23
+invokevirtual java/lang/Short/shortValue()S
 i2l
 ldc 41
 lcmp
@@ -1982,6 +2081,7 @@ ifge L48
 new java/lang/IllegalArgumentException
 dup
 ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be greater than or equal to 41"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L48:
 .stack
@@ -2013,6 +2113,7 @@ locals Object java/time/Instant
 aload 23
 ifnull L49
 aload 23
+invokevirtual java/lang/Short/shortValue()S
 i2l
 ldc 43
 lcmp
@@ -2020,6 +2121,7 @@ ifle L49
 new java/lang/IllegalArgumentException
 dup
 ldc "someShortWrapperValueThatIsNotNullAndAbout42 must be less than or equal to 43"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L49:
 .stack
@@ -2053,6 +2155,7 @@ ifnonnull L50
 new java/lang/NullPointerException
 dup
 ldc "somePastOrPresentInstant must not be null"
+invokespecial java/lang/NullPointerException/<init>(Ljava/lang/String;)V
 athrow
 L50:
 .stack
@@ -2084,10 +2187,13 @@ locals Object java/time/Instant
 aload 24
 ifnull L51
 aload 24
+invokestatic java/time/Instant/now()Ljava/time/Instant;
+invokevirtual java/time/Instant/isAfter(Ljava/time/Instant;)Z
 ifeq L51
 new java/lang/IllegalArgumentException
 dup
 ldc "somePastOrPresentInstant must be a date in the past or in the present"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L51:
 .stack
@@ -2120,16 +2226,60 @@ return
 .limit locals 35
 .limit stack 4
 .end method
+.dep java/lang/Math;abs
+.dep java/lang/CharSequence;length
+.dep java/net/IDN;toASCII
+.dep java/lang/Short;shortValue
+.dep java/lang/String;length
+.dep com/example/SomeLombokClass;cache
+.dep java/lang/Long;longValue
+.dep java/util/Collection;size
+.dep java/lang/CharSequence;toString
 .dep jakarta/validation/constraints/Pattern$Flag;CASE_INSENSITIVE
+.dep java/lang/NullPointerException;<init>
+.dep java/lang/String;substring
+.dep java/time/Instant;isAfter
 .dep jakarta/validation/constraints/Pattern$Flag;MULTILINE
+.dep java/lang/String;endsWith
+.dep java/lang/Boolean;booleanValue
+.dep java/util/Map;size
+.dep java/util/regex/Matcher;matches
+.dep java/lang/String;trim
+.dep java/util/regex/Pattern;matcher
+.dep java/math/BigDecimal;compareTo
+.dep java/lang/String;lastIndexOf
+.dep jakarta/validation/constraints/Pattern$Flag;getValue
+.dep java/lang/IllegalArgumentException;<init>
+.dep java/math/BigDecimal;<init>
+.dep java/lang/Math;log10
+.dep java/time/Instant;now
 .provide com/example/SomeLombokClass;validate
+.desc (I)Ljava/lang/String;
 .desc Ljakarta/validation/constraints/Pattern$Flag;
+.desc ()Ljava/time/Instant;
+.desc ()Ljava/lang/String;
+.desc (D)D
+.desc (Ljava/time/Instant;)Z
+.desc (II)Ljava/lang/String;
+.desc ()I
+.desc ()J
+.desc (Ljava/lang/String;)V
+.desc (Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.desc (Ljava/lang/String;)Ljava/lang/String;
+.desc (Ljava/lang/String;)Z
+.desc (I)I
+.desc ()S
+.desc (Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+.desc ()Z
+.desc (Ljava/math/BigDecimal;)I
+.desc (J)V
 
 .method private static synchronized cache(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 getstatic com/example/SomeLombokClass/cache Ljava/util/Map;
 ifnonnull L0
 new java/util/HashMap
 dup
+invokespecial java/util/HashMap/<init>()V
 putstatic com/example/SomeLombokClass/cache Ljava/util/Map;
 L0:
 .stack
@@ -2141,22 +2291,44 @@ new java/util/AbstractMap$SimpleEntry
 dup
 aload 0
 iload 1
+invokestatic java/lang/Integer/valueOf(I)Ljava/lang/Integer;
+invokespecial java/util/AbstractMap$SimpleEntry/<init>(Ljava/lang/Object;Ljava/lang/Object;)V
+invokeinterface java/util/Map/computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object; 2
 checkcast java/util/regex/Pattern
 areturn
 .limit locals 2
 .limit stack 5
 .end method
+.dep java/lang/Integer;valueOf
+.dep java/util/AbstractMap$SimpleEntry;<init>
 .dep com/example/SomeLombokClass;cache
+.dep java/util/Map;computeIfAbsent
+.dep java/util/HashMap;<init>
 .provide com/example/SomeLombokClass;cache
 .desc Ljava/util/Map;
+.desc (Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;
+.desc ()V
+.desc (Ljava/lang/Object;Ljava/lang/Object;)V
+.desc (I)Ljava/lang/Integer;
 
 .method private static synthetic lambda$cache$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
 aload 0
+invokevirtual java/util/AbstractMap$SimpleEntry/getKey()Ljava/lang/Object;
 checkcast java/lang/String
 aload 0
+invokevirtual java/util/AbstractMap$SimpleEntry/getValue()Ljava/lang/Object;
 checkcast java/lang/Integer
+invokevirtual java/lang/Integer/intValue()I
+invokestatic java/util/regex/Pattern/compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;
 areturn
 .limit locals 1
 .limit stack 2
 .end method
+.dep java/util/AbstractMap$SimpleEntry;getValue
+.dep java/lang/Integer;intValue
+.dep java/util/regex/Pattern;compile
+.dep java/util/AbstractMap$SimpleEntry;getKey
 .provide com/example/SomeLombokClass;lambda$cache$0
+.desc ()I
+.desc (Ljava/lang/String;I)Ljava/util/regex/Pattern;
+.desc ()Ljava/lang/Object;

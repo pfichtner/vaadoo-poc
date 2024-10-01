@@ -482,7 +482,7 @@ public class JasminifierClassAdapter extends ClassVisitor {
 
 						@Override
 						public void visitMethodInsn(int opcode, String owner,
-								String name, String desc) {
+								String name, String desc, boolean isInterface) {
 							print(opcode);
 							JasminifierClassAdapter.this.pw.print(' ');
 							JasminifierClassAdapter.this.pw.print(owner);
