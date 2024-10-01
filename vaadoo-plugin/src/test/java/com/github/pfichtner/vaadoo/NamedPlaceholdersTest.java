@@ -1,6 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
 import static com.github.pfichtner.vaadoo.NamedPlaceholders.replace;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
@@ -13,7 +14,7 @@ class NamedPlaceholdersTest {
 	@Test
 	void noReplacment() {
 		String in = "in";
-		assertThat(replace(in, Map.of())).isEqualTo(in);
+		assertThat(replace(in, emptyMap())).isEqualTo(in);
 	}
 
 	@Test
@@ -26,7 +27,7 @@ class NamedPlaceholdersTest {
 	@Test
 	void simpleReplacmentNoMatch() {
 		String in = "prefix {thekey} sufix";
-		assertThat(replace(in, Map.of())).isEqualTo(in);
+		assertThat(replace(in, emptyMap())).isEqualTo(in);
 	}
 
 	@Test
@@ -42,7 +43,7 @@ class NamedPlaceholdersTest {
 		String expected = "prefix anotherString sufix";
 		assertSoftly(s -> {
 			s.assertThat(replace(in, Map.of("inclusive", false))).isEqualTo(expected);
-			s.assertThat(replace(in, Map.of())).isEqualTo(expected);
+			s.assertThat(replace(in, emptyMap())).isEqualTo(expected);
 		});
 	}
 
