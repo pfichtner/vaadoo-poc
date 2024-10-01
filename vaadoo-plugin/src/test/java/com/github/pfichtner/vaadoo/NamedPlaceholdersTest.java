@@ -32,17 +32,17 @@ class NamedPlaceholdersTest {
 
 	@Test
 	void evalTrue() {
-		String in = "prefix ${inclusive == true ? 'someString' : 'anotherString'} sufix";
+		String in = "prefix ${aBooleanValue == true ? 'someString' : 'anotherString'} sufix";
 		String expected = "prefix someString sufix";
-		assertThat(replace(in, Map.of("inclusive", true))).isEqualTo(expected);
+		assertThat(replace(in, Map.of("aBooleanValue", true))).isEqualTo(expected);
 	}
 
 	@Test
 	void evalFalse() {
-		String in = "prefix ${inclusive == true ? 'someString' : 'anotherString'} sufix";
+		String in = "prefix ${aBooleanValue == true ? 'someString' : 'anotherString'} sufix";
 		String expected = "prefix anotherString sufix";
 		assertSoftly(s -> {
-			s.assertThat(replace(in, Map.of("inclusive", false))).isEqualTo(expected);
+			s.assertThat(replace(in, Map.of("aBooleanValue", false))).isEqualTo(expected);
 			s.assertThat(replace(in, emptyMap())).isEqualTo(expected);
 		});
 	}
