@@ -1,7 +1,6 @@
 package com.github.pfichtner.vaadoo;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
@@ -17,7 +16,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -172,64 +170,6 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	private static IllegalStateException annotationOnTypeNotValid(Class<?> anno, Class<?> type, List<String> valids) {
 		return new IllegalStateException(format("Annotation %s on type %s not allowed, allowed only on types: %s",
 				anno.getName(), type.getName(), valids));
-	}
-
-	private static class Parameters implements Iterable<ParameterInfo> {
-
-		@Deprecated // use Type[] argumentTypes;
-		private final String methodDescriptor;
-		private final ParameterInfo[] infos;
-		private final Type[] argumentTypes;
-
-		public Parameters(String methodDescriptor, Type[] argumentTypes) {
-			this.methodDescriptor = methodDescriptor;
-			this.argumentTypes = argumentTypes;
-			this.infos = new ParameterInfo[argumentTypes.length];
-			int offset = 0;
-			for (int i = 0; i < argumentTypes.length; i++) {
-				var type = argumentTypes[i];
-				infos[i] = new ParameterInfo(i).offset(offset).type(type);
-				offset += type.getSize();
-			}
-		}
-
-		private static Parameters fromDescriptor(String methodDescriptor) {
-			return new Parameters(methodDescriptor, Type.getArgumentTypes(methodDescriptor));
-		}
-
-		private ParameterInfo firstUnamed() {
-			for (int i = 0; i < infos.length; i++) {
-				var parameterInfo = infos[i];
-				if (parameterInfo.name() == null) {
-					return parameterInfo;
-				}
-			}
-			throw new IllegalStateException("all elements are named");
-		}
-
-		public ParameterInfo byOffset(int offset) {
-			for (int i = 0; i < infos.length; i++) {
-				var parameterInfo = infos[i];
-				if (parameterInfo.offset() >= offset) {
-					return parameterInfo;
-				}
-			}
-			throw new IllegalStateException("offset exceeds max");
-		}
-
-		public ParameterInfo byIndex(int parameterIdx) {
-			return infos[parameterIdx];
-		}
-
-		@Override
-		public Iterator<ParameterInfo> iterator() {
-			return asList(this.infos).iterator();
-		}
-
-		public int size() {
-			return this.infos.length;
-		}
-
 	}
 
 	private static class ConstructorVisitor extends MethodVisitor {
