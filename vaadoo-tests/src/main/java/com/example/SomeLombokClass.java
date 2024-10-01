@@ -5,6 +5,7 @@ import static jakarta.validation.constraints.Pattern.Flag.MULTILINE;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -75,6 +77,9 @@ public class SomeLombokClass {
 	@Min(41)
 	@Max(43)
 	Short someShortWrapperValueThatIsNotNullAndAbout42;
+	@NotNull
+	@PastOrPresent
+	Instant somePastOrPresentInstant;
 
 	public static void main(String[] args) {
 		System.out.println(SomeLombokClass.builder().someObject("isNotNull").someNonBlankValue("").build());

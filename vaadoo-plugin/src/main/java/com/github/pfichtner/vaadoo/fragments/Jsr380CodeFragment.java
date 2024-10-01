@@ -7,6 +7,7 @@ package com.github.pfichtner.vaadoo.fragments;
  * <li>calls to other methods (even calls to methods of the class itself)</li>
  * <li>field accesses</li>
  */
-public interface Jsr380CodeFragment extends Jsr380CodeObjectsFragment, Jsr380CodeCharSequencesFragment,
-		Jsr380CodeEmptyFragment, Jsr380CodeSizeFragment, Jsr380CodeBooleanFragment, Jsr380CodeNumberFragment {
+public interface Jsr380CodeFragment
+		extends Jsr380CodeObjectsFragment, Jsr380CodeCharSequencesFragment, Jsr380CodeEmptyFragment,
+		Jsr380CodeSizeFragment, Jsr380CodeBooleanFragment, Jsr380CodeNumberFragment, Jsr380CodeDateFragment {
 }

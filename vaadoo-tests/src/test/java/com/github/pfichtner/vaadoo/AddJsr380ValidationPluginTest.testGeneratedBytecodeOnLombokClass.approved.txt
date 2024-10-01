@@ -135,6 +135,13 @@ value J = 43
 .end annotation
 .end field
 
+.field private final 'somePastOrPresentInstant' Ljava/time/Instant;
+.annotation visible Ljakarta/validation/constraints/NotNull;
+.end annotation
+.annotation visible Ljakarta/validation/constraints/PastOrPresent;
+.end annotation
+.end field
+
 .field private static 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
 
 .method public static main([Ljava/lang/String;)V
@@ -156,14 +163,15 @@ return
 .desc J
 .desc Ljava/util/Map;
 .desc Ljava/lang/String;
+.desc Ljava/time/Instant;
 .desc Ljava/lang/Long;
 .desc Z
 .desc Ljava/math/BigDecimal;
 .desc Ljava/io/PrintStream;
 .desc Ljava/lang/CharSequence;
 
-.method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;)V
-.signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;)V"
+.method <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
+.signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V"
 .annotation invisible Llombok/Generated;
 .end annotation
 aload 0
@@ -190,6 +198,7 @@ aload 20
 lload 21
 aload 23
 aload 24
+aload 25
 aload 0
 aload 1
 putfield com/example/SomeLombokClass/someNullObject Ljava/lang/Object;
@@ -259,9 +268,12 @@ putfield com/example/SomeLombokClass/someBigDecimalPrimitiveValueWithDecimalMin 
 aload 0
 aload 24
 putfield com/example/SomeLombokClass/someShortWrapperValueThatIsNotNullAndAbout42 Ljava/lang/Short;
+aload 0
+aload 25
+putfield com/example/SomeLombokClass/somePastOrPresentInstant Ljava/time/Instant;
 return
-.limit locals 25
-.limit stack 25
+.limit locals 26
+.limit stack 26
 .end method
 .dep com/example/SomeLombokClass;someFalseValue
 .dep com/example/SomeLombokClass;someNullObject
@@ -270,6 +282,7 @@ return
 .dep com/example/SomeLombokClass;anyMailAddress
 .dep com/example/SomeLombokClass;someIntPrimitiveValueThatIsMinimal42
 .dep com/example/SomeLombokClass;someLongWrapperValueThatIsMinimal42
+.dep com/example/SomeLombokClass;somePastOrPresentInstant
 .dep com/example/SomeLombokClass;someNotEmptyArray
 .dep com/example/SomeLombokClass;someFalseValueWrapper
 .dep com/example/SomeLombokClass;someTrueValueWrapper
@@ -296,6 +309,7 @@ return
 .desc J
 .desc Ljava/util/Map;
 .desc Ljava/lang/String;
+.desc Ljava/time/Instant;
 .desc Ljava/lang/Long;
 .desc Z
 .desc Ljava/math/BigDecimal;
@@ -312,7 +326,7 @@ areturn
 .end method
 .provide com/example/SomeLombokClass;builder
 
-.method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;)V
+.method private static validate(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
 .catch java/lang/IllegalArgumentException from L0 to L1 using L2
 aload 0
 ifnull L3
@@ -345,6 +359,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 1
 ifnonnull L4
@@ -377,6 +392,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 3
 ifnonnull L5
@@ -409,6 +425,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 3
 ifgt L6
@@ -441,6 +458,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 4
 ifnonnull L7
@@ -473,6 +491,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 4
 ifgt L8
@@ -505,6 +524,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 5
 ifnonnull L9
@@ -537,6 +557,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 5
 ifgt L10
@@ -569,6 +590,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 6
 ifnonnull L11
@@ -601,6 +623,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 6
 ifgt L12
@@ -633,6 +656,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 7
 ifnonnull L13
@@ -665,6 +689,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 7
 arraylength
@@ -698,6 +723,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 8
 ifnonnull L15
@@ -730,6 +756,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 8
 ifgt L16
@@ -762,6 +789,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 9
 ifnonnull L17
@@ -794,6 +822,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 9
 ifgt L18
@@ -826,6 +855,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 iload 11
 ifne L19
@@ -856,6 +886,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 iload 11
 i2d
@@ -887,10 +918,11 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 stack Integer
 .end stack
-istore 24
-iload 24
+istore 25
+iload 25
 ldc 4
 if_icmple L21
 new java/lang/IllegalArgumentException
@@ -922,12 +954,13 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Integer
 .end stack
 aload 12
 ifnull L22
 iconst_0
-istore 24
+istore 25
 bipush 2
 anewarray jakarta/validation/constraints/Pattern$Flag
 dup
@@ -938,12 +971,12 @@ dup
 bipush 1
 getstatic jakarta/validation/constraints/Pattern$Flag/MULTILINE Ljakarta/validation/constraints/Pattern$Flag;
 aastore
-astore 25
-aload 25
+astore 26
+aload 26
 arraylength
-istore 26
-iconst_0
 istore 27
+iconst_0
+istore 28
 L23:
 .stack
 locals Object java/lang/Object
@@ -969,23 +1002,24 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Integer
 locals Object [Ljakarta/validation/constraints/Pattern$Flag;
 locals Integer
 locals Integer
 .end stack
+iload 28
 iload 27
-iload 26
 if_icmpge L24
-aload 25
-iload 27
+aload 26
+iload 28
 aaload
-astore 28
-iload 24
-aload 28
+astore 29
+iload 25
+aload 29
 ior
-istore 24
-iinc 27 1
+istore 25
+iinc 28 1
 goto L23
 L24:
 .stack
@@ -1012,13 +1046,14 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Integer
 locals Object [Ljakarta/validation/constraints/Pattern$Flag;
 locals Integer
 locals Integer
 .end stack
 ldc "\\d{1,4}"
-iload 24
+iload 25
 aload 12
 ifne L22
 new java/lang/IllegalArgumentException
@@ -1050,6 +1085,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Integer
 .end stack
 aload 13
@@ -1057,11 +1093,11 @@ ifnull L25
 aload 13
 ifeq L25
 aload 13
-astore 24
-aload 24
+astore 25
+aload 25
 bipush 64
-istore 25
-iload 25
+istore 26
+iload 26
 ifge L26
 new java/lang/IllegalArgumentException
 dup
@@ -1092,19 +1128,20 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 .end stack
-aload 24
+aload 25
 iconst_0
-iload 25
-astore 26
-aload 26
+iload 26
+astore 27
+aload 27
 bipush 64
 if_icmpgt L27
 ldc "(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\")(?:\\.(?:[a-z0-9!#$%&'*+/=?^_`{|}~\u0080-\uffff-]+|\"(?:[a-z0-9!#$%&'*.(),<>\\[\\]:;  @+/=?^_`{|}~\u0080-\uffff-]|\\\\\\\\|\\\\\\\")+\"))*"
 iconst_2
-aload 26
+aload 27
 ifne L28
 L27:
 .stack
@@ -1131,6 +1168,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1164,27 +1202,28 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
 .end stack
-aload 24
-iload 25
+aload 25
+iload 26
 iconst_1
 iadd
-astore 27
+astore 28
 iconst_0
-istore 28
+istore 29
 L0:
-aload 27
+aload 28
 ldc "."
 ifne L29
-aload 27
+aload 28
 sipush 255
 if_icmpgt L29
 ldc "(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++(?:\\.(?:[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]-*)*[a-z\u0080-\uffff0-9!#$%&'*+/=?^_`{|}~]++)*|\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\]|\\[IPv6:(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]"
 iconst_2
-aload 27
+aload 28
 ifeq L29
 iconst_1
 goto L30
@@ -1213,6 +1252,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1245,6 +1285,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1252,7 +1293,7 @@ locals Object java/lang/String
 locals Integer
 stack Integer
 .end stack
-istore 28
+istore 29
 L1:
 goto L31
 L2:
@@ -1280,6 +1321,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1287,7 +1329,7 @@ locals Object java/lang/String
 locals Integer
 stack Object java/lang/IllegalArgumentException
 .end stack
-astore 29
+astore 30
 L31:
 .stack
 locals Object java/lang/Object
@@ -1313,13 +1355,14 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
 locals Object java/lang/String
 locals Integer
 .end stack
-iload 28
+iload 29
 ifne L32
 new java/lang/IllegalArgumentException
 dup
@@ -1350,6 +1393,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1357,15 +1401,15 @@ locals Object java/lang/String
 locals Integer
 .end stack
 iconst_0
-istore 29
+istore 30
 bipush 0
 anewarray jakarta/validation/constraints/Pattern$Flag
-astore 30
-aload 30
+astore 31
+aload 31
 arraylength
-istore 31
-iconst_0
 istore 32
+iconst_0
+istore 33
 L33:
 .stack
 locals Object java/lang/Object
@@ -1391,6 +1435,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1401,18 +1446,18 @@ locals Object [Ljakarta/validation/constraints/Pattern$Flag;
 locals Integer
 locals Integer
 .end stack
+iload 33
 iload 32
-iload 31
 if_icmpge L34
-aload 30
-iload 32
+aload 31
+iload 33
 aaload
-astore 33
-iload 29
-aload 33
+astore 34
+iload 30
+aload 34
 ior
-istore 29
-iinc 32 1
+istore 30
+iinc 33 1
 goto L33
 L34:
 .stack
@@ -1439,6 +1484,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 locals Object java/lang/String
 locals Integer
 locals Object java/lang/String
@@ -1450,7 +1496,7 @@ locals Integer
 locals Integer
 .end stack
 ldc ".*"
-iload 29
+iload 30
 aload 13
 ifne L25
 new java/lang/IllegalArgumentException
@@ -1482,6 +1528,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 iload 14
 ifne L35
@@ -1514,6 +1561,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 iload 15
 ifeq L36
@@ -1546,6 +1594,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 16
 ifnull L37
@@ -1580,6 +1629,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 17
 ifnull L38
@@ -1614,6 +1664,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 iload 18
 i2l
@@ -1649,6 +1700,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 19
 ifnull L40
@@ -1685,6 +1737,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 new java/math/BigDecimal
 dup
@@ -1721,6 +1774,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 stack Integer
 .end stack
 iconst_1
@@ -1749,6 +1803,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 stack Integer
 stack Integer
 .end stack
@@ -1782,6 +1837,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 22
 ifnull L44
@@ -1818,6 +1874,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 stack Integer
 .end stack
 iconst_1
@@ -1846,6 +1903,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 stack Integer
 stack Integer
 .end stack
@@ -1879,6 +1937,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 23
 ifnonnull L47
@@ -1911,6 +1970,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 23
 ifnull L48
@@ -1948,6 +2008,7 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 aload 23
 ifnull L49
@@ -1985,9 +2046,78 @@ locals Object java/lang/Long
 locals Long
 locals Object java/math/BigDecimal
 locals Object java/lang/Short
+locals Object java/time/Instant
+.end stack
+aload 24
+ifnonnull L50
+new java/lang/NullPointerException
+dup
+ldc "somePastOrPresentInstant must not be null"
+athrow
+L50:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+locals Object java/time/Instant
+.end stack
+aload 24
+ifnull L51
+aload 24
+ifeq L51
+new java/lang/IllegalArgumentException
+dup
+ldc "somePastOrPresentInstant must be a date in the past or in the present"
+athrow
+L51:
+.stack
+locals Object java/lang/Object
+locals Object java/lang/Object
+locals Object java/lang/String
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/util/Collection
+locals Object java/util/Map
+locals Object [Ljava/lang/Integer;
+locals Object java/lang/CharSequence
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Object java/lang/String
+locals Object java/lang/String
+locals Integer
+locals Integer
+locals Object java/lang/Boolean
+locals Object java/lang/Boolean
+locals Integer
+locals Object java/lang/Long
+locals Long
+locals Object java/math/BigDecimal
+locals Object java/lang/Short
+locals Object java/time/Instant
 .end stack
 return
-.limit locals 34
+.limit locals 35
 .limit stack 4
 .end method
 .dep jakarta/validation/constraints/Pattern$Flag;CASE_INSENSITIVE

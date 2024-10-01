@@ -140,27 +140,10 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			new ConfigEntry(NegativeOrZero.class), //
 			new ConfigEntry(DecimalMin.class), //
 			new ConfigEntry(DecimalMax.class), //
-			//
-			new ConfigEntry(Future.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			}, //
-			new ConfigEntry(FutureOrPresent.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			}, //
-			new ConfigEntry(Past.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			}, //
-			new ConfigEntry(PastOrPresent.class) {
-				Class<?> resolveSuperType(Class<?> actual) {
-					throw new IllegalStateException(anno() + " not yet supported");
-				}
-			} //
+			new ConfigEntry(Future.class), //
+			new ConfigEntry(FutureOrPresent.class), //
+			new ConfigEntry(Past.class), //
+			new ConfigEntry(PastOrPresent.class) //
 	);
 
 	private static Optional<Class<?>> superType(Class<?> classToCheck, List<Class<?>> superTypes) {

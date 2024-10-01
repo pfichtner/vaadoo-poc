@@ -8,7 +8,22 @@ import static java.util.regex.Pattern.compile;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.IDN;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZonedDateTime;
+import java.time.chrono.HijrahDate;
+import java.time.chrono.JapaneseDate;
+import java.time.chrono.MinguoDate;
+import java.time.chrono.ThaiBuddhistDate;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
@@ -19,6 +34,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Negative;
@@ -27,6 +44,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern.Flag;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -869,6 +888,7 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}
+
 	// -----------------------------------------------------------------
 
 	@Override
@@ -937,6 +957,434 @@ public class JdkOnlyCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(NegativeOrZero anno, BigDecimal value) {
 		if (value != null && value.signum() > 0) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Past anno, Date value) {
+		if (value != null && value.getTime() >= System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, Calendar value) {
+		if (value != null && value.getTimeInMillis() >= System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, Instant value) {
+		if (value != null && !value.isBefore(Instant.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, LocalDate value) {
+		if (value != null && !value.isBefore(LocalDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, LocalDateTime value) {
+		if (value != null && !value.isBefore(LocalDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, LocalTime value) {
+		if (value != null && !value.isBefore(LocalTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, MonthDay value) {
+		if (value != null && !value.isBefore(MonthDay.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, OffsetDateTime value) {
+		if (value != null && !value.isBefore(OffsetDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, Year value) {
+		if (value != null && !value.isBefore(Year.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, YearMonth value) {
+		if (value != null && !value.isBefore(YearMonth.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, ZonedDateTime value) {
+		if (value != null && !value.isBefore(ZonedDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, HijrahDate value) {
+		if (value != null && !value.isBefore(HijrahDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, JapaneseDate value) {
+		if (value != null && !value.isBefore(JapaneseDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, MinguoDate value) {
+		if (value != null && !value.isBefore(MinguoDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Past anno, ThaiBuddhistDate value) {
+		if (value != null && !value.isBefore(ThaiBuddhistDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(PastOrPresent anno, Date value) {
+		if (value != null && value.getTime() > System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, Calendar value) {
+		if (value != null && value.getTimeInMillis() > System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, Instant value) {
+		if (value != null && value.isAfter(Instant.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, LocalDate value) {
+		if (value != null && value.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, LocalDateTime value) {
+		if (value != null && value.isAfter(LocalDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, LocalTime value) {
+		if (value != null && value.isAfter(LocalTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, MonthDay value) {
+		if (value != null && value.isAfter(MonthDay.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, OffsetDateTime value) {
+		if (value != null && value.isAfter(OffsetDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, Year value) {
+		if (value != null && value.isAfter(Year.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, YearMonth value) {
+		if (value != null && value.isAfter(YearMonth.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, ZonedDateTime value) {
+		if (value != null && value.isAfter(ZonedDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, HijrahDate value) {
+		if (value != null && value.isAfter(HijrahDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, JapaneseDate value) {
+		if (value != null && value.isAfter(JapaneseDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, MinguoDate value) {
+		if (value != null && value.isAfter(MinguoDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(PastOrPresent anno, ThaiBuddhistDate value) {
+		if (value != null && value.isAfter(ThaiBuddhistDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Future anno, Date value) {
+		if (value != null && value.getTime() <= System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, Calendar value) {
+		if (value != null && value.getTimeInMillis() <= System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, Instant value) {
+		if (value != null && !value.isAfter(Instant.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, LocalDate value) {
+		if (value != null && !value.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, LocalDateTime value) {
+		if (value != null && !value.isAfter(LocalDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, LocalTime value) {
+		if (value != null && !value.isAfter(LocalTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, MonthDay value) {
+		if (value != null && !value.isAfter(MonthDay.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, OffsetDateTime value) {
+		if (value != null && !value.isAfter(OffsetDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, Year value) {
+		if (value != null && !value.isAfter(Year.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, YearMonth value) {
+		if (value != null && !value.isAfter(YearMonth.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, ZonedDateTime value) {
+		if (value != null && !value.isAfter(ZonedDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, HijrahDate value) {
+		if (value != null && !value.isAfter(HijrahDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, JapaneseDate value) {
+		if (value != null && !value.isAfter(JapaneseDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, MinguoDate value) {
+		if (value != null && !value.isAfter(MinguoDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(Future anno, ThaiBuddhistDate value) {
+		if (value != null && !value.isAfter(ThaiBuddhistDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(FutureOrPresent anno, Date value) {
+		if (value != null && value.getTime() < System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, Calendar value) {
+		if (value != null && value.getTimeInMillis() < System.currentTimeMillis()) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, Instant value) {
+		if (value != null && value.isBefore(Instant.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, LocalDate value) {
+		if (value != null && value.isBefore(LocalDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, LocalDateTime value) {
+		if (value != null && value.isBefore(LocalDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, LocalTime value) {
+		if (value != null && value.isBefore(LocalTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, MonthDay value) {
+		if (value != null && value.isBefore(MonthDay.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, OffsetDateTime value) {
+		if (value != null && value.isBefore(OffsetDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, Year value) {
+		if (value != null && value.isBefore(Year.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, YearMonth value) {
+		if (value != null && value.isBefore(YearMonth.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, ZonedDateTime value) {
+		if (value != null && value.isBefore(ZonedDateTime.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, HijrahDate value) {
+		if (value != null && value.isBefore(HijrahDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, JapaneseDate value) {
+		if (value != null && value.isBefore(JapaneseDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, MinguoDate value) {
+		if (value != null && value.isBefore(MinguoDate.now())) {
+			throw new IllegalArgumentException(anno.message());
+		}
+	}
+
+	@Override
+	public void check(FutureOrPresent anno, ThaiBuddhistDate value) {
+		if (value != null && value.isBefore(ThaiBuddhistDate.now())) {
 			throw new IllegalArgumentException(anno.message());
 		}
 	}

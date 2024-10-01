@@ -4,6 +4,7 @@ import static jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE;
 import static jakarta.validation.constraints.Pattern.Flag.MULTILINE;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -47,6 +49,7 @@ public class SomeClass {
 	private final long someLongPrimitiveValueWithDecimalMin;
 	private final BigDecimal someBigDecimalPrimitiveValueWithDecimalMin;
 	private final Short someShortWrapperValueThatIsNotNullAndAbout42;
+	private final Instant somePastOrPresentInstant;
 
 	public SomeClass( //
 			@Null Object someNullObject, //
@@ -71,7 +74,8 @@ public class SomeClass {
 			@Min(42) Long someLongWrapperValueThatIsMinimal42, //
 			@DecimalMin(value = "9876543210") long someLongPrimitiveValueWithDecimalMin, //
 			@DecimalMin(value = "9876543210") BigDecimal someBigDecimalPrimitiveValueWithDecimalMin, //
-			@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42
+			@NotNull @Min(41) @Max(43) Short someShortWrapperValueThatIsNotNullAndAbout42,
+			@NotNull @PastOrPresent Instant somePastOrPresentInstant //
 	//
 	) {
 		this.someNullObject = someNullObject;
@@ -97,13 +101,14 @@ public class SomeClass {
 		this.someLongPrimitiveValueWithDecimalMin = someLongPrimitiveValueWithDecimalMin;
 		this.someBigDecimalPrimitiveValueWithDecimalMin = someBigDecimalPrimitiveValueWithDecimalMin;
 		this.someShortWrapperValueThatIsNotNullAndAbout42 = someShortWrapperValueThatIsNotNullAndAbout42;
+		this.somePastOrPresentInstant = somePastOrPresentInstant;
 	}
 
 	public static void main(String[] args) {
 		System.out.println(new SomeClass(null, "notNull", null, " ", " ", List.of("1"), Map.of(1, "a"), new Integer[1],
 				"X", "custommessage", "123456789012", 1234, "9999", "me@foo.de", true, false, Boolean.TRUE,
 				Boolean.FALSE, 42, Long.valueOf(42), Long.MAX_VALUE, BigDecimal.valueOf(Long.MAX_VALUE),
-				Short.valueOf((short) 42)));
+				Short.valueOf((short) 42), Instant.now()));
 	}
 
 }
