@@ -30,6 +30,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public class SomeLombokClass {
 
+	// provide name clash to test remapping of lambda
+	private void lambda$cache$0() {
+	}
+
 	@Null
 	Object someNullObject;
 	@NotNull

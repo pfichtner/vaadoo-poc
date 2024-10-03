@@ -26,6 +26,10 @@ import jakarta.validation.constraints.Size;
 
 public class SomeClass {
 
+	// provide name clash to test remapping of lambda
+	private void lambda$cache$0() {
+	}
+
 	private final Object someNullObject;
 	private final Object someObject;
 	private final String valueWithoutAnnotation;

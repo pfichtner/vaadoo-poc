@@ -53,6 +53,27 @@
 
 .field private static 'cache' Ljava/util/Map; signature "Ljava/util/Map<Ljava/util/AbstractMap$SimpleEntry<Ljava/lang/String;Ljava/lang/Integer;>;Ljava/util/regex/Pattern;>;"
 
+.method private lambda$cache$0()V
+return
+.limit locals 1
+.limit stack 0
+.end method
+.provide com/example/SomeClass;lambda$cache$0
+.desc Ljava/lang/Object;
+.desc Ljava/lang/Boolean;
+.desc Ljava/lang/Short;
+.desc Ljava/util/Collection;
+.desc [Ljava/lang/Integer;
+.desc I
+.desc J
+.desc Ljava/util/Map;
+.desc Ljava/lang/String;
+.desc Ljava/time/Instant;
+.desc Ljava/lang/Long;
+.desc Z
+.desc Ljava/math/BigDecimal;
+.desc Ljava/lang/CharSequence;
+
 .method public <init>(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
 .signature "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection<Ljava/lang/String;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/String;>;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V"
 aload 0
@@ -196,8 +217,8 @@ return
 .desc Ljava/lang/String;
 .desc Ljava/time/Instant;
 .desc ()V
-.desc Ljava/lang/Long;
 .desc (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/util/Collection;Ljava/util/Map;[Ljava/lang/Integer;Ljava/lang/CharSequence;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;ZZLjava/lang/Boolean;Ljava/lang/Boolean;ILjava/lang/Long;JLjava/math/BigDecimal;Ljava/lang/Short;Ljava/time/Instant;)V
+.desc Ljava/lang/Long;
 .desc Z
 .desc Ljava/math/BigDecimal;
 .desc Ljava/lang/CharSequence;
@@ -2299,7 +2320,7 @@ areturn
 .desc (Ljava/lang/Object;Ljava/lang/Object;)V
 .desc (I)Ljava/lang/Integer;
 
-.method private static synthetic lambda$cache$0(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
+.method private static synthetic lambda$cache$0$1(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;
 aload 0
 invokevirtual java/util/AbstractMap$SimpleEntry/getKey()Ljava/lang/Object;
 checkcast java/lang/String
@@ -2316,7 +2337,7 @@ areturn
 .dep java/lang/Integer;intValue
 .dep java/util/regex/Pattern;compile
 .dep java/util/AbstractMap$SimpleEntry;getKey
-.provide com/example/SomeClass;lambda$cache$0
+.provide com/example/SomeClass;lambda$cache$0$1
 .desc ()I
 .desc (Ljava/lang/String;I)Ljava/util/regex/Pattern;
 .desc ()Ljava/lang/Object;

@@ -53,6 +53,10 @@ public record SomeRecord( //
 		@NotNull @PastOrPresent Instant somePastOrPresentInstant //
 	){
 
+	// provide name clash to test remapping of lambda
+	private void lambda$cache$0() {
+	}
+
 	public static void main(String[] args) {
 		System.out.println(new SomeRecord(null, "notNull", null, " ", " ", List.of("1"), Map.of(1, "a"), new Integer[1],
 				"X", "custommessage", "123456789012", 1234, "9999", "me@foo.de", true, false, Boolean.TRUE,
