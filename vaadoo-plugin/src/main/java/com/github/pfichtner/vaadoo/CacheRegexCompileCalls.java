@@ -168,10 +168,8 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 											&& fragmentClassName.equals(innerHandle.getOwner())) {
 										String calledMethod = innerHandle.getName();
 										if (classMembers.containsMethodName(calledMethod)) {
-											System.out.println("*** remapping " + calledMethod);
 											calledMethod = remappedLambdas.computeIfAbsent(calledMethod,
 													classMembers::newMethod);
-											System.out.println("*** remapped " + calledMethod);
 										}
 
 										bootstrapMethodArguments[i] = new Handle(innerHandle.getTag(), classname,
