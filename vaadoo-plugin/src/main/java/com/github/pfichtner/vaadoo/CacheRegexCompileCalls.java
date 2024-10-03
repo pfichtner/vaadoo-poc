@@ -115,6 +115,7 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 
 			private final String fragmentClassName = Type.getType(clazz).getInternalName();
 			private final Map<String, String> remappedFieldNames = new HashMap<>();
+			private final Map<String, String> remappedLambdas = new HashMap<>();
 
 			@Override
 			public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
@@ -138,27 +139,13 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 					return null;
 				}
 
-				// TODO if it comes to name clashes on the lambda (synthetic method) we would
-				// have to rewrite
-
-				// mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Function;", new
-				// Handle(Opcodes.H_INVOKESTATIC, "java/lang/invoke/LambdaMetafactory",
-				// "metafactory",
-				// "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
-				// false), new Object[]{Type.getType("(Ljava/lang/Object;)Ljava/lang/Object;"),
-				// new Handle(Opcodes.H_INVOKESTATIC, "com/example/SomeClass", "lambda$cache$0",
-				// "(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;", false),
-				// Type.getType("(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;")});
-				// mv = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
-				// "lambda$cache$0",
-				// "(Ljava/util/AbstractMap$SimpleEntry;)Ljava/util/regex/Pattern;", null,
-				// null);
-
 				if (isFragmentMethod) {
 					// name could differ (we tried to add method "cache" to the class but because
 					// "cache" already was present the name got "cache$1" (we first insert the
 					// calls, then we add the method, which is done here)
 					name = methodCalled;
+				} else {
+					name = remappedLambdas.getOrDefault(name, name);
 				}
 
 				MethodVisitor mv = outputVisitor().visitMethod(access, name, descriptor, signature, exceptions);
@@ -179,9 +166,16 @@ public class CacheRegexCompileCalls extends ClassVisitor {
 									Handle innerHandle = (Handle) bootstrapMethodArguments[i];
 									if (H_INVOKESTATIC == innerHandle.getTag()
 											&& fragmentClassName.equals(innerHandle.getOwner())) {
+										String calledMethod = innerHandle.getName();
+										if (classMembers.containsMethodName(calledMethod)) {
+											System.out.println("*** remapping " + calledMethod);
+											calledMethod = remappedLambdas.computeIfAbsent(calledMethod,
+													classMembers::newMethod);
+											System.out.println("*** remapped " + calledMethod);
+										}
+
 										bootstrapMethodArguments[i] = new Handle(innerHandle.getTag(), classname,
-												innerHandle.getName(), innerHandle.getDesc(),
-												innerHandle.isInterface());
+												calledMethod, innerHandle.getDesc(), innerHandle.isInterface());
 									}
 								}
 							}
