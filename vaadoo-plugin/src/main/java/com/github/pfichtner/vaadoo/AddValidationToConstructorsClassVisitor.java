@@ -175,7 +175,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		@Override
 		public void visitParameter(String name, int access) {
 			visitParameterCalled = true;
-			parameters.firstUnamed().name(name);
+			parameters.firstUnnamed().name(name);
 			super.visitParameter(name, access);
 		}
 
@@ -222,7 +222,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 			// This is not valid in source- but in bytecode (we call validate before the
 			// super call)
 			if (!validationAdded && opcode == ALOAD && varIndex == 0) {
-				addValidateMethodCall(parameters.argumentTypes);
+				addValidateMethodCall(parameters.argumentTypes());
 				validationAdded = true;
 			}
 		}
@@ -297,7 +297,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 	}
 
 	private void addValidateMethod(String name, Parameters parameters) {
-		var signature = parameters.methodDescriptor;
+		var signature = parameters.methodDescriptor();
 		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 		mv.visitCode();
 

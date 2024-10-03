@@ -8,11 +8,11 @@ import net.bytebuddy.jar.asm.Type;
 
 class Parameters implements Iterable<ParameterInfo> {
 
-	final String methodDescriptor;
-	final ParameterInfo[] infos;
-	final Type[] argumentTypes;
+	private final String methodDescriptor;
+	private final ParameterInfo[] infos;
+	private final Type[] argumentTypes;
 
-	public Parameters(String methodDescriptor) {
+	private Parameters(String methodDescriptor) {
 		this.methodDescriptor = methodDescriptor;
 		this.argumentTypes = Type.getArgumentTypes(methodDescriptor);
 		this.infos = new ParameterInfo[argumentTypes.length];
@@ -24,11 +24,11 @@ class Parameters implements Iterable<ParameterInfo> {
 		}
 	}
 
-	static Parameters fromDescriptor(String methodDescriptor) {
+	public static Parameters fromDescriptor(String methodDescriptor) {
 		return new Parameters(methodDescriptor);
 	}
 
-	ParameterInfo firstUnamed() {
+	public ParameterInfo firstUnnamed() {
 		for (int i = 0; i < infos.length; i++) {
 			var parameterInfo = infos[i];
 			if (parameterInfo.name() == null) {
@@ -55,6 +55,14 @@ class Parameters implements Iterable<ParameterInfo> {
 	@Override
 	public Iterator<ParameterInfo> iterator() {
 		return asList(this.infos).iterator();
+	}
+
+	public String methodDescriptor() {
+		return methodDescriptor;
+	}
+
+	public Type[] argumentTypes() {
+		return argumentTypes;
 	}
 
 	public int size() {
