@@ -29,6 +29,10 @@ public class ClassMembers {
 		toAdd.forEach(methodNames::add);
 	}
 
+	public boolean containsMethodName(String methodName) {
+		return methodNames.contains(methodName);
+	}
+
 	public String newMethod(String arg) {
 		String newMethodName = arg;
 		for (int i = 1; methodNames.contains(newMethodName); i++) {
