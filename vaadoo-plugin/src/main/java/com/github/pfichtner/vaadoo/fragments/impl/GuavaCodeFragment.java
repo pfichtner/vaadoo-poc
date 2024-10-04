@@ -4,9 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Math.abs;
 import static java.lang.Math.log10;
+import static java.lang.String.format;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.IDN;
@@ -23,6 +26,7 @@ import java.time.chrono.HijrahDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.MinguoDate;
 import java.time.chrono.ThaiBuddhistDate;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -30,6 +34,7 @@ import java.util.Map;
 
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
+import jakarta.validation.ConstraintValidator;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMax;
@@ -1099,6 +1104,26 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 	@Override
 	public void check(FutureOrPresent anno, ThaiBuddhistDate value) {
 		checkArgument(value == null || !value.isBefore(ThaiBuddhistDate.now()), anno.message());
+	}
+
+	// -----------------------------------------------------------------
+
+	@Override
+	public void check(Annotation anno, Object value, ConstraintValidator<?, Object> validator) {
+		checkArgument( //
+				validator.isValid(value, null), //
+				Arrays.stream(anno.getClass().getMethods()) //
+						.filter(m -> "message".equals(m.getName())) //
+						.filter(m -> m.getParameterCount() == 0) //
+						.findFirst().map(m -> {
+							try {
+								Object invokeResult = m.invoke(validator);
+								return invokeResult == null ? null : String.valueOf(invokeResult);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								// ignore
+								return null;
+							}
+						}).orElse(format("{@@@NAME@@@} not valid (checked by %s)", validator.getClass().getName())));
 	}
 
 }

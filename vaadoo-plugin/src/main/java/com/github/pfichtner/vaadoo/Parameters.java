@@ -24,7 +24,7 @@ class Parameters implements Iterable<ParameterInfo> {
 		}
 	}
 
-	public static Parameters fromDescriptor(String methodDescriptor) {
+	public static Parameters parametersFromDescriptor(String methodDescriptor) {
 		return new Parameters(methodDescriptor);
 	}
 

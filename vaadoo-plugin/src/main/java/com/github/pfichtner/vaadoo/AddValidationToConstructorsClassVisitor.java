@@ -1,5 +1,7 @@
 package com.github.pfichtner.vaadoo;
 
+import static com.github.pfichtner.vaadoo.AsmUtil.classtype;
+import static com.github.pfichtner.vaadoo.Parameters.parametersFromDescriptor;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
 
+import jakarta.validation.Constraint;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMax;
@@ -168,7 +171,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 				ClassMembers classMembers) {
 			super(ASM9, methodVisitor);
 			this.className = className;
-			this.parameters = Parameters.fromDescriptor(methodDescriptor);
+			this.parameters = parametersFromDescriptor(methodDescriptor);
 			this.classMembers = classMembers;
 		}
 
@@ -301,6 +304,9 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		MethodVisitor mv = cv.visitMethod(ACC_PRIVATE | ACC_STATIC, name, signature, null, null);
 		mv.visitCode();
 
+		// TODO move to config
+		boolean customAnnotationsEnabled = false;
+
 		var injector = new MethodInjector(codeFragment, signature);
 		for (var parameter : parameters) {
 			for (var annotation : parameter.getAnnotations()) {
@@ -308,6 +314,20 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 					if (annotation.equals(config.type())) {
 						injector.inject(mv, parameter, checkMethod(config, parameter.classtype()));
 					}
+				}
+				if (customAnnotationsEnabled) {
+					var classtype = classtype(annotation);
+					if (configs.stream().map(ConfigEntry::anno).noneMatch(classtype::equals)) {
+						var contraint = classtype.getAnnotation(Constraint.class);
+						if (contraint != null) {
+							for (var validatedBy : contraint.validatedBy()) {
+								// TODO add third parameter (validatedBy) to injection
+								injector.inject(mv, parameter,
+										checkMethod(new ConfigEntry(Constraint.class), parameter.classtype()));
+							}
+						}
+					}
+
 				}
 			}
 		}
