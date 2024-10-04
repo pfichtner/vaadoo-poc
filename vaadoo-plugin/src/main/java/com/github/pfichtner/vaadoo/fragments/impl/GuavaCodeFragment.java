@@ -762,174 +762,159 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(Past anno, Date value) {
-		boolean b = value != null && value.getTime() >= System.currentTimeMillis();
-		checkArgument(!b);
+		checkArgument(value == null || value.getTime() < System.currentTimeMillis(), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, Calendar value) {
-		boolean b = value != null && value.getTimeInMillis() >= System.currentTimeMillis();
-		checkArgument(!b);
+		checkArgument(value == null || value.getTimeInMillis() < System.currentTimeMillis(), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, Instant value) {
-		boolean b = value != null && !value.isBefore(Instant.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(Instant.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, LocalDate value) {
-		boolean b = value != null && !value.isBefore(LocalDate.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(LocalDate.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, LocalDateTime value) {
-		boolean b = value != null && !value.isBefore(LocalDateTime.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(LocalDateTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, LocalTime value) {
-		boolean b = value != null && !value.isBefore(LocalTime.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(LocalTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, MonthDay value) {
-		boolean b = value != null && !value.isBefore(MonthDay.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(MonthDay.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, OffsetDateTime value) {
-		boolean b = value != null && !value.isBefore(OffsetDateTime.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(OffsetDateTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, Year value) {
-		boolean b = value != null && !value.isBefore(Year.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(Year.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, YearMonth value) {
-		boolean b = value != null && !value.isBefore(YearMonth.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(YearMonth.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, ZonedDateTime value) {
-		boolean b = value != null && !value.isBefore(ZonedDateTime.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(ZonedDateTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, HijrahDate value) {
-		boolean b = value != null && !value.isBefore(HijrahDate.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(HijrahDate.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, JapaneseDate value) {
-		boolean b = value != null && !value.isBefore(JapaneseDate.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(JapaneseDate.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, MinguoDate value) {
-		boolean b = value != null && !value.isBefore(MinguoDate.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(MinguoDate.now()), anno.message());
 	}
 
 	@Override
 	public void check(Past anno, ThaiBuddhistDate value) {
-		boolean b = value != null && !value.isBefore(ThaiBuddhistDate.now());
-		checkArgument(!b);
+		checkArgument(value == null || value.isBefore(ThaiBuddhistDate.now()), anno.message());
 	}
 
 	// -----------------------------------------------------------------
 
 	@Override
 	public void check(PastOrPresent anno, Date value) {
-		checkArgument(value == null || value.getTime() <= System.currentTimeMillis());
+		checkArgument(value == null || value.getTime() <= System.currentTimeMillis(), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, Calendar value) {
-		checkArgument(value == null || value.getTimeInMillis() <= System.currentTimeMillis());
+		checkArgument(value == null || value.getTimeInMillis() <= System.currentTimeMillis(), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, Instant value) {
-		checkArgument(value == null || !value.isAfter(Instant.now()));
+		checkArgument(value == null || !value.isAfter(Instant.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, LocalDate value) {
-		checkArgument(value == null || !value.isAfter(LocalDate.now()));
+		checkArgument(value == null || !value.isAfter(LocalDate.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, LocalDateTime value) {
-		checkArgument(value == null || !value.isAfter(LocalDateTime.now()));
+		checkArgument(value == null || !value.isAfter(LocalDateTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, LocalTime value) {
-		checkArgument(value == null || !value.isAfter(LocalTime.now()));
+		checkArgument(value == null || !value.isAfter(LocalTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, MonthDay value) {
-		checkArgument(value == null || !value.isAfter(MonthDay.now()));
+		checkArgument(value == null || !value.isAfter(MonthDay.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, OffsetDateTime value) {
-		checkArgument(value == null || !value.isAfter(OffsetDateTime.now()));
+		checkArgument(value == null || !value.isAfter(OffsetDateTime.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, Year value) {
-		checkArgument(value == null || !value.isAfter(Year.now()));
+		checkArgument(value == null || !value.isAfter(Year.now()), anno.message());
 	}
 
 	@Override
 	public void check(PastOrPresent anno, YearMonth value) {
-		checkArgument(value == null || !value.isAfter(YearMonth.now()));
+		checkArgument(value == null || !value.isAfter(YearMonth.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(PastOrPresent anno, ZonedDateTime value) {
-		checkArgument(value == null || !value.isAfter(ZonedDateTime.now()));
+		checkArgument(value == null || !value.isAfter(ZonedDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(PastOrPresent anno, HijrahDate value) {
-		checkArgument(value == null || !value.isAfter(HijrahDate.now()));
+		checkArgument(value == null || !value.isAfter(HijrahDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(PastOrPresent anno, JapaneseDate value) {
-		checkArgument(value == null || !value.isAfter(JapaneseDate.now()));
+		checkArgument(value == null || !value.isAfter(JapaneseDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(PastOrPresent anno, MinguoDate value) {
-		checkArgument(value == null || !value.isAfter(MinguoDate.now()));
+		checkArgument(value == null || !value.isAfter(MinguoDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(PastOrPresent anno, ThaiBuddhistDate value) {
-		checkArgument(value == null || !value.isAfter(ThaiBuddhistDate.now()));
+		checkArgument(value == null || !value.isAfter(ThaiBuddhistDate.now()), anno.message());
 
 	}
 
@@ -937,91 +922,91 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(Future anno, Date value) {
-		checkArgument(value == null || value.getTime() > System.currentTimeMillis());
+		checkArgument(value == null || value.getTime() > System.currentTimeMillis(), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, Calendar value) {
-		checkArgument(value == null || value.getTimeInMillis() > System.currentTimeMillis());
+		checkArgument(value == null || value.getTimeInMillis() > System.currentTimeMillis(), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, Instant value) {
-		checkArgument(value == null || value.isAfter(Instant.now()));
+		checkArgument(value == null || value.isAfter(Instant.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, LocalDate value) {
-		checkArgument(value == null || value.isAfter(LocalDate.now()));
+		checkArgument(value == null || value.isAfter(LocalDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, LocalDateTime value) {
-		checkArgument(value == null || value.isAfter(LocalDateTime.now()));
+		checkArgument(value == null || value.isAfter(LocalDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, LocalTime value) {
-		checkArgument(value == null || value.isAfter(LocalTime.now()));
+		checkArgument(value == null || value.isAfter(LocalTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, MonthDay value) {
-		checkArgument(value == null || value.isAfter(MonthDay.now()));
+		checkArgument(value == null || value.isAfter(MonthDay.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, OffsetDateTime value) {
-		checkArgument(value == null || value.isAfter(OffsetDateTime.now()));
+		checkArgument(value == null || value.isAfter(OffsetDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, Year value) {
-		checkArgument(value == null || value.isAfter(Year.now()));
+		checkArgument(value == null || value.isAfter(Year.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, YearMonth value) {
-		checkArgument(value == null || value.isAfter(YearMonth.now()));
+		checkArgument(value == null || value.isAfter(YearMonth.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, ZonedDateTime value) {
-		checkArgument(value == null || value.isAfter(ZonedDateTime.now()));
+		checkArgument(value == null || value.isAfter(ZonedDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, HijrahDate value) {
-		checkArgument(value == null || value.isAfter(HijrahDate.now()));
+		checkArgument(value == null || value.isAfter(HijrahDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, JapaneseDate value) {
-		checkArgument(value == null || value.isAfter(JapaneseDate.now()));
+		checkArgument(value == null || value.isAfter(JapaneseDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, MinguoDate value) {
-		checkArgument(value == null || value.isAfter(MinguoDate.now()));
+		checkArgument(value == null || value.isAfter(MinguoDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(Future anno, ThaiBuddhistDate value) {
-		checkArgument(value == null || value.isAfter(ThaiBuddhistDate.now()));
+		checkArgument(value == null || value.isAfter(ThaiBuddhistDate.now()), anno.message());
 
 	}
 
@@ -1029,91 +1014,91 @@ public class GuavaCodeFragment implements Jsr380CodeFragment {
 
 	@Override
 	public void check(FutureOrPresent anno, Date value) {
-		checkArgument(value == null || value.getTime() >= System.currentTimeMillis());
+		checkArgument(value == null || value.getTime() >= System.currentTimeMillis(), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, Calendar value) {
-		checkArgument(value == null || value.getTimeInMillis() >= System.currentTimeMillis());
+		checkArgument(value == null || value.getTimeInMillis() >= System.currentTimeMillis(), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, Instant value) {
-		checkArgument(value == null || !value.isBefore(Instant.now()));
+		checkArgument(value == null || !value.isBefore(Instant.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, LocalDate value) {
-		checkArgument(value == null || !value.isBefore(LocalDate.now()));
+		checkArgument(value == null || !value.isBefore(LocalDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, LocalDateTime value) {
-		checkArgument(value == null || !value.isBefore(LocalDateTime.now()));
+		checkArgument(value == null || !value.isBefore(LocalDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, LocalTime value) {
-		checkArgument(value == null || !value.isBefore(LocalTime.now()));
+		checkArgument(value == null || !value.isBefore(LocalTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, MonthDay value) {
-		checkArgument(value == null || !value.isBefore(MonthDay.now()));
+		checkArgument(value == null || !value.isBefore(MonthDay.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, OffsetDateTime value) {
-		checkArgument(value == null || !value.isBefore(OffsetDateTime.now()));
+		checkArgument(value == null || !value.isBefore(OffsetDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, Year value) {
-		checkArgument(value == null || !value.isBefore(Year.now()));
+		checkArgument(value == null || !value.isBefore(Year.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, YearMonth value) {
-		checkArgument(value == null || !value.isBefore(YearMonth.now()));
+		checkArgument(value == null || !value.isBefore(YearMonth.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, ZonedDateTime value) {
-		checkArgument(value == null || !value.isBefore(ZonedDateTime.now()));
+		checkArgument(value == null || !value.isBefore(ZonedDateTime.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, HijrahDate value) {
-		checkArgument(value == null || !value.isBefore(HijrahDate.now()));
+		checkArgument(value == null || !value.isBefore(HijrahDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, JapaneseDate value) {
-		checkArgument(value == null || !value.isBefore(JapaneseDate.now()));
+		checkArgument(value == null || !value.isBefore(JapaneseDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, MinguoDate value) {
-		checkArgument(value == null || !value.isBefore(MinguoDate.now()));
+		checkArgument(value == null || !value.isBefore(MinguoDate.now()), anno.message());
 
 	}
 
 	@Override
 	public void check(FutureOrPresent anno, ThaiBuddhistDate value) {
-		checkArgument(value == null || !value.isBefore(ThaiBuddhistDate.now()));
+		checkArgument(value == null || !value.isBefore(ThaiBuddhistDate.now()), anno.message());
 	}
 
 }
