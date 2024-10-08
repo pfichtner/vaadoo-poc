@@ -5,8 +5,9 @@ import lombok.ToString;
 @ToString
 public class ClassWithFizzNumber {
 
-	// tom make use of the annotation on fields using lombok you'd have to add this
-	// to lombok.config (lombok.copyableAnnotations)
+	// to make use of the annotation on fields using lombok you'd have to add
+	// @FizzBuzzNumber to lombok.config (lombok.copyableAnnotations)
+	// @FizzBuzzNumber
 	private final Integer number;
 
 	public ClassWithFizzNumber(@FizzBuzzNumber Integer number) {
