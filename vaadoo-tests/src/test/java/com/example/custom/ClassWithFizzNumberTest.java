@@ -1,5 +1,6 @@
 package com.example.custom;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -10,7 +11,7 @@ class ClassWithFizzNumberTest {
 	@Test
 	void failsIfNumberIsNotOneOfFizzBuzz() {
 		assertThatThrownBy(() -> new ClassWithFizzNumber(4)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("number" + " not valid");
+				.hasMessage(format("%s not valid", "number"));
 	}
 
 	@Test

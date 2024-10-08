@@ -341,11 +341,12 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 								mv.visitJumpInsn(IFNE, label0);
 								mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
 								mv.visitInsn(DUP);
-								Object message = parameter.annotationValue(annotation, "message");
+								var message = parameter.annotationValue(annotation, "message");
 								if (message == null || "".equals(message)) {
-									message = parameter.name() + " not valid";
+									mv.visitLdcInsn(parameter.name() + " not valid");
+								} else {
+									mv.visitLdcInsn(message);
 								}
-								mv.visitLdcInsn(message);
 								mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>",
 										"(Ljava/lang/String;)V", false);
 								mv.visitInsn(ATHROW);
