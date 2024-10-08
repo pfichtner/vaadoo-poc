@@ -6,10 +6,18 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_PRIVATE;
 import static net.bytebuddy.jar.asm.Opcodes.ACC_STATIC;
+import static net.bytebuddy.jar.asm.Opcodes.ACONST_NULL;
 import static net.bytebuddy.jar.asm.Opcodes.ALOAD;
 import static net.bytebuddy.jar.asm.Opcodes.ASM9;
+import static net.bytebuddy.jar.asm.Opcodes.ATHROW;
+import static net.bytebuddy.jar.asm.Opcodes.DUP;
+import static net.bytebuddy.jar.asm.Opcodes.F_APPEND;
+import static net.bytebuddy.jar.asm.Opcodes.IFNE;
 import static net.bytebuddy.jar.asm.Opcodes.ILOAD;
+import static net.bytebuddy.jar.asm.Opcodes.INVOKESPECIAL;
 import static net.bytebuddy.jar.asm.Opcodes.INVOKESTATIC;
+import static net.bytebuddy.jar.asm.Opcodes.INVOKEVIRTUAL;
+import static net.bytebuddy.jar.asm.Opcodes.NEW;
 import static net.bytebuddy.jar.asm.Opcodes.RETURN;
 import static net.bytebuddy.jar.asm.Type.getType;
 
@@ -305,7 +313,7 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		mv.visitCode();
 
 		// TODO move to config
-		boolean customAnnotationsEnabled = false;
+		boolean customAnnotationsEnabled = true;
 
 		var injector = new MethodInjector(codeFragment, signature);
 		for (var parameter : parameters) {
@@ -317,13 +325,32 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 				}
 				if (customAnnotationsEnabled) {
 					var classtype = classtype(annotation);
-					if (configs.stream().map(ConfigEntry::anno).noneMatch(classtype::equals)) {
+					if (!isStandardJr380Anno(classtype)) {
 						var contraint = classtype.getAnnotation(Constraint.class);
 						if (contraint != null) {
-							for (var validatedBy : contraint.validatedBy()) {
-								// TODO add third parameter (validatedBy) to injection
-								injector.inject(mv, parameter,
-										checkMethod(new ConfigEntry(Constraint.class), parameter.classtype()));
+							for (var validatorClass : contraint.validatedBy()) {
+								String validatorType = Type.getInternalName(validatorClass);
+								mv.visitTypeInsn(NEW, validatorType);
+								mv.visitInsn(DUP);
+								mv.visitMethodInsn(INVOKESPECIAL, validatorType, "<init>", "()V", false);
+								mv.visitVarInsn(ALOAD, parameter.index());
+								mv.visitInsn(ACONST_NULL);
+								mv.visitMethodInsn(INVOKEVIRTUAL, validatorType, "isValid",
+										"(Ljava/lang/Integer;Ljakarta/validation/ConstraintValidatorContext;)Z", false);
+								Label label0 = new Label();
+								mv.visitJumpInsn(IFNE, label0);
+								mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
+								mv.visitInsn(DUP);
+								Object message = parameter.annotationValue(annotation, "message");
+								if (message == null || "".equals(message)) {
+									message = parameter.name() + " not valid";
+								}
+								mv.visitLdcInsn(message);
+								mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>",
+										"(Ljava/lang/String;)V", false);
+								mv.visitInsn(ATHROW);
+								mv.visitLabel(label0);
+								mv.visitFrame(F_APPEND, 1, new Object[] { validatorType }, 0, null);
 							}
 						}
 					}
@@ -335,6 +362,10 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(parameters.size(), parameters.size());
 		mv.visitEnd();
+	}
+
+	private boolean isStandardJr380Anno(Class<?> classtype) {
+		return configs.stream().map(ConfigEntry::anno).anyMatch(classtype::equals);
 	}
 
 	private Method checkMethod(ConfigEntry config, Class<?> actual) {

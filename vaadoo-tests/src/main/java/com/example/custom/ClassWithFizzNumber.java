@@ -13,6 +13,10 @@ public class ClassWithFizzNumber {
 		this.number = number;
 	}
 
+	public ClassWithFizzNumber(@FizzBuzzNumber(message = "other message") Integer number, boolean ___) {
+		this.number = number;
+	}
+
 	public static void main(String[] args) {
 		System.out.println(new ClassWithFizzNumber(42));
 	}
