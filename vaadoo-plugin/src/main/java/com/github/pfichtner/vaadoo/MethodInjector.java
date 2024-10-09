@@ -103,7 +103,7 @@ public class MethodInjector {
 						var annotationValue = parameter.annotationValue(handledAnnotation, k);
 						return annotationValue == null ? k : annotationValue;
 					};
-					private final Function<String, Object> resolver = rbResolver.andThen(paramNameResolver)
+					final Function<String, Object> resolver = rbResolver.andThen(paramNameResolver)
 							.andThen(annotationValueResolver);
 
 					@Override
@@ -275,7 +275,7 @@ public class MethodInjector {
 
 	private final ClassReader classReader;
 
-	private static final String NAME = "@@@NAME@@@";
+	static final String NAME = "@@@NAME@@@";
 	private final String signatureOfTargetMethod;
 
 	public MethodInjector(Class<? extends Jsr380CodeFragment> clazz, String signatureOfTargetMethod) {

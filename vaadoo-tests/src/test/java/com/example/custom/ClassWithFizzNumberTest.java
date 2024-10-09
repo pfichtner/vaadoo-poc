@@ -12,13 +12,15 @@ class ClassWithFizzNumberTest {
 
 	@Test
 	void failsIfNumberIsNotOneOfFizzBuzz() {
-		assertThatThrownBy(() -> new ClassWithFizzNumber(NOT_FIZZ_NOR_BUZZ))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage(format("%s not valid", "number"));
+		assertThatThrownBy(() -> new ClassWithFizzNumber(NOT_FIZZ_NOR_BUZZ)) //
+				.isInstanceOf(IllegalArgumentException.class) //
+				.hasMessage("number must be divisible by 3 or 5");
 	}
 
 	@Test
 	void customeMessage() {
-		assertThatThrownBy(() -> new ClassWithFizzNumber(4, true)).isInstanceOf(IllegalArgumentException.class)
+		assertThatThrownBy(() -> new ClassWithFizzNumber(4, true)) //
+				.isInstanceOf(IllegalArgumentException.class) //
 				.hasMessage("other message");
 	}
 

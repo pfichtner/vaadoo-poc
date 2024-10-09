@@ -73,16 +73,13 @@ return
 .end annotation
 aload 0
 getfield com/example/custom/ClassWithFizzNumber/number Ljava/lang/Integer;
-invokestatic java/lang/String/valueOf(Ljava/lang/Object;)Ljava/lang/String;
 areturn
 .limit locals 1
 .limit stack 1
 .end method
 .dep com/example/custom/ClassWithFizzNumber;number
-.dep java/lang/String;valueOf
 .provide com/example/custom/ClassWithFizzNumber;toString
 .desc Ljava/lang/Integer;
-.desc (Ljava/lang/Object;)Ljava/lang/String;
 
 .method private static validate(Ljava/lang/Integer;)V
 new com/example/custom/FizzBuzzNumberValidator
@@ -94,7 +91,7 @@ invokevirtual com/example/custom/FizzBuzzNumberValidator/isValid(Ljava/lang/Inte
 ifne L0
 new java/lang/IllegalArgumentException
 dup
-ldc "number not valid"
+ldc "number must be divisible by 3 or 5"
 invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
 athrow
 L0:

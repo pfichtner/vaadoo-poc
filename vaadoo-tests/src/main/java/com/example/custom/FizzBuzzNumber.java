@@ -14,6 +14,6 @@ import jakarta.validation.Constraint;
 @Constraint(validatedBy = FizzBuzzNumberValidator.class)
 public @interface FizzBuzzNumber {
 
-	String message() default "";
+	String message() default "{constraints.fizzbuzz.message}";
 
 }

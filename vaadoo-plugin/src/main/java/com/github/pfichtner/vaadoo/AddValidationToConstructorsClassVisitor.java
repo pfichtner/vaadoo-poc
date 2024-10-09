@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.github.pfichtner.vaadoo.ParameterInfo.EnumEntry;
 import com.github.pfichtner.vaadoo.fragments.Jsr380CodeFragment;
@@ -342,11 +343,21 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 								mv.visitTypeInsn(NEW, "java/lang/IllegalArgumentException");
 								mv.visitInsn(DUP);
 								var message = parameter.annotationValue(annotation, "message");
-								if (message == null || "".equals(message)) {
-									mv.visitLdcInsn(parameter.name() + " not valid");
-								} else {
-									mv.visitLdcInsn(message);
+								if (message == null) {
+									Object defaultMessage = defaultMessage(classtype, message);
+									if (defaultMessage instanceof String) {
+										Function<String, String> rbResolver = Resources::message;
+										Function<String, String> paramNameResolver = k -> k.equals(MethodInjector.NAME)
+												? parameter.name()
+												: k;
+										message = NamedPlaceholders.replace((String) defaultMessage,
+												rbResolver.andThen(paramNameResolver));
+									}
+									if (message == null) {
+										message = parameter.name() + " not valid";
+									}
 								}
+								mv.visitLdcInsn(message);
 								mv.visitMethodInsn(INVOKESPECIAL, "java/lang/IllegalArgumentException", "<init>",
 										"(Ljava/lang/String;)V", false);
 								mv.visitInsn(ATHROW);
@@ -363,6 +374,18 @@ public class AddValidationToConstructorsClassVisitor extends ClassVisitor {
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(parameters.size(), parameters.size());
 		mv.visitEnd();
+	}
+
+	private Object defaultMessage(Class<?> annotationClass, Object message) {
+		try {
+			return Arrays.stream(annotationClass.getMethods()) //
+					.filter(m -> "message".equals(m.getName())) //
+					.filter(m -> m.getParameterCount() == 0) //
+					.findFirst().map(Method::getDefaultValue) //
+					.orElse(null);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private boolean isStandardJr380Anno(Class<?> classtype) {
