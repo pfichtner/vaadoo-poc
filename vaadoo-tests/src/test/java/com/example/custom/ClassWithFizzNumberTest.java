@@ -8,10 +8,18 @@ import org.junit.jupiter.api.Test;
 
 class ClassWithFizzNumberTest {
 
+	private static final int NOT_FIZZ_NOR_BUZZ = 1;
+
 	@Test
 	void failsIfNumberIsNotOneOfFizzBuzz() {
-		assertThatThrownBy(() -> new ClassWithFizzNumber(4)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage(format("%s not valid", "number"));
+		assertThatThrownBy(() -> new ClassWithFizzNumber(NOT_FIZZ_NOR_BUZZ))
+				.isInstanceOf(IllegalArgumentException.class).hasMessage(format("%s not valid", "number"));
+	}
+
+	@Test
+	void customeMessage() {
+		assertThatThrownBy(() -> new ClassWithFizzNumber(4, true)).isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("other message");
 	}
 
 	@Test
@@ -22,12 +30,6 @@ class ClassWithFizzNumberTest {
 			new ClassWithFizzNumber(6);
 			new ClassWithFizzNumber(15);
 		});
-	}
-
-	@Test
-	void customeMessage() {
-		assertThatThrownBy(() -> new ClassWithFizzNumber(4, true)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("other message");
 	}
 
 }
