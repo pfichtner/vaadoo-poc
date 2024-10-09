@@ -1,0 +1,144 @@
+.bytecode 61.0
+.class public synchronized com/example/custom/ClassWithFizzNumber
+.super java/lang/Object
+.inner class public static final Lookup inner java/lang/invoke/MethodHandles$Lookup outer java/lang/invoke/MethodHandles
+
+.field private final 'number' Ljava/lang/Integer;
+
+.method public <init>(Ljava/lang/Integer;)V
+aload 0
+aload 1
+invokestatic com/example/custom/ClassWithFizzNumber/validate(Ljava/lang/Integer;)V
+invokespecial java/lang/Object/<init>()V
+aload 0
+aload 1
+putfield com/example/custom/ClassWithFizzNumber/number Ljava/lang/Integer;
+return
+.limit locals 2
+.limit stack 2
+.end method
+.dep com/example/custom/ClassWithFizzNumber;validate
+.dep java/lang/Object;<init>
+.dep com/example/custom/ClassWithFizzNumber;number
+.provide com/example/custom/ClassWithFizzNumber;<init>
+.desc Ljava/lang/Integer;
+.desc ()V
+.desc (Ljava/lang/Integer;)V
+
+.method public <init>(Ljava/lang/Integer;Z)V
+aload 0
+aload 1
+iload 2
+invokestatic com/example/custom/ClassWithFizzNumber/validate(Ljava/lang/Integer;Z)V
+invokespecial java/lang/Object/<init>()V
+aload 0
+aload 1
+putfield com/example/custom/ClassWithFizzNumber/number Ljava/lang/Integer;
+return
+.limit locals 3
+.limit stack 3
+.end method
+.dep com/example/custom/ClassWithFizzNumber;validate
+.dep java/lang/Object;<init>
+.dep com/example/custom/ClassWithFizzNumber;number
+.provide com/example/custom/ClassWithFizzNumber;<init>
+.desc Ljava/lang/Integer;
+.desc ()V
+.desc (Ljava/lang/Integer;Z)V
+
+.method public static main([Ljava/lang/String;)V
+getstatic java/lang/System/out Ljava/io/PrintStream;
+new com/example/custom/ClassWithFizzNumber
+dup
+bipush 42
+invokestatic java/lang/Integer/valueOf(I)Ljava/lang/Integer;
+invokespecial com/example/custom/ClassWithFizzNumber/<init>(Ljava/lang/Integer;)V
+invokevirtual java/io/PrintStream/println(Ljava/lang/Object;)V
+return
+.limit locals 1
+.limit stack 4
+.end method
+.dep java/lang/Integer;valueOf
+.dep java/io/PrintStream;println
+.dep java/lang/System;out
+.dep com/example/custom/ClassWithFizzNumber;<init>
+.provide com/example/custom/ClassWithFizzNumber;main
+.desc (Ljava/lang/Object;)V
+.desc (I)Ljava/lang/Integer;
+.desc Ljava/io/PrintStream;
+.desc (Ljava/lang/Integer;)V
+
+.method public toString()Ljava/lang/String;
+.annotation invisible Llombok/Generated;
+.end annotation
+aload 0
+getfield com/example/custom/ClassWithFizzNumber/number Ljava/lang/Integer;
+invokestatic java/lang/String/valueOf(Ljava/lang/Object;)Ljava/lang/String;
+areturn
+.limit locals 1
+.limit stack 1
+.end method
+.dep com/example/custom/ClassWithFizzNumber;number
+.dep java/lang/String;valueOf
+.provide com/example/custom/ClassWithFizzNumber;toString
+.desc Ljava/lang/Integer;
+.desc (Ljava/lang/Object;)Ljava/lang/String;
+
+.method private static validate(Ljava/lang/Integer;)V
+new com/example/custom/FizzBuzzNumberValidator
+dup
+invokespecial com/example/custom/FizzBuzzNumberValidator/<init>()V
+aload 0
+aconst_null
+invokevirtual com/example/custom/FizzBuzzNumberValidator/isValid(Ljava/lang/Integer;Ljakarta/validation/ConstraintValidatorContext;)Z
+ifne L0
+new java/lang/IllegalArgumentException
+dup
+ldc "number not valid"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
+athrow
+L0:
+.stack
+locals Object java/lang/Integer
+.end stack
+return
+.limit locals 1
+.limit stack 3
+.end method
+.dep com/example/custom/FizzBuzzNumberValidator;<init>
+.dep com/example/custom/FizzBuzzNumberValidator;isValid
+.dep java/lang/IllegalArgumentException;<init>
+.provide com/example/custom/ClassWithFizzNumber;validate
+.desc ()V
+.desc (Ljava/lang/Integer;Ljakarta/validation/ConstraintValidatorContext;)Z
+.desc (Ljava/lang/String;)V
+
+.method private static validate(Ljava/lang/Integer;Z)V
+new com/example/custom/FizzBuzzNumberValidator
+dup
+invokespecial com/example/custom/FizzBuzzNumberValidator/<init>()V
+aload 0
+aconst_null
+invokevirtual com/example/custom/FizzBuzzNumberValidator/isValid(Ljava/lang/Integer;Ljakarta/validation/ConstraintValidatorContext;)Z
+ifne L0
+new java/lang/IllegalArgumentException
+dup
+ldc "other message"
+invokespecial java/lang/IllegalArgumentException/<init>(Ljava/lang/String;)V
+athrow
+L0:
+.stack
+locals Object java/lang/Integer
+locals Integer
+.end stack
+return
+.limit locals 2
+.limit stack 3
+.end method
+.dep com/example/custom/FizzBuzzNumberValidator;<init>
+.dep com/example/custom/FizzBuzzNumberValidator;isValid
+.dep java/lang/IllegalArgumentException;<init>
+.provide com/example/custom/ClassWithFizzNumber;validate
+.desc ()V
+.desc (Ljava/lang/Integer;Ljakarta/validation/ConstraintValidatorContext;)Z
+.desc (Ljava/lang/String;)V

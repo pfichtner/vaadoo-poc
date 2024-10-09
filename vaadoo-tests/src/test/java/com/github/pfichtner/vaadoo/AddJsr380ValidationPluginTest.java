@@ -29,6 +29,7 @@ import com.example.Mandator;
 import com.example.SomeClass;
 import com.example.SomeLombokClass;
 import com.example.SomeRecord;
+import com.example.custom.ClassWithFizzNumber;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.build.Plugin;
@@ -57,6 +58,11 @@ class AddJsr380ValidationPluginTest {
 					.havingCause().isInstanceOf(NullPointerException.class)
 					.withMessage("someNotEmptyCharSequence must not be empty");
 		}
+	}
+
+	@Test
+	void testGeneratedBytecodeOnCustomValidatorClass() throws Exception {
+		verify(toJasmin(ClassWithFizzNumber.class), options());
 	}
 
 	private static Object[] defaultArgs(Parameter[] parameters) {
