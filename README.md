@@ -9,6 +9,7 @@ Validating automatically domain objects: It's magic
 
 ## This is a "work in progress" PoC of weaving JSR 380 (Bean Validation 2.0) checks based on annotations into the bytecode. 
 ## Update 2024-10-01: Feature-complete, all JSR 380 annotations are supported now
+## Update 2024-10-09: Custom validators are supported now
 
 ## Why? 
 When implementing an application using Spring it's very handy to use the JSR 380 annotations. But where to place them? 
