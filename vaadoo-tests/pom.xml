@@ -15,7 +15,7 @@
 		plugin -->
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<asm.version>9.7.1</asm.version>
+		<asm.version>9.8</asm.version>
 	</properties>
 
 	<build>
