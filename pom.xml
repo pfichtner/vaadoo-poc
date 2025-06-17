@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<bytebuddy.version>1.17.5</bytebuddy.version>
+		<bytebuddy.version>1.17.6</bytebuddy.version>
 	</properties>
 
 	<modules>
