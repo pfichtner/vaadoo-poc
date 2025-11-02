@@ -1,10 +1,10 @@
-<a href="[[https://bytebuddy.net]](https://github.com/pfichtner/vaadoo/)(https://github.com/pfichtner/vaadoo/)">
+<a href="[[https://bytebuddy.net]](https://github.com/pfichtner/vaadoo-poc/)(https://github.com/pfichtner/vaadoo/)">
 <img src="https://pfichtner.github.io/assets/vaadoo/vaadoo.png" alt="vaadoo logo" height="120px" align="right" />
 </a>
 
-[![Java CI with Maven](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml/badge.svg)](https://github.com/pfichtner/vaadoo/actions/workflows/maven.yml)
+[![Java CI with Maven](https://github.com/pfichtner/vaadoo-poc/actions/workflows/maven.yml/badge.svg)](https://github.com/pfichtner/vaadoo-poc/actions/workflows/maven.yml)
 
-# Vaadoo
+# Vaadoo-PoC
 Validating automatically domain objects: It's magic
 
 ## This is a "work in progress" PoC of weaving JSR 380 (Bean Validation 2.0) checks based on annotations into the bytecode. 
